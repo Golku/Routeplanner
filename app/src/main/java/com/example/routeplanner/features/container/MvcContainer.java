@@ -38,7 +38,9 @@ public interface MvcContainer {
 
         void showManualInputOption(boolean show);
 
-        void showAddressDetails(Address address);
+        void showBottomAddressDetails();
+
+        void showTopAddressDetails();
 
         void navigateToDestination(String address);
 
@@ -62,6 +64,8 @@ public interface MvcContainer {
         void getUserLocation();
 
         void updateUserLocation(String userAddress, LatLng userLocation);
+
+        void updateCommentsList();
 
         void logOut();
 

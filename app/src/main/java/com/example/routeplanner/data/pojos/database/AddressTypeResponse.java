@@ -3,7 +3,7 @@ package com.example.routeplanner.data.pojos.database;
 public class AddressTypeResponse {
 
     private boolean error;
-    private boolean message;
+    private String message;
 
     public boolean isError() {
         return error;
@@ -13,11 +13,11 @@ public class AddressTypeResponse {
         this.error = error;
     }
 
-    public boolean isMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(boolean message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 }

@@ -22,8 +22,6 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
@@ -211,7 +209,8 @@ public class ContainerController extends BaseController implements
             case "itemClick":
                 for(Address address : container.getAddressList()){
                     if(address.getAddress().equals(event.getAddress().getAddress())){
-                        view.showAddressDetails(address);
+                        showAddressDetails(address);
+                        view.showBottomAddressDetails();
                         break;
                     }
                 }
@@ -248,7 +247,24 @@ public class ContainerController extends BaseController implements
         view.showFragment(1);
     }
 
+    private void showAddressDetails(Address address){
+        createEvent("addressDetails", "addressClicked", address, this);
+    }
+
+    private void showAddressDetailsNewAddress(Address address){
+        createEvent("addressDetails", "addressAdded", address, this);
+    }
+
+    @Override
+    public void updateCommentsList() {
+        createEvent("addressDetails", "updateCommentsList",this);
+    }
+
     private void addAddress(Address address) {
+        if(address.isValid()){
+            showAddressDetailsNewAddress(address);
+            view.showTopAddressDetails();
+        }
         createEvent("addressFragment", "addAddress", address, this);
     }
 
@@ -304,6 +320,7 @@ public class ContainerController extends BaseController implements
     @Override
     public void addressResponse(Address response) {
         if (response != null) {
+
             addAddress(response);
         }
     }

@@ -1,10 +1,10 @@
-package com.example.routeplanner.features.addressDetails;
+package com.example.routeplanner.features.container.addressDetailsFragment;
 
 import com.example.routeplanner.data.database.DatabaseCallback;
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.CommentInformation;
+import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.Session;
-import com.example.routeplanner.data.pojos.database.AddressInformation;
 
 public interface MvcAddressDetails {
 
@@ -12,13 +12,15 @@ public interface MvcAddressDetails {
 
         void setUpAdapter(AddressDetailsAdapter adapter);
 
-        void updateMessageToUserTextView(String message);
-
         void changeAddressType(Address address);
 
         void networkOperationStarted();
 
-        void networkOperationFinish();
+        void networkOperationFinish(String message);
+
+        void postEvent(Event event);
+
+        void updateAddressInfo(Address address, boolean newAddress);
 
         void showAddressInGoogle(Address address);
 
@@ -26,14 +28,12 @@ public interface MvcAddressDetails {
 
         void showCommentInput(Address address);
 
-        void showToast(String message);
+        void scrollToComment(int position);
 
-        void closeActivity();
+        void showToast(String message);
     }
 
     interface Controller{
-
-        void setInfo(Session session, Address address);
 
         void getAddressInformation();
 
@@ -46,6 +46,8 @@ public interface MvcAddressDetails {
         void googleLinkClick();
 
         void addCommentButtonClick();
+
+        void eventReceived(Event event);
     }
 
     interface Model{

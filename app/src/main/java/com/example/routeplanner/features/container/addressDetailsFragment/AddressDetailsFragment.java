@@ -1,17 +1,19 @@
-package com.example.routeplanner.features.addressDetails;
+package com.example.routeplanner.features.container.addressDetailsFragment;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,15 +24,20 @@ import com.example.routeplanner.R;
 import com.example.routeplanner.data.models.DialogCreator;
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.CommentInformation;
+import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.features.commentDisplay.CommentDisplayActivity;
 import com.example.routeplanner.features.commentInput.CommentInputActivity;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AddressDetailsActivity extends AppCompatActivity implements
+public class AddressDetailsFragment extends Fragment implements
         MvcAddressDetails.View,
         TimePickerDialog.OnTimeSetListener{
 
@@ -46,7 +53,7 @@ public class AddressDetailsActivity extends AppCompatActivity implements
     ImageView addressTypeImageView;
     @BindView(R.id.messageToUserTextView)
     TextView messageToUserTextView;
-    @BindView(R.id.get_user_location_btn)
+    @BindView(R.id.addCommentBtn)
     FloatingActionButton addCommentBtn;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -64,6 +71,8 @@ public class AddressDetailsActivity extends AppCompatActivity implements
     TextView openingHoursHolder;
     @BindView(R.id.closing_time_holder)
     TextView closingHoursHolder;
+    @BindView(R.id.addedComfirmationTv)
+    TextView addedConfirmationTv;
 
     private final String debugTag = "debugTag";
 
@@ -72,37 +81,52 @@ public class AddressDetailsActivity extends AppCompatActivity implements
     private String workingHours;
     private boolean returning;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_address_details);
-        ButterKnife.bind(this);
-        returning = false;
+        EventBus.getDefault().register(this);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_address_details, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         init();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (returning) {
-            controller.getAddressInformation();
-        }
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        if (returning) {
+//            controller.getAddressInformation();
+//        }
+//    }
 
     private void init() {
-        controller = new AddressDetailsController(this);
-        Address address = getIntent().getParcelableExtra("address");
+        controller = new AddressDetailsController(this, new Session(getActivity()));
+    }
+
+    @Override
+    public void updateAddressInfo(Address address, boolean newAddress) {
+        recyclerView.setAdapter(null);
 
         streetTextView.setText(address.getStreet());
         postcodeTextView.setText(address.getPostCode());
         cityTextView.setText(address.getCity());
 
-        addressTypeImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                typeChangeConfirmation();
-            }
-        });
+        if(newAddress){
+            addedConfirmationTv.setVisibility(View.VISIBLE);
+        }else{
+            addedConfirmationTv.setVisibility(View.GONE);
+        }
 
         if (address.isBusiness()) {
             openingTimeTv.setVisibility(View.VISIBLE);
@@ -114,35 +138,46 @@ public class AddressDetailsActivity extends AppCompatActivity implements
             openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
             closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
             addressTypeImageView.setImageResource(R.drawable.business_ic_white);
+        }else{
+            openingTimeTv.setVisibility(View.GONE);
+            changeOpeningTimeTv.setVisibility(View.GONE);
+            closingTimeTv.setVisibility(View.GONE);
+            changeClosingTimeTv.setVisibility(View.GONE);
+            openingHoursHolder.setVisibility(View.GONE);
+            closingHoursHolder.setVisibility(View.GONE);
+            addressTypeImageView.setImageResource(R.drawable.home_ic_white);
         }
 
-        controller.setInfo(new Session(this), address);
         controller.getAddressInformation();
     }
 
     @Override
     public void setUpAdapter(AddressDetailsAdapter adapter) {
-        messageToUserTextView.setVisibility(View.GONE);
         recyclerView.setAdapter(adapter);
     }
 
-    private void typeChangeConfirmation() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure?")
-                .setTitle("Change address type")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        addressTypeImageView.setVisibility(View.INVISIBLE);
-                        typeChangeProgress_pb.setVisibility(View.VISIBLE);
-                        controller.changeAddressType();
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    @OnClick(R.id.addressTypeImageView)
+    public void typeChangeRequest() {
+        addressTypeImageView.setVisibility(View.INVISIBLE);
+        typeChangeProgress_pb.setVisibility(View.VISIBLE);
+        controller.changeAddressType();
+
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//        builder.setMessage("Are you sure?")
+//                .setTitle("Change address type")
+//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        addressTypeImageView.setVisibility(View.INVISIBLE);
+//                        typeChangeProgress_pb.setVisibility(View.VISIBLE);
+//                        controller.changeAddressType();
+//                    }
+//                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int id) {
+//                // User cancelled the dialog
+//            }
+//        });
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
     }
 
     @SuppressLint("SetTextI18n")
@@ -178,15 +213,15 @@ public class AddressDetailsActivity extends AppCompatActivity implements
     @OnClick(R.id.change_opening_time_tv)
     public void onChangeOpeningHoursClick(){
         workingHours = "open";
-        DialogFragment timePicker = new DialogCreator();
-        timePicker.show(getSupportFragmentManager(), "Time Picker");
+        DialogFragment timePicker = new DialogCreator(this);
+        timePicker.show(getActivity().getSupportFragmentManager(), "Time Picker");
     }
 
     @OnClick(R.id.change_closing_time_tv)
     public void onOChangeClosingHoursClick(){
         workingHours = "close";
-        DialogFragment timePicker = new DialogCreator();
-        timePicker.show(getSupportFragmentManager(), "Time Picker");
+        DialogFragment timePicker = new DialogCreator(this);
+        timePicker.show(getActivity().getSupportFragmentManager(), "Time Picker");
     }
 
     @SuppressLint("SetTextI18n")
@@ -205,11 +240,20 @@ public class AddressDetailsActivity extends AppCompatActivity implements
         controller.changeOpeningHours(hourOfDay, minute, workingHours);
     }
 
-    @OnClick(R.id.get_user_location_btn)
+    @OnClick(R.id.addCommentBtn)
     public void onAddCommentButtonClick() {
         controller.addCommentButtonClick();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void receiveEvent(Event event){
+        controller.eventReceived(event);
+    }
+
+    @Override
+    public void postEvent(Event event) {
+        EventBus.getDefault().post(event);
+    }
     @Override
     public void showAddressInGoogle(Address address) {
         String url = "http://www.google.com/search?q=" + address.getStreet() + " " + address.getCity();
@@ -219,26 +263,32 @@ public class AddressDetailsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void updateMessageToUserTextView(String message) {
-        messageToUserTextView.setText(message);
-    }
-
-    @Override
     public void networkOperationStarted() {
         progressBar.setVisibility(View.VISIBLE);
+        //typeChangeProgress_pb.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void networkOperationFinish() {
-        progressBar.setVisibility(View.GONE);
-        typeChangeProgress_pb.setVisibility(View.GONE);
-        addressTypeImageView.setVisibility(View.VISIBLE);
+    public void networkOperationFinish(String message) {
+
+        if(!message.isEmpty()){
+            messageToUserTextView.setText(message);
+        }else{
+            messageToUserTextView.setVisibility(View.GONE);
+        }
+
+        if(message.equals("typeChange")){
+            typeChangeProgress_pb.setVisibility(View.GONE);
+            addressTypeImageView.setVisibility(View.VISIBLE);
+        }else{
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void showCommentDisplay(CommentInformation commentInformation) {
         returning = false;
-        Intent i = new Intent(this, CommentDisplayActivity.class);
+        Intent i = new Intent(getActivity(), CommentDisplayActivity.class);
         i.putExtra("commentInformation", commentInformation);
         startActivity(i);
     }
@@ -246,19 +296,25 @@ public class AddressDetailsActivity extends AppCompatActivity implements
     @Override
     public void showCommentInput(Address address) {
         returning = true;
-        Intent i = new Intent(this, CommentInputActivity.class);
+        Intent i = new Intent(getActivity(), CommentInputActivity.class);
         i.putExtra("address", address);
         startActivity(i);
     }
 
     @Override
+    public void scrollToComment(int position) {
+        recyclerView.smoothScrollToPosition(position);
+    }
+
+    @Override
     public void showToast(String message) {
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getActivity(), message, Toast.LENGTH_LONG);
         toast.show();
     }
 
     @Override
-    public void closeActivity() {
-        finish();
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

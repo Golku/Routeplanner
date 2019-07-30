@@ -158,6 +158,7 @@ public class AddressListController extends BaseController implements
             view.showToast("Address: " + address.getAddress()+ " is invalid");
             return;
         }
+
         boolean notFound = true;
         for(Address it : addressList){
             if(it.getAddress().equals(address.getAddress())){

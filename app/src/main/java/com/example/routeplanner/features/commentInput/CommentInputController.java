@@ -54,7 +54,6 @@ public class CommentInputController implements MvcCommentInput.Presenter, Databa
         view.onFinishNetworkOperation();
 
         if(!response.isError()){
-            view.showToast("Comment was added");
             view.closeActivity();
         }else{
             view.showToast("Fail to add list_item_comment");

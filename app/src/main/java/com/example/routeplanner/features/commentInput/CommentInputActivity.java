@@ -25,7 +25,7 @@ public class CommentInputActivity extends AppCompatActivity implements MvcCommen
     TextView dateTextView;
     @BindView(R.id.commentEditText)
     EditText commentEditText;
-    @BindView(R.id.get_user_location_btn)
+    @BindView(R.id.addCommentBtn)
     Button addCommentBtn;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -54,7 +54,7 @@ public class CommentInputActivity extends AppCompatActivity implements MvcCommen
         dateTextView.setText(date);
     }
 
-    @OnClick(R.id.get_user_location_btn)
+    @OnClick(R.id.addCommentBtn)
     @Override
     public void onAddCommentBtnClick() {
         String comment = commentEditText.getText().toString();

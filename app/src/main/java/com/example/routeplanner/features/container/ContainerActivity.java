@@ -1,11 +1,14 @@
 package com.example.routeplanner.features.container;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -17,19 +20,21 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.routeplanner.R;
-import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
 import com.example.routeplanner.data.pojos.Session;
-import com.example.routeplanner.features.addressDetails.AddressDetailsActivity;
 import com.example.routeplanner.features.container.addressListFragment.AddressListFragment;
 import com.example.routeplanner.features.container.driveListFragment.DriveListFragment;
 import com.example.routeplanner.features.container.mapFragment.MapFragment;
@@ -56,12 +61,14 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @Nullable
     @BindView(R.id.loading_screen)
     ConstraintLayout loadingScreen;
-    @BindView(R.id.menu_btn_wrapper)
-    ConstraintLayout menuBtnWrapper;
-    @BindView(R.id.menu_wrapper)
-    ConstraintLayout menuWrapper;
+    @BindView(R.id.container)
+    ConstraintLayout container;
     @BindView(R.id.inputAddressComLo)
     ConstraintLayout inputAddressComLo;
+    @BindView(R.id.topBlackScreen)
+    ConstraintLayout topBlackScreen;
+    @BindView(R.id.addressDetailsWrapper)
+    ConstraintLayout addressDetailsWrapper;
     @BindView(R.id.nav_bar)
     BottomNavigationView navBar;
     @BindView(R.id.snack_bar_container)
@@ -81,9 +88,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     private final String debugTag = "debugTag";
 
-    private boolean menuIsVisible;
-
     private boolean inputting;
+    private boolean showingDetails;
     private boolean backPress;
 
     private boolean typing;
@@ -97,6 +103,12 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         predictionsList.setVisibility(View.GONE);
 
         inputText.getText().clear();
+        showManualInputOption(false);
+
+        if(showingDetails){
+            hideAddressDetails();
+            return;
+        }
 
         if (backPress) {
             closeActivity();
@@ -107,6 +119,14 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
             }
             backPress = true;
             onBackPressToast();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(showingDetails){
+            controller.updateCommentsList();
         }
     }
 
@@ -130,6 +150,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         init();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void init() {
         //loadingScreen.bringToFront();
         controller = new ContainerController(this, this);
@@ -144,6 +165,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         controller.setVariables(new Session(this), this, placesClient);
 
         inputting = false;
+        showingDetails = false;
         backPress = false;
         typing = false;
 
@@ -153,9 +175,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-                if (menuIsVisible) {
-                    hideMenu();
-                }
+                hideAddressDetails();
 
                 switch(item.getItemId()){
 
@@ -180,7 +200,9 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
             public void onTextChanged(CharSequence c, int start, int before, int count) {
 
                 if(typing){
-                    fragmentContainer.setVisibility(View.GONE);
+
+                    hideAddressDetails();
+
                     predictionsList.setVisibility(View.VISIBLE);
                     typing = false;
                 }
@@ -189,6 +211,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
                     controller.getPrediction(inputText.getText().toString());
                 }else if(inputText.getText().toString().length() <= 3){
                     setupPredictionAdapter(new ArrayList<AutocompletePrediction>());
+                    showManualInputOption(false);
                 }
 
             }
@@ -240,32 +263,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         fragmentContainer.setCurrentItem(position);
     }
 
-    @OnClick(R.id.menu_btn_wrapper)
-    public void showMenuBtnClick() {
 
-        if (menuIsVisible) {
-            hideMenu();
-        } else {
-            showMenu();
-        }
-    }
-
-    private void showMenu() {
-        menuWrapper.setVisibility(View.VISIBLE);
-        menuWrapper.bringToFront();
-        menuIsVisible = true;
-        menuBtnWrapper.setBackgroundResource(R.drawable.drop_menu_btn_selected);
-    }
-
-    private void hideMenu() {
-        menuWrapper.setVisibility(View.GONE);
-        menuIsVisible = false;
-        menuBtnWrapper.setBackgroundResource(R.drawable.drop_menu_btn);
-    }
-
-    @OnClick(R.id.log_out_btn)
-    public void menuBtnClick() {
-        hideMenu();
+    public void logUserOut() {
         controller.logOut();
     }
 
@@ -289,7 +288,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         showManualInputOption(false);
         inputText.getText().clear();
         predictionsList.setVisibility(View.GONE);
-        fragmentContainer.setVisibility(View.VISIBLE);
+
         typing = true;
         controller.getAddress(address);
     }
@@ -335,8 +334,9 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @Override
     public void predictionSelected(String address) {
         inputText.getText().clear();
+
         predictionsList.setVisibility(View.GONE);
-        fragmentContainer.setVisibility(View.VISIBLE);
+
         typing = true;
         controller.getAddress(address);
     }
@@ -352,10 +352,49 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     }
 
     @Override
-    public void showAddressDetails(Address address) {
-        Intent i = new Intent(this, AddressDetailsActivity.class);
-        i.putExtra("address", address);
-        startActivity(i);
+    public void showTopAddressDetails() {
+
+        ViewGroup.LayoutParams params = addressDetailsWrapper.getLayoutParams();
+        params.height = (int) (0 * Resources.getSystem().getDisplayMetrics().density);
+        addressDetailsWrapper.setLayoutParams(params);
+
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(container);
+        constraintSet.connect(R.id.addressDetailsWrapper, ConstraintSet.TOP, R.id.topBarWrapper, ConstraintSet.BOTTOM,8);
+        constraintSet.applyTo(container);
+
+        addressDetailsWrapper.setVisibility(View.VISIBLE);
+        addressDetailsWrapper.bringToFront();
+
+        showingDetails = true;
+    }
+
+    @Override
+    public void showBottomAddressDetails() {
+
+        ViewGroup.LayoutParams params = addressDetailsWrapper.getLayoutParams();
+        params.height = (int) (400 * Resources.getSystem().getDisplayMetrics().density);
+        addressDetailsWrapper.setLayoutParams(params);
+
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(container);
+        constraintSet.clear(R.id.addressDetailsWrapper, ConstraintSet.TOP);
+        constraintSet.applyTo(container);
+
+        addressDetailsWrapper.setVisibility(View.VISIBLE);
+        topBlackScreen.setVisibility(View.VISIBLE);
+
+        topBlackScreen.bringToFront();
+        addressDetailsWrapper.bringToFront();
+
+        showingDetails = true;
+    }
+
+    @OnClick(R.id.topBlackScreen)
+    public void hideAddressDetails(){
+        topBlackScreen.setVisibility(View.GONE);
+        addressDetailsWrapper.setVisibility(View.GONE);
+        showingDetails = false;
     }
 
     @Override

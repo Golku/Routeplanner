@@ -1,5 +1,6 @@
-package com.example.routeplanner.features.addressDetails;
+package com.example.routeplanner.features.container.addressDetailsFragment;
 
+import android.os.Handler;
 import android.util.Log;
 import com.example.routeplanner.data.database.DatabaseCallback;
 import com.example.routeplanner.data.database.DatabaseService;
@@ -9,6 +10,7 @@ import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.data.pojos.database.AddressInformationResponse;
 import com.example.routeplanner.data.pojos.database.AddressTypeResponse;
+import com.example.routeplanner.features.splash.SplashActivity;
 import com.google.gson.Gson;
 import org.greenrobot.eventbus.EventBus;
 import okhttp3.OkHttpClient;
@@ -24,14 +26,16 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
 
     private MvcAddressDetails.View view;
     private AddressDetailsModel model;
+    private Handler handler;
 
     private Session session;
     private Address address;
 
     private AddressDetailsAdapter adapter;
 
-    AddressDetailsController(MvcAddressDetails.View view) {
+    AddressDetailsController(MvcAddressDetails.View view, Session session) {
         this.view = view;
+        this.session = session;
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(new OkHttpClient())
@@ -42,18 +46,19 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
         adapter = new AddressDetailsAdapter(null, this);
         this.view.setUpAdapter(adapter);
         this.model = new AddressDetailsModel(retrofit.create(DatabaseService.class));
-    }
-
-    @Override
-    public void setInfo(Session session, Address address) {
-        this.session = session;
-        this.address = address;
+        this.address = new Address();
+        this.handler = new Handler();
     }
 
     @Override
     public void getAddressInformation() {
         view.networkOperationStarted();
-        model.getAddressInformation(address, this);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                model.getAddressInformation(address, AddressDetailsController.this);
+            }
+        }, 1000);
     }
 
     @Override
@@ -80,7 +85,12 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
 
     @Override
     public void changeAddressType() {
-        model.changeAddressType(session.getUsername(), address, this);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                model.changeAddressType(session.getUsername(), address, AddressDetailsController.this);
+            }
+        }, 1000);
     }
 
     @Override
@@ -124,24 +134,48 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
     }
 
     @Override
+    public void eventReceived(Event event) {
+
+        if (!event.getReceiver().equals("addressDetails")) {
+            return;
+        }
+
+        Log.d(debugTag, "Event received on addressDetails: "+ event.getEventName());
+
+        switch (event.getEventName()) {
+            case "addressClicked":
+                address = event.getAddress();
+                view.updateAddressInfo(address, false);
+                break;
+            case "addressAdded":
+                address = event.getAddress();
+                view.updateAddressInfo(address, true);
+                break;
+            case "updateCommentsList":
+                model.getAddressInformation(address, AddressDetailsController.this);
+                break;
+        }
+    }
+
+    @Override
     public void onListItemClick(CommentInformation commentInformation) {
         view.showCommentDisplay(commentInformation);
     }
 
     @Override
     public void onAddressInformationResponse(AddressInformationResponse response) {
-        view.networkOperationFinish();
-        view.updateMessageToUserTextView(response.getMessage());
+        view.networkOperationFinish(response.getMessage());
         if (response.isInformationAvailable()) {
             if (response.getAddressInformation() != null) {
                 view.setUpAdapter(adapter = new AddressDetailsAdapter(response.getAddressInformation(), this));
+                view.scrollToComment(response.getAddressInformation().getCommentsCount());
             }
         }
     }
 
     @Override
     public void onAddressInformationResponseFailure() {
-        view.networkOperationFinish();
+        view.networkOperationFinish("Failed to get address information");
         view.showToast("Unable to connect to the database");
     }
 
@@ -172,12 +206,12 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
         }
 
         view.changeAddressType(address);
-        view.networkOperationFinish();
+        view.networkOperationFinish("typeChange");
     }
 
     @Override
     public void typeChangeResponseFailure() {
-        view.networkOperationFinish();
+        view.networkOperationFinish("Failed to change address");
         view.showToast("Fail to change address type");
     }
 }

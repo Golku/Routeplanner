@@ -1,4 +1,4 @@
-package com.example.routeplanner.features.addressDetails;
+package com.example.routeplanner.features.container.addressDetailsFragment;
 
 import com.example.routeplanner.data.database.DatabaseCallback;
 import com.example.routeplanner.data.database.DatabaseService;

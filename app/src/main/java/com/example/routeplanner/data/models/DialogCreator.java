@@ -1,19 +1,23 @@
 package com.example.routeplanner.data.models;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.example.routeplanner.features.container.addressDetailsFragment.AddressDetailsFragment;
+
 import java.util.Calendar;
 
+@SuppressLint("ValidFragment")
 public class DialogCreator extends DialogFragment {
 
-    private onTimeSetListener timeSetlistener;
+    AddressDetailsFragment addressDetailsFragment;
 
-    interface onTimeSetListener{
-        void onTimeSet();
+    public DialogCreator(AddressDetailsFragment addressDetailsFragment) {
+        this.addressDetailsFragment = addressDetailsFragment;
     }
 
     @NonNull
@@ -25,7 +29,7 @@ public class DialogCreator extends DialogFragment {
 
         return new TimePickerDialog(
                 getActivity(),
-                (TimePickerDialog.OnTimeSetListener) getActivity(),
+                addressDetailsFragment,
                 hour,
                 minute,
                 true);

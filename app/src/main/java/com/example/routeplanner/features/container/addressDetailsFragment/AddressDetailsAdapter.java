@@ -1,7 +1,6 @@
-package com.example.routeplanner.features.addressDetails;
+package com.example.routeplanner.features.container.addressDetailsFragment;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
