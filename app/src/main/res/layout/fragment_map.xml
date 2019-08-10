@@ -26,6 +26,6 @@
         android:clickable="true"
         android:focusable="true"
         android:layout_gravity="bottom|end"
-        app:backgroundTint="@color/colorAccentDefault"
+        app:backgroundTint="@color/colorDarkBlue"
         app:srcCompat="@drawable/ic_action_user"/>
 </FrameLayout>

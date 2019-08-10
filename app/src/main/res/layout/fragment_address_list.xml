@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorFiller"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
@@ -24,7 +25,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:layout_constraintBottom_toBottomOf="@+id/address_list"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -37,9 +38,9 @@
         android:layout_marginBottom="64dp"
         android:clickable="true"
         android:focusable="true"
-        app:backgroundTint="@color/colorAccentDefault"
+        app:backgroundTint="@color/colorDarkBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/add_ic" />
+        app:srcCompat="@drawable/add_ic_white" />
 
 </android.support.constraint.ConstraintLayout>

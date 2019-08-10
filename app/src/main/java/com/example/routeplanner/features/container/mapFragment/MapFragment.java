@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +19,15 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.LatLng;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import java.util.ArrayList;
+
 import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -40,6 +45,8 @@ public class MapFragment extends Fragment implements
     private final String debugTag = "debugTag";
 
     private MapController controller;
+
+    private List<Polyline >polylines;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,7 +80,7 @@ public class MapFragment extends Fragment implements
     @Override
     public void onMapReady(GoogleMap googleMap) {
         MapsInitializer.initialize(getContext());
-        controller.setMapData(googleMap, getContext());
+        controller.setMapData(googleMap, this);
     }
 
     @OnClick(R.id.get_user_location_btn)
@@ -83,22 +90,6 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void deselectedMultipleMarkers() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setMessage("Are you sure?")
-//                .setTitle("Deselect multiple markers")
-//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        controller.multipleMarkersDeselected();
-//                    }
-//                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int id) {
-//                // User cancelled the dialog
-//            }
-//        });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-
         Snackbar snackbar = Snackbar.make(snackBarContainer, "Deselect until here?", Snackbar.LENGTH_SHORT);
         snackbar.setAction("yes", new View.OnClickListener() {
             @Override
@@ -107,6 +98,39 @@ public class MapFragment extends Fragment implements
             }
         });
         snackbar.show();
+    }
+
+    @Override
+    public void addPolylineToMap(List<LatLng> newDecodedPath, GoogleMap googleMap) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Polyline polyline = googleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                polyline.setColor(ContextCompat.getColor(getActivity(), R.color.ice));
+                controller.storePolyline(polyline);
+            }
+        });
+    }
+
+    @Override
+    public void removePolylineFromMap(Polyline polyline) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                polyline.remove();
+            }
+        });
+    }
+
+    @Override
+    public void updatePolyline(Polyline polyline) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                polyline.setColor(ContextCompat.getColor(getActivity(), R.color.glacierBlue));
+                polyline.setZIndex(1);
+            }
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

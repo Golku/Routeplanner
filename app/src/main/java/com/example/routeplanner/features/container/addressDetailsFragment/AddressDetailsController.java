@@ -10,6 +10,8 @@ import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.data.pojos.database.AddressInformationResponse;
 import com.example.routeplanner.data.pojos.database.AddressTypeResponse;
+import com.example.routeplanner.features.shared.BaseController;
+import com.example.routeplanner.features.shared.MvcBaseController;
 import com.example.routeplanner.features.splash.SplashActivity;
 import com.google.gson.Gson;
 import org.greenrobot.eventbus.EventBus;
@@ -17,7 +19,8 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AddressDetailsController implements MvcAddressDetails.Controller,
+public class AddressDetailsController extends BaseController implements MvcAddressDetails.Controller,
+        MvcBaseController,
         DatabaseCallback.AddressInformationCallBack,
         AddressDetailsAdapter.CommentListFunctions,
         DatabaseCallback.AddressTypeChangeCallback {
@@ -52,7 +55,7 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
 
     @Override
     public void getAddressInformation() {
-        view.networkOperationStarted();
+        view.networkOperationStarted("Fetching address comments");
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -140,7 +143,7 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
             return;
         }
 
-        Log.d(debugTag, "Event received on addressDetails: "+ event.getEventName());
+        //Log.d(debugTag, "Event received on addressDetails: "+ event.getEventName());
 
         switch (event.getEventName()) {
             case "addressClicked":
@@ -163,13 +166,27 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
     }
 
     @Override
+    public void publishEvent(Event event) {
+        view.postEvent(event);
+    }
+
+    @Override
     public void onAddressInformationResponse(AddressInformationResponse response) {
-        view.networkOperationFinish(response.getMessage());
+
         if (response.isInformationAvailable()) {
             if (response.getAddressInformation() != null) {
+
+                if(response.getAddressInformation().getCommentsCount() > 0){
+                    view.networkOperationFinish("");
+                }else{
+                    view.networkOperationFinish("No comments");
+                }
+
                 view.setUpAdapter(adapter = new AddressDetailsAdapter(response.getAddressInformation(), this));
                 view.scrollToComment(response.getAddressInformation().getCommentsCount());
             }
+        }else{
+            view.networkOperationFinish("No comments");
         }
     }
 
@@ -197,12 +214,7 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
                 }
             }
 
-            Event event = new Event();
-            event.setReceiver("all");
-            event.setEventName("addressTypeChange");
-            event.setAddress(address);
-
-            EventBus.getDefault().post(event);
+            createEvent("all", "addressTypeChange", this.address, this);
         }
 
         view.changeAddressType(address);
@@ -211,7 +223,7 @@ public class AddressDetailsController implements MvcAddressDetails.Controller,
 
     @Override
     public void typeChangeResponseFailure() {
-        view.networkOperationFinish("Failed to change address");
+        view.networkOperationFinish("");
         view.showToast("Fail to change address type");
     }
 }

@@ -1,26 +1,23 @@
 package com.example.routeplanner.features.container;
 
-import android.content.Context;
-
 import com.example.routeplanner.data.api.ApiCallback;
-import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
-import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.data.pojos.api.AddressRequest;
-import com.example.routeplanner.data.pojos.api.ChangeAddressRequest;
+import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.data.pojos.api.DriveRequest;
 import com.example.routeplanner.data.pojos.api.RemoveAddressRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.net.PlacesClient;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public interface MvcContainer {
 
     interface View{
+
+        void showLoader(String message);
+
+        void hideLoader();
 
         void setupFragments(RouteInfoHolder routeInfoHolder);
 
@@ -28,7 +25,7 @@ public interface MvcContainer {
 
         void showFragment(int position);
 
-        void updateDeliveryCompletion(int[] deliveryCompletion);
+        void updateAddressCount(int privateAddress, int businessAddress);
 
         void updateRouteEndTimeTv(String endTime);
 
@@ -42,7 +39,7 @@ public interface MvcContainer {
 
         void showTopAddressDetails();
 
-        void navigateToDestination(String address);
+        void navigateToDestination(Drive drive);
 
         void showLoginScreen();
 
@@ -52,8 +49,6 @@ public interface MvcContainer {
     }
 
     interface Controller{
-
-        void setVariables(Session session, Context context, PlacesClient placeClient);
 
         void getContainer();
 

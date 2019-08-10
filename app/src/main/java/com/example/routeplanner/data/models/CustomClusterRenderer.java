@@ -2,6 +2,7 @@ package com.example.routeplanner.data.models;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.api.Drive;

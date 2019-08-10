@@ -20,29 +20,25 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.TypedValue;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.Utils;
 import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
 import com.example.routeplanner.data.pojos.Session;
+import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.features.container.addressListFragment.AddressListFragment;
 import com.example.routeplanner.features.container.driveListFragment.DriveListFragment;
 import com.example.routeplanner.features.container.mapFragment.MapFragment;
 import com.example.routeplanner.features.login.LoginActivity;
-import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
-import com.google.android.libraries.places.api.net.PlacesClient;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -63,6 +59,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     ConstraintLayout loadingScreen;
     @BindView(R.id.container)
     ConstraintLayout container;
+    @BindView(R.id.loaderWrapper)
+    ConstraintLayout loaderWrapper;
     @BindView(R.id.inputAddressComLo)
     ConstraintLayout inputAddressComLo;
     @BindView(R.id.topBlackScreen)
@@ -77,12 +75,22 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     ViewPager fragmentContainer;
     @BindView(R.id.route_end_time)
     TextView routeEndTime;
+    @BindView(R.id.info_bar_wrapper)
+    ConstraintLayout info_bar_wrapper;
     @BindView(R.id.input_wrapper)
     ConstraintLayout input_wrapper;
     @BindView(R.id.inputText)
     EditText inputText;
     @BindView(R.id.predictionsList)
     RecyclerView predictionsList;
+    @BindView(R.id.loadingMessage)
+    TextView loadingMessage;
+    @BindView(R.id.totalStopsNumber)
+    TextView totalStopsNumber;
+    @BindView(R.id.privateCountTv)
+    TextView privateCountTv;
+    @BindView(R.id.businessCountTv)
+    TextView businessCountTv;
 
     private ContainerController controller;
 
@@ -100,6 +108,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         fragmentContainer.setVisibility(View.VISIBLE);
         navBar.setVisibility(View.VISIBLE);
         input_wrapper.setVisibility(View.GONE);
+        info_bar_wrapper.setVisibility(View.VISIBLE);
         predictionsList.setVisibility(View.GONE);
 
         inputText.getText().clear();
@@ -152,17 +161,10 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @SuppressLint("ClickableViewAccessibility")
     private void init() {
-        //loadingScreen.bringToFront();
-        controller = new ContainerController(this, this);
+        Utils.darkenStatusBar(this, R.color.colorDarkBlue);
+        showLoader("Loading container, please wait...");
 
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), "AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY");
-        }
-
-
-        PlacesClient placesClient = Places.createClient(this);
-
-        controller.setVariables(new Session(this), this, placesClient);
+        controller = new ContainerController(this, this, new Session(this));
 
         inputting = false;
         showingDetails = false;
@@ -208,6 +210,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
                 }
 
                 if(inputText.getText().toString().length() >= 3){
+//                    showLoader("Powered by Google");
                     controller.getPrediction(inputText.getText().toString());
                 }else if(inputText.getText().toString().length() <= 3){
                     setupPredictionAdapter(new ArrayList<AutocompletePrediction>());
@@ -226,6 +229,18 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         });
 
         controller.getContainer();
+    }
+
+    @Override
+    public void showLoader(String message) {
+        loadingMessage.setText(message);
+        loaderWrapper.setVisibility(View.VISIBLE);
+        loaderWrapper.bringToFront();
+    }
+
+    @Override
+    public void hideLoader() {
+        loaderWrapper.setVisibility(View.GONE);
     }
 
     @Override
@@ -248,7 +263,12 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         containerSectionPagerAdapter.addFragment(routeListFragment);
 
         fragmentContainer.setAdapter(containerSectionPagerAdapter);
-        //loadingScreen.setVisibility(View.GONE);
+
+        hideLoader();
+
+        fragmentContainer.setVisibility(View.VISIBLE);
+        navBar.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -263,7 +283,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         fragmentContainer.setCurrentItem(position);
     }
 
-
+    @OnClick(R.id.route_end_time)
     public void logUserOut() {
         controller.logOut();
     }
@@ -289,6 +309,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         inputText.getText().clear();
         predictionsList.setVisibility(View.GONE);
 
+        showLoader("Adding address, please wait...");
+
         typing = true;
         controller.getAddress(address);
     }
@@ -300,8 +322,10 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
         fragmentContainer.setVisibility(View.GONE);
         navBar.setVisibility(View.GONE);
+        info_bar_wrapper.setVisibility(View.GONE);
         input_wrapper.setVisibility(View.VISIBLE);
         predictionsList.setVisibility(View.VISIBLE);
+
 
         inputText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -314,9 +338,10 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     }
 
     @Override
-    public void updateDeliveryCompletion(int[] deliveryCompletion) {
-//        privateCompletion.setText(String.valueOf(deliveryCompletion[0]) + "/" + String.valueOf(deliveryCompletion[1]) + " delivered");
-//        businessCompletion.setText(String.valueOf(deliveryCompletion[2]) + "/" + String.valueOf(deliveryCompletion[3]) + " delivered");
+    public void updateAddressCount(int privateAddress, int businessAddress) {
+        privateCountTv.setText(String.valueOf(privateAddress));
+        businessCountTv.setText(String.valueOf(businessAddress));
+        totalStopsNumber.setText(String.valueOf(privateAddress+businessAddress));
     }
 
     @Override
@@ -336,6 +361,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         inputText.getText().clear();
 
         predictionsList.setVisibility(View.GONE);
+
+        showLoader("Adding address, please wait...");
 
         typing = true;
         controller.getAddress(address);
@@ -360,7 +387,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(container);
-        constraintSet.connect(R.id.addressDetailsWrapper, ConstraintSet.TOP, R.id.topBarWrapper, ConstraintSet.BOTTOM,8);
+        constraintSet.connect(R.id.addressDetailsWrapper, ConstraintSet.TOP, R.id.topBarWrapper, ConstraintSet.BOTTOM,32);
         constraintSet.applyTo(container);
 
         addressDetailsWrapper.setVisibility(View.VISIBLE);
@@ -371,6 +398,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @Override
     public void showBottomAddressDetails() {
+
+        Utils.darkenStatusBar(this, R.color.colorBlack);
 
         ViewGroup.LayoutParams params = addressDetailsWrapper.getLayoutParams();
         params.height = (int) (400 * Resources.getSystem().getDisplayMetrics().density);
@@ -392,14 +421,15 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @OnClick(R.id.topBlackScreen)
     public void hideAddressDetails(){
+        Utils.darkenStatusBar(this, R.color.colorDarkBlue);
         topBlackScreen.setVisibility(View.GONE);
         addressDetailsWrapper.setVisibility(View.GONE);
         showingDetails = false;
     }
 
     @Override
-    public void navigateToDestination(String address) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + address);
+    public void navigateToDestination(Drive drive) {
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + drive.getDestinationAddress().getLat() +", "+ drive.getDestinationAddress().getLng());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         startActivity(mapIntent);

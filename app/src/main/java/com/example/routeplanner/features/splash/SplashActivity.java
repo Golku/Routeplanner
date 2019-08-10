@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.Utils;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.features.container.ContainerActivity;
 import com.example.routeplanner.features.login.LoginActivity;
@@ -24,6 +25,7 @@ public class SplashActivity extends AppCompatActivity implements MvcSplash.View{
     }
 
     private void init(){
+        Utils.darkenStatusBar(this, R.color.colorBlack);
         controller = new SplashController(this);
         handler.postDelayed(new Runnable() {
             @Override

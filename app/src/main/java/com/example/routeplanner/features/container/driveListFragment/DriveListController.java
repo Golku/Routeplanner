@@ -39,8 +39,8 @@ public class DriveListController extends BaseController implements
     }
 
     @Override
-    public void goButtonClick(String address) {
-        createEvent("container", "driveDirections", address, this);
+    public void goButtonClick(Drive drive) {
+        createEvent("container", "driveDirections", drive, this);
     }
 
     @Override
@@ -50,7 +50,6 @@ public class DriveListController extends BaseController implements
             createEvent("mapFragment","updateMarkers",this);
             createEvent("container", "updateEndTime", this);
         }
-//        showDriveList();
     }
 
     @Override
@@ -65,7 +64,7 @@ public class DriveListController extends BaseController implements
             return;
         }
 
-        Log.d(debugTag, "Event received on driveFragment: " + event.getEventName());
+        //Log.d(debugTag, "Event received on driveFragment: " + event.getEventName());
 
         switch (event.getEventName()) {
             case "addressTypeChange":

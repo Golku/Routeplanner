@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.Utils;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.features.container.ContainerActivity;
 
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity implements MvcLogin.View{
     }
 
     private void init() {
+        Utils.darkenStatusBar(this, R.color.colorBlack);
         controller = new LoginController(this);
     }
 

@@ -152,12 +152,12 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
                         backgroundPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.red, null));
 
                         textPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.white, null));
-                        textPaint.setTextSize(80f);
+                        textPaint.setTextSize(50f);
 
                         RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
                         c.drawRect(background, backgroundPaint);
 
-                        c.drawText("X Delete",
+                        c.drawText("X   Delete",
                                 (float) itemView.getLeft() + width,
                                 (float) itemView.getTop() + (height*(float)0.6),
                                 textPaint);

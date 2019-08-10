@@ -1,6 +1,7 @@
 package com.example.routeplanner.features.container;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -16,12 +17,14 @@ import com.example.routeplanner.data.pojos.api.Container;
 import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.data.pojos.api.DriveRequest;
 import com.example.routeplanner.data.pojos.api.RemoveAddressRequest;
+import com.example.routeplanner.features.container.addressDetailsFragment.AddressDetailsController;
 import com.example.routeplanner.features.shared.BaseController;
 import com.example.routeplanner.features.shared.MvcBaseController;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
@@ -56,10 +59,20 @@ public class ContainerController extends BaseController implements
     private Container container;
     private PlacesClient placesClient;
 
-    ContainerController(MvcContainer.View view, ContainerActivity activity) {
+    private Handler handler;
+
+    ContainerController(MvcContainer.View view, ContainerActivity activity, Session session) {
         this.view = view;
         this.activity = activity;
+        this.handler = new Handler();
+        this.session = session;
+        this.context = activity;
 
+        if (!Places.isInitialized()) {
+            Places.initialize(context.getApplicationContext(), "AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY");
+        }
+
+        this.placesClient = Places.createClient(activity);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(new OkHttpClient())//192.168.0.16 - 217.103.231.118
@@ -71,15 +84,6 @@ public class ContainerController extends BaseController implements
     }
 
     //container data
-
-    @Override
-    public void setVariables(Session session, Context context, PlacesClient placeClient) {
-        this.session = session;
-        this.context = context;
-        this.placesClient = placeClient;
-
-    }
-
     private void setupContainer(Container container) {
         this.container = container;
 
@@ -96,15 +100,8 @@ public class ContainerController extends BaseController implements
 
         int privateAddressCount = container.getPrivateAddressCount();
         int businessAddressCount = container.getBusinessAddressCount();
-        int invalidAddressCount = container.getInvalidAddressCount();
 
-//        In this method update the container by loading the values that are displayed in the top information bar
-
-//        deliveryCompletion[0] = deliveredPrivate;
-//        deliveryCompletion[2] = deliveredBusiness;
-//        deliveryCompletion[1] = route.getPrivateAddressCount();
-//        deliveryCompletion[3] = route.getBusinessAddressCount();
-//        view.updateDeliveryCompletion(deliveryCompletion);
+        view.updateAddressCount(privateAddressCount, businessAddressCount);
     }
 
     private void updateRouteEndTime() {
@@ -112,7 +109,7 @@ public class ContainerController extends BaseController implements
             Drive finalDrive = container.getDriveList().get(container.getDriveList().size() - 1);
             view.updateRouteEndTimeTv(finalDrive.getDeliveryTimeHumanReadable());
         } else {
-            view.updateRouteEndTimeTv("");
+            view.updateRouteEndTimeTv("--:--");
         }
     }
 
@@ -150,6 +147,7 @@ public class ContainerController extends BaseController implements
             @Override
             public void onSuccess(FindAutocompletePredictionsResponse response) {
                 //Log.d(debugTag, "onSuccess");
+
                 view.setupPredictionAdapter(response.getAutocompletePredictions());
 
                 if(response.getAutocompletePredictions().size() < 1){
@@ -169,8 +167,6 @@ public class ContainerController extends BaseController implements
             }
         });
     }
-
-    //menu bottoms
 
     @Override
     public void getUserLocation() {
@@ -196,11 +192,11 @@ public class ContainerController extends BaseController implements
     @Override
     public void eventReceived(Event event) {
 
-        if (!event.getReceiver().equals("container")) {
+        if(!(event.getReceiver().equals("container") || event.getReceiver().equals("all"))){
             return;
         }
 
-        Log.d(debugTag, "Event received on container: "+ event.getEventName());
+        //Log.d(debugTag, "Event received on container: "+ event.getEventName());
 
         switch (event.getEventName()) {
             case "updateContainer":
@@ -234,7 +230,22 @@ public class ContainerController extends BaseController implements
                 updateRouteEndTime();
                 break;
             case "driveDirections":
-                view.navigateToDestination(event.getAddressString());
+                view.navigateToDestination(event.getDrive());
+                break;
+            case "addressTypeChange":
+
+                Log.d(debugTag, "Changing");
+
+                if(event.getAddress().isBusiness()){
+                    container.setBusinessAddressCount(container.getBusinessAddressCount()+1);
+                    container.setPrivateAddressCount(container.getPrivateAddressCount()-1);
+                }else{
+                    container.setPrivateAddressCount(container.getPrivateAddressCount()+1);
+                    container.setBusinessAddressCount(container.getBusinessAddressCount()-1);
+                }
+
+                updateContainerInfo();
+
                 break;
         }
     }
@@ -261,7 +272,17 @@ public class ContainerController extends BaseController implements
     }
 
     private void addAddress(Address address) {
+        view.hideLoader();
         if(address.isValid()){
+
+            if(address.isBusiness()){
+                container.setBusinessAddressCount(container.getBusinessAddressCount()+1);
+            }else{
+                container.setPrivateAddressCount(container.getPrivateAddressCount()+1);
+            }
+
+            updateContainerInfo();
+
             showAddressDetailsNewAddress(address);
             view.showTopAddressDetails();
         }
@@ -280,19 +301,38 @@ public class ContainerController extends BaseController implements
 
     @Override
     public void getContainer() {
-        model.containerRequest(session.getUsername(), this);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                model.containerRequest(session.getUsername(), ContainerController.this);
+            }
+        }, 1000);
     }
 
     @Override
     public void getAddress(String address) {
-        AddressRequest request = new AddressRequest(session.getUsername(), address);
-        model.addressRequest(request, this);
+        final AddressRequest request = new AddressRequest(session.getUsername(), address);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                model.addressRequest(request, ContainerController.this);
+            }
+        }, 1000);
     }
 
     private void removeAddress(Address address) {
         RemoveAddressRequest request = new RemoveAddressRequest();
         request.setUsername(session.getUsername());
         request.setAddress(address.getAddress());
+
+        if(address.isBusiness()){
+            container.setBusinessAddressCount(container.getBusinessAddressCount()-1);
+        }else{
+            container.setPrivateAddressCount(container.getPrivateAddressCount()-1);
+        }
+
+        updateContainerInfo();
+
         model.removeAddress(request);
     }
 
@@ -320,7 +360,6 @@ public class ContainerController extends BaseController implements
     @Override
     public void addressResponse(Address response) {
         if (response != null) {
-
             addAddress(response);
         }
     }

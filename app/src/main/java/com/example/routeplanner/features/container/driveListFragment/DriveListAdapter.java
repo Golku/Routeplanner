@@ -38,7 +38,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
 
     interface AdapterCallback{
         void itemClick(Address address);
-        void goButtonClick(String address);
+        void goButtonClick(Drive drive);
         void completeDrive(Drive drive);
     }
 
@@ -133,7 +133,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
                 callback.itemClick(driveList.get(this.getAdapterPosition()).getDestinationAddress());
             }
             else if(v == this.goIvWrapper){
-                callback.goButtonClick(driveList.get(this.getAdapterPosition()).getDestinationAddress().getAddress());
+                callback.goButtonClick(driveList.get(this.getAdapterPosition()));
             }
         }
     }
@@ -173,12 +173,12 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
                         backgroundPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.green, null));
 
                         textPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.white, null));
-                        textPaint.setTextSize(80);
+                        textPaint.setTextSize(50f);
 
                         RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
                         c.drawRect(background, backgroundPaint);
 
-                        c.drawText("✔ Done",
+                        c.drawText("✔   Done",
                                 (float) itemView.getLeft() + width,
                                 (float) itemView.getTop() + (height*(float)0.6),
                                 textPaint);

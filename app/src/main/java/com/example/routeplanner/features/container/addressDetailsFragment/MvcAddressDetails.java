@@ -14,7 +14,7 @@ public interface MvcAddressDetails {
 
         void changeAddressType(Address address);
 
-        void networkOperationStarted();
+        void networkOperationStarted(String message);
 
         void networkOperationFinish(String message);
 

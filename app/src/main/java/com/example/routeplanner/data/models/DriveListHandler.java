@@ -60,6 +60,7 @@ public class DriveListHandler {
     public void addDriveToList(Drive drive) {
         driveList.add(drive);
 
+
         long deliveryTime;
         long driveTime = drive.getDriveDurationInSeconds() * 1000;
         long PACKAGE_DELIVERY_TIME = 120000;
@@ -135,7 +136,6 @@ public class DriveListHandler {
                 }
 
                 completed = true;
-
             }else{
                 completed = false;
             }

@@ -97,7 +97,7 @@ public class AddressListController extends BaseController implements
             return;
         }
 
-        Log.d(debugTag, "Event received on addressFragment: "+ event.getEventName());
+        //Log.d(debugTag, "Event received on addressFragment: "+ event.getEventName());
 
         switch (event.getEventName()) {
             case "addressTypeChange" : addressTypeChange(event.getAddress());

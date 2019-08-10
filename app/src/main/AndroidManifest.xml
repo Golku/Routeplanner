@@ -40,9 +40,6 @@
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="adjustPan"/>
 
-        <activity android:name=".features.container.addressDetailsFragment.AddressDetailsFragment"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
-
         <activity android:name=".features.commentInput.CommentInputActivity"
             android:windowSoftInputMode="adjustPan"/>
 

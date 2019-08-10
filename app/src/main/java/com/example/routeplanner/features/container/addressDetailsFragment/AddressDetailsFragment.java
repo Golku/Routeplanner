@@ -71,8 +71,6 @@ public class AddressDetailsFragment extends Fragment implements
     TextView openingHoursHolder;
     @BindView(R.id.closing_time_holder)
     TextView closingHoursHolder;
-    @BindView(R.id.addedComfirmationTv)
-    TextView addedConfirmationTv;
 
     private final String debugTag = "debugTag";
 
@@ -123,9 +121,9 @@ public class AddressDetailsFragment extends Fragment implements
         cityTextView.setText(address.getCity());
 
         if(newAddress){
-            addedConfirmationTv.setVisibility(View.VISIBLE);
+//            addedConfirmationTv.setVisibility(View.VISIBLE);
         }else{
-            addedConfirmationTv.setVisibility(View.GONE);
+//            addedConfirmationTv.setVisibility(View.GONE);
         }
 
         if (address.isBusiness()) {
@@ -263,13 +261,7 @@ public class AddressDetailsFragment extends Fragment implements
     }
 
     @Override
-    public void networkOperationStarted() {
-        progressBar.setVisibility(View.VISIBLE);
-        //typeChangeProgress_pb.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void networkOperationFinish(String message) {
+    public void networkOperationStarted(String message) {
 
         if(!message.isEmpty()){
             messageToUserTextView.setText(message);
@@ -277,12 +269,28 @@ public class AddressDetailsFragment extends Fragment implements
             messageToUserTextView.setVisibility(View.GONE);
         }
 
+        progressBar.setVisibility(View.VISIBLE);
+        messageToUserTextView.setVisibility(View.VISIBLE);
+        //typeChangeProgress_pb.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void networkOperationFinish(String message) {
+
         if(message.equals("typeChange")){
             typeChangeProgress_pb.setVisibility(View.GONE);
             addressTypeImageView.setVisibility(View.VISIBLE);
+            message = "";
         }else{
             progressBar.setVisibility(View.GONE);
         }
+
+        if(!message.isEmpty()){
+            messageToUserTextView.setText(message);
+        }else{
+            messageToUserTextView.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
