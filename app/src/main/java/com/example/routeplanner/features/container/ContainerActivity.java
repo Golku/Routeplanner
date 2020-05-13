@@ -268,7 +268,6 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
         fragmentContainer.setVisibility(View.VISIBLE);
         navBar.setVisibility(View.VISIBLE);
-
     }
 
     @Override

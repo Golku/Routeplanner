@@ -1,5 +1,7 @@
 package com.example.routeplanner.features.login;
 
+import android.util.Log;
+
 import com.example.routeplanner.data.database.DatabaseCallback;
 import com.example.routeplanner.data.database.DatabaseService;
 import com.example.routeplanner.data.pojos.database.LoginResponse;
@@ -11,6 +13,7 @@ import retrofit2.Response;
 public class LoginModel implements MvcLogin.Model{
 
     private DatabaseService databaseService;
+    private final String debugTag = "debugTag";
 
     LoginModel(DatabaseService databaseService) {
         this.databaseService = databaseService;

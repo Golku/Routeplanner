@@ -27,7 +27,7 @@ public class CommentInputController implements MvcCommentInput.Presenter, Databa
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(new OkHttpClient())
-                .baseUrl("http://217.103.231.118/map/v1/")
+                .baseUrl("http://212.187.39.139/map/v1/")
                 .addConverterFactory(GsonConverterFactory.create(new Gson()))
                 .build();
 

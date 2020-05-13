@@ -1,5 +1,7 @@
 package com.example.routeplanner.features.login;
 
+import android.util.Log;
+
 import com.example.routeplanner.data.database.DatabaseCallback;
 import com.example.routeplanner.data.database.DatabaseService;
 import com.example.routeplanner.data.pojos.database.LoginResponse;
@@ -24,7 +26,7 @@ public class LoginController extends BaseController implements MvcLogin.Controll
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(new OkHttpClient())
-                .baseUrl("http://217.103.231.118/map/v1/")
+                .baseUrl("http://212.187.39.139/map/v1/")
                 .addConverterFactory(GsonConverterFactory.create(new Gson()))
                 .build();
 
@@ -40,6 +42,7 @@ public class LoginController extends BaseController implements MvcLogin.Controll
         String encryptedUsername = encryptInput(username);
         String encryptedPassword = encryptInput(password);
 
+        Log.d(debugTag, "Login");
         model.loginRequest(encryptedUsername, encryptedPassword, this);
     }
 
@@ -49,7 +52,10 @@ public class LoginController extends BaseController implements MvcLogin.Controll
 
     @Override
     public void onLoginResponse(LoginResponse response) {
-        if (response == null) {return;}
+        if (response == null) {
+            view.showToast("Response is null");
+            return;
+        }
 
         if(response.isMatch()){
             beginSession(response.getUserId(), username, view.getSession());
@@ -64,6 +70,6 @@ public class LoginController extends BaseController implements MvcLogin.Controll
     @Override
     public void onLoginResponseFailure() {
         view.finishNetworkOperation();
-        view.showToast("Failed");
+        view.showToast("Failed to login");
     }
 }
