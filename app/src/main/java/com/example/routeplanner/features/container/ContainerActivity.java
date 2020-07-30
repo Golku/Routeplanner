@@ -91,6 +91,10 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     TextView privateCountTv;
     @BindView(R.id.businessCountTv)
     TextView businessCountTv;
+    @BindView(R.id.routeDistanceTv)
+    TextView routeDistanceTv;
+    @BindView(R.id.routeDurationTv)
+    TextView routeDurationTv;
 
     private ContainerController controller;
 
@@ -99,7 +103,6 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     private boolean inputting;
     private boolean showingDetails;
     private boolean backPress;
-
     private boolean typing;
 
     @Override

@@ -65,6 +65,7 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
         if(address.isValid()){
             holder.streetTv.setText(address.getStreet());
             holder.cityTv.setText(address.getPostCode() +" "+ address.getCity());
+            holder.packageCountTv.setText(String.valueOf(address.getPackageCount()));
 
             if(address.isBusiness()){
                 holder.addressType.setImageResource(R.drawable.business_ic);
@@ -87,6 +88,7 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
         private ViewGroup itemWrapper;
         private TextView streetTv;
         private TextView cityTv;
+        private TextView packageCountTv;
         private ImageView addressType;
 
         CustomViewHolder(View itemView) {
@@ -94,6 +96,7 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
             itemWrapper = itemView.findViewById(R.id.item_wrapper);
             streetTv = itemView.findViewById(R.id.street_tv);
             cityTv = itemView.findViewById(R.id.city_tv);
+            packageCountTv = itemView.findViewById(R.id.packageCount_tv);
             addressType = itemView.findViewById(R.id.address_type_iv);
             itemWrapper.setOnClickListener(this);
 

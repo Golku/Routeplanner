@@ -277,13 +277,22 @@ public class ContainerController extends BaseController implements
         view.hideLoader();
         if(address.isValid()){
 
-            if(address.isBusiness()){
-                container.setBusinessAddressCount(container.getBusinessAddressCount()+1);
-            }else{
-                container.setPrivateAddressCount(container.getPrivateAddressCount()+1);
+            boolean notFound = true;
+            for(Address it : container.getAddressList()){
+                if (it.getAddress().equals(address.getAddress())) {
+                    notFound = false;
+                    break;
+                }
             }
+            if(notFound){
+                if(address.isBusiness()){
+                    container.setBusinessAddressCount(container.getBusinessAddressCount()+1);
+                }else{
+                    container.setPrivateAddressCount(container.getPrivateAddressCount()+1);
+                }
 
-            updateContainerInfo();
+                updateContainerInfo();
+            }
 
             showAddressDetailsNewAddress(address);
             view.showTopAddressDetails();

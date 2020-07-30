@@ -162,8 +162,9 @@ public class AddressListController extends BaseController implements
         boolean notFound = true;
         for(Address it : addressList){
             if(it.getAddress().equals(address.getAddress())){
-                it.setPackageCount(it.getPackageCount()+1);
+                addressList.set(addressList.indexOf(it), address);
                 notFound = false;
+                adapter.notifyDataSetChanged();
                 break;
             }
         }
