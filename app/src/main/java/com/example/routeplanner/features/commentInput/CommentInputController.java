@@ -5,6 +5,7 @@ import com.example.routeplanner.data.database.DatabaseService;
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.data.pojos.database.CommentInputResponse;
+import com.example.routeplanner.features.shared.BaseController;
 import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
@@ -13,7 +14,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class CommentInputController implements MvcCommentInput.Presenter, DatabaseCallback.CommentInputCallBack {
+public class CommentInputController extends BaseController implements MvcCommentInput.Presenter, DatabaseCallback.CommentInputCallBack {
 
     private MvcCommentInput.View view;
     private CommentInputModel model;
@@ -24,14 +25,7 @@ public class CommentInputController implements MvcCommentInput.Presenter, Databa
 
     CommentInputController(MvcCommentInput.View view) {
         this.view = view;
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(new OkHttpClient())
-                .baseUrl("http://212.187.39.139/map/v1/")
-                .addConverterFactory(GsonConverterFactory.create(new Gson()))
-                .build();
-
-        this.model = new CommentInputModel(retrofit.create(DatabaseService.class));
+        this.model = new CommentInputModel(createDatabaseService());
     }
 
     @Override
@@ -56,13 +50,13 @@ public class CommentInputController implements MvcCommentInput.Presenter, Databa
         if(!response.isError()){
             view.closeActivity();
         }else{
-            view.showToast("Fail to add list_item_comment");
+            view.showToast("Failed to add comment, please try again");
         }
     }
 
     @Override
     public void onCommentInputResponseFailure() {
-        view.showToast("Unable to connect to the database");
-        view.closeActivity();
+        view.onFinishNetworkOperation();
+        view.showToast("Failed to add comment, please try again");
     }
 }

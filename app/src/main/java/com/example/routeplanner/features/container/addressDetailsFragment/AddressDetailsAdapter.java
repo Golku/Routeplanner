@@ -1,6 +1,7 @@
 package com.example.routeplanner.features.container.addressDetailsFragment;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,11 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
+
+//        if(position == addressInformation.getCommentsCount()-1){
+//            holder.itemWrapper.setBackgroundResource(R.drawable.last_comment_item_bg);
+//        }
+
         holder.employedName.setText(addressInformation.getEmployeeId().get(position));
         holder.date.setText(addressInformation.getDates().get(position));
         holder.comment.setText(addressInformation.getComments().get(position));
@@ -53,18 +59,18 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
 
     class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        private ViewGroup itemWrapper;
         private TextView employedName;
         private TextView date;
         private TextView comment;
-        private ViewGroup container;
 
         CustomViewHolder(View itemView) {
             super(itemView);
             this.employedName = itemView.findViewById(R.id.username_tv);
             this.date = itemView.findViewById(R.id.date_tv);
             this.comment = itemView.findViewById(R.id.comment_tv);
-            this.container = itemView.findViewById(R.id.root_layout);
-            this.container.setOnClickListener(this);
+            this.itemWrapper = itemView.findViewById(R.id.item_wrapper);
+            this.itemWrapper.setOnClickListener(this);
         }
 
         public void onClick(View v) {

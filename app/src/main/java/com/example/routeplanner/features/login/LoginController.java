@@ -23,14 +23,7 @@ public class LoginController extends BaseController implements MvcLogin.Controll
 
     LoginController(MvcLogin.View view) {
         this.view = view;
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(new OkHttpClient())
-                .baseUrl("http://212.187.39.139/map/v1/")
-                .addConverterFactory(GsonConverterFactory.create(new Gson()))
-                .build();
-
-        this.model = new LoginModel(retrofit.create(DatabaseService.class));
+        this.model = new LoginModel(createDatabaseService());
     }
 
     @Override
@@ -42,7 +35,6 @@ public class LoginController extends BaseController implements MvcLogin.Controll
         String encryptedUsername = encryptInput(username);
         String encryptedPassword = encryptInput(password);
 
-        Log.d(debugTag, "Login");
         model.loginRequest(encryptedUsername, encryptedPassword, this);
     }
 
@@ -53,23 +45,25 @@ public class LoginController extends BaseController implements MvcLogin.Controll
     @Override
     public void onLoginResponse(LoginResponse response) {
         if (response == null) {
-            view.showToast("Response is null");
+            view.showDialog("Something went wrong, please try again");
             return;
         }
 
-        if(response.isMatch()){
+        if(!response.isError()){
             beginSession(response.getUserId(), username, view.getSession());
             view.showContainer();
             view.closeActivity();
         }else{
             view.finishNetworkOperation();
-            view.showToast("No match");
+            view.showDialog(response.getMessage());
+//            view.showToast(response.getMessage());
         }
     }
 
     @Override
     public void onLoginResponseFailure() {
         view.finishNetworkOperation();
-        view.showToast("Failed to login");
+        view.showDialog("Failed to login, please try again");
+//        view.showToast("Failed to login, please try again");
     }
 }

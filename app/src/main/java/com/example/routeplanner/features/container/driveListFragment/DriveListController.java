@@ -45,6 +45,13 @@ public class DriveListController extends BaseController implements
 
     @Override
     public void completeDrive(Drive drive) {
+
+        if(view.isOrganising()){
+            view.showDialog("Can't complete drive while organising");
+            listHandler.getAdapter().notifyDataSetChanged();
+            return;
+        }
+
         if(listHandler.driveCompleted(drive)){
             createEvent("mapFragment","driveCompleted", drive.getDestinationAddress(),this);
             createEvent("mapFragment","updateMarkers",this);
@@ -55,6 +62,12 @@ public class DriveListController extends BaseController implements
     @Override
     public void publishEvent(Event event) {
         view.postEvent(event);
+    }
+
+    private void updateDriveList(List<Drive> driveList){
+        for(Drive drive : driveList){
+            listHandler.addDriveToList(drive);
+        }
     }
 
     @Override
@@ -71,26 +84,30 @@ public class DriveListController extends BaseController implements
                 listHandler.addressTypeChange(event.getAddress());
                 showDriveList();
                 break;
-            case "updateList":
-                listHandler.updateList(event.getDriveList());
-                showDriveList();
+            case "updateDriveList":
+                updateDriveList(event.getRouteInfo().getDriveList());
+                createEvent("container", "updateEndTime", this);
+                createEvent("container", "updateApiDriveList", this);
                 break;
             case "addDrive":
                 listHandler.addDriveToList(event.getDrive());
                 view.scrollToItem(listHandler.getListSize());
                 createEvent("mapFragment", "driveSuccess", this);
                 createEvent("container", "updateEndTime", this);
+                createEvent("container", "updateApiDriveList", this);
                 break;
             case "removeDrive":
                 listHandler.removeDriveFromList();
                 view.scrollToItem(listHandler.getListSize());
                 createEvent("container", "updateEndTime", this);
+                createEvent("container", "updateApiDriveList", this);
                 break;
             case "RemoveMultipleDrive":
                 listHandler.removeMultipleDrive(event.getAddressString());
                 view.scrollToItem(listHandler.getListSize());
                 showDriveList();
                 createEvent("container", "updateEndTime", this);
+                createEvent("container", "updateApiDriveList", this);
                 break;
         }
     }

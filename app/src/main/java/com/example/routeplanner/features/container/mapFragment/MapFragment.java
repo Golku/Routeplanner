@@ -3,16 +3,22 @@ package com.example.routeplanner.features.container.mapFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.GenericDialog;
+import com.example.routeplanner.data.pojos.DialogMessage;
 import com.example.routeplanner.data.pojos.Event;
+import com.example.routeplanner.data.pojos.MyApplication;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -39,14 +45,18 @@ public class MapFragment extends Fragment implements
     @BindView(R.id.mapView)
     MapView mapView;
 
+    @BindView(R.id.get_user_location_btn)
+    FloatingActionButton getUserLocationBtn;
+
     @BindView(R.id.snack_bar_container)
     CoordinatorLayout snackBarContainer;
+
+    @BindView(R.id.organizingRouteWrapper)
+    ConstraintLayout organizingRouteWrapper;
 
     private final String debugTag = "debugTag";
 
     private MapController controller;
-
-    private List<Polyline >polylines;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,47 +99,36 @@ public class MapFragment extends Fragment implements
     }
 
     @Override
+    public boolean getOrganizing() {
+        return ((MyApplication) getActivity().getApplication()).isOrganizing();
+    }
+
+    @Override
     public void deselectedMultipleMarkers() {
         Snackbar snackbar = Snackbar.make(snackBarContainer, "Deselect until here?", Snackbar.LENGTH_SHORT);
-        snackbar.setAction("yes", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                controller.multipleMarkersDeselected();
-            }
-        });
+        snackbar.setAction("yes", v -> controller.multipleMarkersDeselected());
         snackbar.show();
     }
 
     @Override
     public void addPolylineToMap(List<LatLng> newDecodedPath, GoogleMap googleMap) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Polyline polyline = googleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                polyline.setColor(ContextCompat.getColor(getActivity(), R.color.ice));
-                controller.storePolyline(polyline);
-            }
+        getActivity().runOnUiThread(() -> {
+            Polyline polyline = googleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+            polyline.setColor(ContextCompat.getColor(getActivity(), R.color.ice));
+            controller.storePolyline(polyline);
         });
     }
 
     @Override
     public void removePolylineFromMap(Polyline polyline) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                polyline.remove();
-            }
-        });
+        getActivity().runOnUiThread(polyline::remove);
     }
 
     @Override
     public void updatePolyline(Polyline polyline) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                polyline.setColor(ContextCompat.getColor(getActivity(), R.color.glacierBlue));
-                polyline.setZIndex(1);
-            }
+        getActivity().runOnUiThread(() -> {
+            polyline.setColor(ContextCompat.getColor(getActivity(), R.color.glacierBlue));
+            polyline.setZIndex(1);
         });
     }
 
@@ -141,6 +140,29 @@ public class MapFragment extends Fragment implements
     @Override
     public void postEvent(Event event) {
         EventBus.getDefault().post(event);
+    }
+
+    @Override
+    public void showOrganizingRouteLoader(boolean show) {
+        if(show){
+//            mapView.setVisibility(View.GONE);
+            getUserLocationBtn.setClickable(false);
+            organizingRouteWrapper.setVisibility(View.VISIBLE);
+        }else{
+            organizingRouteWrapper.setVisibility(View.GONE);
+            getUserLocationBtn.setClickable(true);
+//            mapView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void showDialog(String message) {
+        DialogMessage dialogMessage = new DialogMessage(message);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("message", dialogMessage);
+        GenericDialog dialog = new GenericDialog();
+        dialog.setArguments(bundle);
+        dialog.show(getActivity().getSupportFragmentManager(), "Generic dialog");
     }
 
     @Override

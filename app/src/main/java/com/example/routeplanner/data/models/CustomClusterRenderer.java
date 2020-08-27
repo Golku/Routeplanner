@@ -95,7 +95,12 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
 
         Resources res = context.getResources();
         int resID = res.getIdentifier(iconName, "drawable", context.getPackageName());
-        marker.setIcon(BitmapDescriptorFactory.fromResource(resID));
+        try{
+            //Log.d(debugTag, "set icon");
+            marker.setIcon(BitmapDescriptorFactory.fromResource(resID));
+        }catch (NullPointerException e){
+            Log.d(debugTag, "CustomClusterRenderer line 103 exception: " + e.getMessage());
+        }
     }
 
     @Override

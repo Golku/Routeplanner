@@ -6,7 +6,13 @@ import com.example.routeplanner.data.pojos.api.ChangeAddressRequest;
 import com.example.routeplanner.data.pojos.api.Container;
 import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.data.pojos.api.DriveRequest;
+import com.example.routeplanner.data.pojos.api.OrganizeRouteRequest;
+import com.example.routeplanner.data.pojos.api.OrganizedRouteResponse;
 import com.example.routeplanner.data.pojos.api.RemoveAddressRequest;
+import com.example.routeplanner.data.pojos.api.UpdateDriveListRequest;
+import com.example.routeplanner.data.pojos.api.UpdatePackageCountRequest;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -22,8 +28,14 @@ public interface ApiService {
     @POST("address")
     Call<Address> addressRequest(@Body AddressRequest request);
 
-    @POST("changeaddress")
-    Call<Address> changeAddressRequest(@Body ChangeAddressRequest request);
+    @POST("route")
+    Call<OrganizedRouteResponse> sortRoute(@Body OrganizeRouteRequest request);
+
+    @POST("packageCount")
+    Call<Void> updatePackageCount(@Body UpdatePackageCountRequest request);
+
+    @POST("updatedrivelist")
+    Call<Void> updateDriveList(@Body UpdateDriveListRequest request);
 
     @POST("removeaddress")
     Call<Void> removeAddressRequest(@Body RemoveAddressRequest request);

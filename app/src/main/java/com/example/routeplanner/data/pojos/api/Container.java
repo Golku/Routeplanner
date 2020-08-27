@@ -7,13 +7,11 @@ import java.util.List;
 public class Container {
 
     private String username;
-    private String routeCode;
     private int routeState;
     private List<Address> addressList;
     private List<Drive> driveList;
     private int privateAddressCount;
     private int businessAddressCount;
-    private int invalidAddressCount;
 
     public String getUsername() {
         return username;
@@ -21,14 +19,6 @@ public class Container {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getRouteCode() {
-        return routeCode;
-    }
-
-    public void setRouteCode(String routeCode) {
-        this.routeCode = routeCode;
     }
 
     public int getRouteState() {
@@ -69,13 +59,5 @@ public class Container {
 
     public void setBusinessAddressCount(int businessAddressCount) {
         this.businessAddressCount = businessAddressCount;
-    }
-
-    public int getInvalidAddressCount() {
-        return invalidAddressCount;
-    }
-
-    public void setInvalidAddressCount(int invalidAddressCount) {
-        this.invalidAddressCount = invalidAddressCount;
     }
 }

@@ -13,8 +13,12 @@ public class Event {
     private String addressString;
     private int position;
     private Address address;
+    private boolean gettingDrive;
+    private boolean organizingRoute;
     private Drive drive;
+    private RouteInfo routeInfo;
     private List<Address> addressList;
+    private List<Address> routeOrder;
     private List<Drive> driveList;
     private DriveRequest driveRequest;
     private ChangeAddressRequest changeAddressRequest;
@@ -59,6 +63,22 @@ public class Event {
         this.address = address;
     }
 
+    public boolean isGettingDrive() {
+        return gettingDrive;
+    }
+
+    public void setGettingDrive(boolean gettingDrive) {
+        this.gettingDrive = gettingDrive;
+    }
+
+    public boolean isOrganizingRoute() {
+        return organizingRoute;
+    }
+
+    public void setOrganizingRoute(boolean organizingRoute) {
+        this.organizingRoute = organizingRoute;
+    }
+
     public Drive getDrive() {
         return drive;
     }
@@ -67,12 +87,28 @@ public class Event {
         this.drive = drive;
     }
 
+    public RouteInfo getRouteInfo() {
+        return routeInfo;
+    }
+
+    public void setRouteInfo(RouteInfo routeInfo) {
+        this.routeInfo = routeInfo;
+    }
+
     public List<Address> getAddressList() {
         return addressList;
     }
 
     public void setAddressList(List<Address> addressList) {
         this.addressList = addressList;
+    }
+
+    public List<Address> getRouteOrder() {
+        return routeOrder;
+    }
+
+    public void setRouteOrder(List<Address> routeOrder) {
+        this.routeOrder = routeOrder;
     }
 
     public List<Drive> getDriveList() {

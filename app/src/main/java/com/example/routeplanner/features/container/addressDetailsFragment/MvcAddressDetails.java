@@ -5,6 +5,7 @@ import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.CommentInformation;
 import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.Session;
+import com.example.routeplanner.data.pojos.api.UpdatePackageCountRequest;
 
 public interface MvcAddressDetails {
 
@@ -16,11 +17,13 @@ public interface MvcAddressDetails {
 
         void networkOperationStarted(String message);
 
-        void networkOperationFinish(String message);
+        void networkOperationFinish(int operation, String message);
 
         void postEvent(Event event);
 
         void updateAddressInfo(Address address, boolean newAddress);
+
+        void changePackageCountTextView(String count);
 
         void showAddressInGoogle(Address address);
 
@@ -29,6 +32,8 @@ public interface MvcAddressDetails {
         void showCommentInput(Address address);
 
         void scrollToComment(int position);
+
+        void showDialog(String message);
 
         void showToast(String message);
     }
@@ -47,6 +52,8 @@ public interface MvcAddressDetails {
 
         void addCommentButtonClick();
 
+        void updatePackageCount();
+
         void eventReceived(Event event);
     }
 
@@ -55,6 +62,8 @@ public interface MvcAddressDetails {
         void getAddressInformation(Address address, DatabaseCallback.AddressInformationCallBack callback);
 
         void changeAddressType(String username, Address address, DatabaseCallback.AddressTypeChangeCallback callback);
+
+        void updatePackageCount(UpdatePackageCountRequest request);
 
         void changeOpeningTime(Address address, int openingTime);
 

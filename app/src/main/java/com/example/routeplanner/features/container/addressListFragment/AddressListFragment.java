@@ -14,8 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.GenericDialog;
 import com.example.routeplanner.data.pojos.Address;
+import com.example.routeplanner.data.pojos.DialogMessage;
 import com.example.routeplanner.data.pojos.Event;
+import com.example.routeplanner.data.pojos.MyApplication;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
 
 import org.greenrobot.eventbus.EventBus;
@@ -61,6 +64,11 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
     }
 
     @Override
+    public boolean isOrganising() {
+        return ((MyApplication) getActivity().getApplication()).isOrganizing();
+    }
+
+    @Override
     public void setupAdapter(AddressListAdapter adapter) {
         adapter.addContext(this.getContext());
         adapter.addTouchHelper(recyclerView);
@@ -77,12 +85,9 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
 
         Snackbar snackbar = Snackbar.make(snackBarContainer, "Address deleted", Snackbar.LENGTH_LONG);
 
-        snackbar.setAction("Undo", new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.restoreAddress();
-                recyclerView.smoothScrollToPosition(position);
-            }
+        snackbar.setAction("Undo", view -> {
+            controller.restoreAddress();
+            recyclerView.smoothScrollToPosition(position);
         });
         snackbar.addCallback(new Snackbar.Callback(){
             @Override
@@ -110,8 +115,18 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
     }
 
     @Override
+    public void showDialog(String message) {
+        DialogMessage dialogMessage = new DialogMessage(message);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("message", dialogMessage);
+        GenericDialog dialog = new GenericDialog();
+        dialog.setArguments(bundle);
+        dialog.show(getActivity().getSupportFragmentManager(), "Generic dialog");
+    }
+
+    @Override
     public void showToast(String message) {
-        Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
         toast.show();
     }
 

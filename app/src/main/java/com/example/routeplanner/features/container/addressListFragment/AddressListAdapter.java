@@ -100,12 +100,9 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
             addressType = itemView.findViewById(R.id.address_type_iv);
             itemWrapper.setOnClickListener(this);
 
-            itemWrapper.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    callback.showAddress(addressList.get(getAdapterPosition()));
-                    return true;// returning true instead of false, works for me
-                }
+            itemWrapper.setOnLongClickListener(view -> {
+                callback.showAddress(addressList.get(getAdapterPosition()));
+                return true;// returning true instead of false, works for me
             });
 
         }

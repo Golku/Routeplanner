@@ -22,6 +22,9 @@ public class Drive{
     private long deliveryTimeInMillis;
     private String deliveryTimeHumanReadable;
 
+    private long timeDiffLong;
+    private String timeDiffString;
+
     private int done;
 
     public boolean isValid() {
@@ -110,6 +113,22 @@ public class Drive{
 
     public void setDeliveryTimeHumanReadable(String deliveryTimeHumanReadable) {
         this.deliveryTimeHumanReadable = deliveryTimeHumanReadable;
+    }
+
+    public long getTimeDiffLong() {
+        return timeDiffLong;
+    }
+
+    public void setTimeDiffLong(long timeDiffLong) {
+        this.timeDiffLong = timeDiffLong;
+    }
+
+    public String getTimeDiffString() {
+        return timeDiffString;
+    }
+
+    public void setTimeDiffString(String timeDiffString) {
+        this.timeDiffString = timeDiffString;
     }
 
     public int getDone() {

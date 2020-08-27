@@ -13,6 +13,8 @@ public interface MvcLogin {
 
         void showContainer();
 
+        void showDialog(String message);
+
         void showToast(String message);
 
         void finishNetworkOperation();

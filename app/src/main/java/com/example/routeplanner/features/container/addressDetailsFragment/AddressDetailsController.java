@@ -8,6 +8,7 @@ import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.CommentInformation;
 import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.Session;
+import com.example.routeplanner.data.pojos.api.UpdatePackageCountRequest;
 import com.example.routeplanner.data.pojos.database.AddressInformationResponse;
 import com.example.routeplanner.data.pojos.database.AddressTypeResponse;
 import com.example.routeplanner.features.shared.BaseController;
@@ -15,6 +16,9 @@ import com.example.routeplanner.features.shared.MvcBaseController;
 import com.example.routeplanner.features.splash.SplashActivity;
 import com.google.gson.Gson;
 import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -36,32 +40,28 @@ public class AddressDetailsController extends BaseController implements MvcAddre
 
     private AddressDetailsAdapter adapter;
 
+    private ArrayList<String> addressList;
+    private ArrayList<Integer> countList;
+    private boolean updatingCount;
+
     AddressDetailsController(MvcAddressDetails.View view, Session session) {
         this.view = view;
         this.session = session;
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(new OkHttpClient())
-                .baseUrl("http://212.187.39.139/map/v1/")
-                .addConverterFactory(GsonConverterFactory.create(new Gson()))
-                .build();
-
         adapter = new AddressDetailsAdapter(null, this);
         this.view.setUpAdapter(adapter);
-        this.model = new AddressDetailsModel(retrofit.create(DatabaseService.class));
+        this.model = new AddressDetailsModel(createDatabaseService(), createApiService());
         this.address = new Address();
         this.handler = new Handler();
+        this.addressList = new ArrayList<>();
+        this.countList = new ArrayList<>();
     }
 
     @Override
     public void getAddressInformation() {
         view.networkOperationStarted("Fetching address comments");
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                model.getAddressInformation(address, AddressDetailsController.this);
-            }
-        }, 1000);
+//        model.getAddressInformation(address, AddressDetailsController.this);
+        handler.postDelayed(() -> model.getAddressInformation(address, AddressDetailsController.this), 500);
     }
 
     @Override
@@ -88,12 +88,8 @@ public class AddressDetailsController extends BaseController implements MvcAddre
 
     @Override
     public void changeAddressType() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                model.changeAddressType(session.getUsername(), address, AddressDetailsController.this);
-            }
-        }, 1000);
+//        model.changeAddressType(session.getUsername(), address, AddressDetailsController.this);
+        handler.postDelayed(() -> model.changeAddressType(session.getUsername(), address, AddressDetailsController.this), 500);
     }
 
     @Override
@@ -171,29 +167,57 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     }
 
     @Override
+    public void updatePackageCount() {
+        address.setPackageCount(address.getPackageCount()+1);
+        view.changePackageCountTextView(String.valueOf(address.getPackageCount()));
+
+        if(!addressList.contains(address.getAddress())){
+            addressList.add(address.getAddress());
+        }
+        countList.add(addressList.indexOf(address.getAddress()), address.getPackageCount());
+
+        createEvent("addressFragment", "updateAddressList", this);
+
+        if(!updatingCount){
+            handler.postDelayed(() -> {
+                UpdatePackageCountRequest request = new UpdatePackageCountRequest();
+                request.setUsername(session.getUsername());
+                request.setAddressList(addressList);
+                request.setCountList(countList);
+                model.updatePackageCount(request);
+                addressList.clear();
+                countList.clear();
+                updatingCount = false;
+            }, 10000);
+            updatingCount = true;
+        }
+    }
+
+    @Override
     public void onAddressInformationResponse(AddressInformationResponse response) {
 
         if (response.isInformationAvailable()) {
             if (response.getAddressInformation() != null) {
 
                 if(response.getAddressInformation().getCommentsCount() > 0){
-                    view.networkOperationFinish("");
+                    view.networkOperationFinish(1, "");
                 }else{
-                    view.networkOperationFinish("No comments");
+                    view.networkOperationFinish(1,"No comments");
                 }
 
                 view.setUpAdapter(adapter = new AddressDetailsAdapter(response.getAddressInformation(), this));
                 view.scrollToComment(response.getAddressInformation().getCommentsCount());
+            }else{
+                view.networkOperationFinish(1,"No comments");
             }
         }else{
-            view.networkOperationFinish("No comments");
+            view.networkOperationFinish(1,"No comments");
         }
     }
 
     @Override
     public void onAddressInformationResponseFailure() {
-        view.networkOperationFinish("Failed to get address information");
-        view.showToast("Unable to connect to the database");
+        view.networkOperationFinish(1,"Failed to get address information");
     }
 
     @Override
@@ -215,15 +239,17 @@ public class AddressDetailsController extends BaseController implements MvcAddre
             }
 
             createEvent("all", "addressTypeChange", this.address, this);
+        }else{
+            view.showToast("Failed to change address type, please try again");
         }
 
         view.changeAddressType(address);
-        view.networkOperationFinish("typeChange");
+        view.networkOperationFinish(2, "");
     }
 
     @Override
     public void typeChangeResponseFailure() {
-        view.networkOperationFinish("");
-        view.showToast("Fail to change address type");
+        view.networkOperationFinish(2,"");
+        view.showToast("Failed to change address type, please try again");
     }
 }

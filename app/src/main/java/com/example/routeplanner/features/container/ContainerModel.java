@@ -7,7 +7,12 @@ import com.example.routeplanner.data.pojos.api.AddressRequest;
 import com.example.routeplanner.data.pojos.api.Container;
 import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.data.pojos.api.DriveRequest;
+import com.example.routeplanner.data.pojos.api.OrganizeRouteRequest;
+import com.example.routeplanner.data.pojos.api.OrganizedRouteResponse;
 import com.example.routeplanner.data.pojos.api.RemoveAddressRequest;
+import com.example.routeplanner.data.pojos.api.UpdateDriveListRequest;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +56,40 @@ public class ContainerModel implements MvcContainer.Model{
             @Override
             public void onFailure(Call<Address> call, Throwable t) {
                 callback.addressResponseFailure();
+            }
+        });
+    }
+
+    @Override
+    public void sortRequest(OrganizeRouteRequest request, ApiCallback.OrganizeRouteCallback callback) {
+        Call<OrganizedRouteResponse> call = apiService.sortRoute(request);
+
+        call.enqueue(new Callback<OrganizedRouteResponse>() {
+            @Override
+            public void onResponse(Call<OrganizedRouteResponse> call, Response<OrganizedRouteResponse> response) {
+                callback.organizeRouteResponse(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<OrganizedRouteResponse> call, Throwable t) {
+                callback.organizedRouteFailure();
+            }
+        });
+    }
+
+    @Override
+    public void updateApiDriveList(UpdateDriveListRequest request) {
+        Call<Void> call = apiService.updateDriveList(request);
+
+        call.enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) {
+
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+
             }
         });
     }

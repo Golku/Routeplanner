@@ -66,7 +66,7 @@ public class CommentInputActivity extends AppCompatActivity implements MvcCommen
         addCommentBtn.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
         messageToUserTextView.setVisibility(View.VISIBLE);
-        messageToUserTextView.setText("Adding list_item_comment...");
+        messageToUserTextView.setText("Adding comment...");
     }
 
     @Override

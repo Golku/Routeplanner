@@ -2,9 +2,11 @@ package com.example.routeplanner.features.container.addressDetailsFragment;
 
 import android.util.Log;
 
+import com.example.routeplanner.data.api.ApiService;
 import com.example.routeplanner.data.database.DatabaseCallback;
 import com.example.routeplanner.data.database.DatabaseService;
 import com.example.routeplanner.data.pojos.Address;
+import com.example.routeplanner.data.pojos.api.UpdatePackageCountRequest;
 import com.example.routeplanner.data.pojos.database.AddressInformationResponse;
 import com.example.routeplanner.data.pojos.database.AddressTypeResponse;
 
@@ -14,10 +16,12 @@ import retrofit2.Response;
 
 public class AddressDetailsModel implements MvcAddressDetails.Model {
 
+    private ApiService apiService;
     private DatabaseService databaseService;
 
-    AddressDetailsModel(DatabaseService databaseService) {
+    AddressDetailsModel(DatabaseService databaseService, ApiService apiService) {
         this.databaseService = databaseService;
+        this.apiService = apiService;
     }
 
     @Override
@@ -60,6 +64,23 @@ public class AddressDetailsModel implements MvcAddressDetails.Model {
             @Override
             public void onFailure(Call<AddressTypeResponse> call, Throwable t) {
                 callback.typeChangeResponseFailure();
+            }
+        });
+    }
+
+    @Override
+    public void updatePackageCount(UpdatePackageCountRequest request) {
+        Call<Void> call = apiService.updatePackageCount(request);
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+
             }
         });
     }

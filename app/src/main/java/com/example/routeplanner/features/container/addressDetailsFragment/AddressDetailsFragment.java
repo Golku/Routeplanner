@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +23,12 @@ import android.widget.Toast;
 
 import com.example.routeplanner.R;
 import com.example.routeplanner.data.models.DialogCreator;
+import com.example.routeplanner.data.models.GenericDialog;
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.CommentInformation;
+import com.example.routeplanner.data.pojos.DialogMessage;
 import com.example.routeplanner.data.pojos.Event;
+import com.example.routeplanner.data.pojos.MyApplication;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.features.commentDisplay.CommentDisplayActivity;
 import com.example.routeplanner.features.commentInput.CommentInputActivity;
@@ -32,6 +36,8 @@ import com.example.routeplanner.features.commentInput.CommentInputActivity;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.time.LocalDate;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,14 +77,14 @@ public class AddressDetailsFragment extends Fragment implements
     TextView openingHoursHolder;
     @BindView(R.id.closing_time_holder)
     TextView closingHoursHolder;
+    @BindView(R.id.packageCount_Tv)
+    TextView packageCount_Tv;
 
     private final String debugTag = "debugTag";
 
     private AddressDetailsController controller;
 
     private String workingHours;
-    private boolean returning;
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,14 +106,6 @@ public class AddressDetailsFragment extends Fragment implements
         init();
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        if (returning) {
-//            controller.getAddressInformation();
-//        }
-//    }
-
     private void init() {
         controller = new AddressDetailsController(this, new Session(getActivity()));
     }
@@ -119,12 +117,7 @@ public class AddressDetailsFragment extends Fragment implements
         streetTextView.setText(address.getStreet());
         postcodeTextView.setText(address.getPostCode());
         cityTextView.setText(address.getCity());
-
-        if(newAddress){
-//            addedConfirmationTv.setVisibility(View.VISIBLE);
-        }else{
-//            addedConfirmationTv.setVisibility(View.GONE);
-        }
+        packageCount_Tv.setText(String.valueOf(address.getPackageCount()));
 
         if (address.isBusiness()) {
             openingTimeTv.setVisibility(View.VISIBLE);
@@ -178,6 +171,16 @@ public class AddressDetailsFragment extends Fragment implements
 //        dialog.show();
     }
 
+    @OnClick(R.id.packageCount_Tv)
+    public void updatePackageCount(){
+        controller.updatePackageCount();
+    }
+
+    @Override
+    public void changePackageCountTextView(String count) {
+        packageCount_Tv.setText(count);
+    }
+
     @SuppressLint("SetTextI18n")
     @Override
     public void changeAddressType(Address address) {
@@ -210,6 +213,12 @@ public class AddressDetailsFragment extends Fragment implements
 
     @OnClick(R.id.change_opening_time_tv)
     public void onChangeOpeningHoursClick(){
+
+        if(((MyApplication) getActivity().getApplication()).isOrganizing()){
+            showDialog("Can't change time while organising");
+            return;
+        }
+
         workingHours = "open";
         DialogFragment timePicker = new DialogCreator(this);
         timePicker.show(getActivity().getSupportFragmentManager(), "Time Picker");
@@ -217,6 +226,12 @@ public class AddressDetailsFragment extends Fragment implements
 
     @OnClick(R.id.change_closing_time_tv)
     public void onOChangeClosingHoursClick(){
+
+        if(((MyApplication) getActivity().getApplication()).isOrganizing()){
+            showDialog("Can't change time while organising");
+            return;
+        }
+
         workingHours = "close";
         DialogFragment timePicker = new DialogCreator(this);
         timePicker.show(getActivity().getSupportFragmentManager(), "Time Picker");
@@ -275,27 +290,22 @@ public class AddressDetailsFragment extends Fragment implements
     }
 
     @Override
-    public void networkOperationFinish(String message) {
+    public void networkOperationFinish(int operation, String message) {
 
-        if(message.equals("typeChange")){
-            typeChangeProgress_pb.setVisibility(View.GONE);
-            addressTypeImageView.setVisibility(View.VISIBLE);
-            message = "";
-        }else{
-            progressBar.setVisibility(View.GONE);
+        switch (operation) {
+            case 1:
+                messageToUserTextView.setText(message);
+                progressBar.setVisibility(View.INVISIBLE);
+                break;
+            case 2:
+                typeChangeProgress_pb.setVisibility(View.GONE);
+                addressTypeImageView.setVisibility(View.VISIBLE);
+                break;
         }
-
-        if(!message.isEmpty()){
-            messageToUserTextView.setText(message);
-        }else{
-            messageToUserTextView.setVisibility(View.GONE);
-        }
-
     }
 
     @Override
     public void showCommentDisplay(CommentInformation commentInformation) {
-        returning = false;
         Intent i = new Intent(getActivity(), CommentDisplayActivity.class);
         i.putExtra("commentInformation", commentInformation);
         startActivity(i);
@@ -303,7 +313,6 @@ public class AddressDetailsFragment extends Fragment implements
 
     @Override
     public void showCommentInput(Address address) {
-        returning = true;
         Intent i = new Intent(getActivity(), CommentInputActivity.class);
         i.putExtra("address", address);
         startActivity(i);
@@ -312,6 +321,16 @@ public class AddressDetailsFragment extends Fragment implements
     @Override
     public void scrollToComment(int position) {
         recyclerView.smoothScrollToPosition(position);
+    }
+
+    @Override
+    public void showDialog(String message) {
+        DialogMessage dialogMessage = new DialogMessage(message);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("message", dialogMessage);
+        GenericDialog dialog = new GenericDialog();
+        dialog.setArguments(bundle);
+        dialog.show(getActivity().getSupportFragmentManager(), "Generic dialog");
     }
 
     @Override

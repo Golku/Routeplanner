@@ -15,6 +15,10 @@ public interface MvcAddressList {
 
         void scrollToItem(int position);
 
+        boolean isOrganising();
+
+        void showDialog(String message);
+
         void showToast(String message);
     }
 

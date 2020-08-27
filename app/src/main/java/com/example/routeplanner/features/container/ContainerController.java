@@ -1,6 +1,7 @@
 package com.example.routeplanner.features.container;
 
 import android.content.Context;
+import android.os.Debug;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -10,14 +11,19 @@ import com.example.routeplanner.data.api.ApiService;
 import com.example.routeplanner.data.models.LocationManager;
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.Event;
+import com.example.routeplanner.data.pojos.MyApplication;
+import com.example.routeplanner.data.pojos.RouteInfo;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
 import com.example.routeplanner.data.pojos.Session;
 import com.example.routeplanner.data.pojos.api.AddressRequest;
 import com.example.routeplanner.data.pojos.api.Container;
 import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.data.pojos.api.DriveRequest;
+import com.example.routeplanner.data.pojos.api.OrganizeRouteRequest;
+import com.example.routeplanner.data.pojos.api.OrganizedRouteResponse;
 import com.example.routeplanner.data.pojos.api.RemoveAddressRequest;
-import com.example.routeplanner.features.container.addressDetailsFragment.AddressDetailsController;
+import com.example.routeplanner.data.pojos.api.UpdateDriveListRequest;
+import com.example.routeplanner.data.pojos.api.UpdatePackageCountRequest;
 import com.example.routeplanner.features.shared.BaseController;
 import com.example.routeplanner.features.shared.MvcBaseController;
 import com.google.android.gms.common.api.ApiException;
@@ -33,7 +39,9 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.gson.Gson;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -46,22 +54,26 @@ public class ContainerController extends BaseController implements
         MvcContainer.Controller,
         ApiCallback.ContainerResponseCallback,
         ApiCallback.AddAddressCallback,
+        ApiCallback.OrganizeRouteCallback,
         ApiCallback.DriveResponseCallback {
 
     private final String debugTag = "debugTag";
 
     private MvcContainer.View view;
-
     private ContainerActivity activity;
-
     private ContainerModel model;
 
+    private Handler handler;
     private Context context;
     private Session session;
     private Container container;
     private PlacesClient placesClient;
-
-    private Handler handler;
+    private SimpleDateFormat sdf;
+    private SimpleDateFormat sdf2;
+    private Address userLocation;
+    private List<Address> routeOrder;
+    private boolean updatingApiDriveList;
+    private boolean organizingRoute;
 
     ContainerController(MvcContainer.View view, ContainerActivity activity, Session session) {
         this.view = view;
@@ -69,6 +81,9 @@ public class ContainerController extends BaseController implements
         this.handler = new Handler();
         this.session = session;
         this.context = activity;
+        this.sdf = new SimpleDateFormat("mm:ss");
+        this.sdf2 = new SimpleDateFormat("hh:mm:ss");
+
 
         if (!Places.isInitialized()) {
             Places.initialize(context.getApplicationContext(), "AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY");
@@ -76,29 +91,27 @@ public class ContainerController extends BaseController implements
 
         this.placesClient = Places.createClient(activity);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(new OkHttpClient())//192.168.0.16 - 217.103.231.118
-                .baseUrl("http://212.187.39.139:8080/RouteApi_war/webapi/")
-                .addConverterFactory(GsonConverterFactory.create(new Gson()))
-                .build();
-
-        this.model = new ContainerModel(retrofit.create(ApiService.class));
+        this.model = new ContainerModel(createApiService());
     }
 
-    //container data
+    //container
     private void setupContainer(Container container) {
         this.container = container;
 
-        updateContainerInfo();
+        updateStopsInfo();
+
+        if(!container.getDriveList().isEmpty()){
+            updateRouteInfo();
+        }
 
         RouteInfoHolder routeInfoHolder = new RouteInfoHolder();
-        routeInfoHolder.setAddressList(container.getAddressList());
-        routeInfoHolder.setDriveList(container.getDriveList());
+        routeInfoHolder.setAddressList(this.container.getAddressList());
+        routeInfoHolder.setDriveList(this.container.getDriveList());
 
         view.setupFragments(routeInfoHolder);
     }
 
-    private void updateContainerInfo() {
+    private void updateStopsInfo() {
 
         int privateAddressCount = container.getPrivateAddressCount();
         int businessAddressCount = container.getBusinessAddressCount();
@@ -106,13 +119,83 @@ public class ContainerController extends BaseController implements
         view.updateAddressCount(privateAddressCount, businessAddressCount);
     }
 
-    private void updateRouteEndTime() {
+    private void updateRouteInfo() {
+        boolean displayEndTimeDiff = false;
         if (container.getDriveList().size() > 0) {
             Drive finalDrive = container.getDriveList().get(container.getDriveList().size() - 1);
-            view.updateRouteEndTimeTv(finalDrive.getDeliveryTimeHumanReadable());
+
+            long routeDistanceInM = 0;
+            long routeDurationInSec = 0;
+            long timeDifference = 0;
+
+            for(Drive drive: container.getDriveList()){
+                routeDistanceInM += drive.getDriveDistanceInMeters();
+                routeDurationInSec += drive.getDriveDurationInSeconds();
+
+                if(drive.getTimeDiffLong() > 0){
+                    if(drive.getTimeDiffString().contains("+")){
+                        timeDifference -= drive.getTimeDiffLong();
+                    }else{
+                        timeDifference += drive.getTimeDiffLong();
+                    }
+                }
+            }
+
+//            Log.d(debugTag, "TimeDiff: "+ timeDifference);
+
+            String diffSign;
+            String color;
+
+            if(timeDifference < 0){
+                diffSign = "+";
+                timeDifference = timeDifference * -1;
+                color = "red";
+            }else{
+                diffSign = "-";
+                color = "green";
+            }
+
+            String endTimeDifference;
+
+            if(timeDifference >= 3600000){
+                endTimeDifference = sdf2.format(timeDifference);
+            }else{
+                endTimeDifference = sdf.format(timeDifference);
+            }
+
+            double routeDistanceInKM = (double) (routeDistanceInM/1000);
+            double routeDurationInMin = (double) (routeDurationInSec/60);
+
+            int hour;
+            double minutes;
+            String timeString;
+
+            if(routeDurationInMin > 60){
+                hour = (int)(routeDurationInMin/60);
+                minutes = ((routeDurationInMin/60) - hour) * 60;
+                String minutesString = String.format("%.0f", minutes);
+                timeString = hour +" u " + minutesString + " m";
+            }else{
+                timeString = String.format("%.0f", routeDurationInMin) + " m";
+            }
+
+            String distanceString = String.format("%.1f", routeDistanceInKM) + " km";
+
+            if(timeDifference != 0){
+                displayEndTimeDiff = true;
+            }
+
+            view.updateRouteTravelInfo(distanceString, timeString, finalDrive.getDeliveryTimeHumanReadable(), diffSign+" "+endTimeDifference, color, displayEndTimeDiff);
         } else {
-            view.updateRouteEndTimeTv("--:--");
+            view.updateRouteTravelInfo("0", "0", "--:--", "", "", false);
         }
+    }
+
+    @Override
+    public void getUserLocation() {
+        ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION}, 1);
+        LocationManager locationManager = new LocationManager(context, this);
+        locationManager.getUserLocation();
     }
 
     @Override
@@ -123,6 +206,7 @@ public class ContainerController extends BaseController implements
         address.setLat(userLocation.latitude);
         address.setLng(userLocation.longitude);
         address.setUserLocation(true);
+        this.userLocation = address;
         createEvent("mapFragment", "markAddress", address ,this);
     }
 
@@ -145,36 +229,23 @@ public class ContainerController extends BaseController implements
                 .setQuery(address)
                 .build();
 
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener(new OnSuccessListener<FindAutocompletePredictionsResponse>() {
-            @Override
-            public void onSuccess(FindAutocompletePredictionsResponse response) {
-                //Log.d(debugTag, "onSuccess");
+        placesClient.findAutocompletePredictions(request).addOnSuccessListener(response -> {
+            //Log.d(debugTag, "onSuccess");
 
-                view.setupPredictionAdapter(response.getAutocompletePredictions());
+            view.setupPredictionAdapter(response.getAutocompletePredictions());
 
-                if(response.getAutocompletePredictions().size() < 1){
-                    view.showManualInputOption(true);
-                }else{
-                    view.showManualInputOption(false);
-                }
+            if(response.getAutocompletePredictions().size() < 1){
+                view.showManualInputOption(true);
+            }else{
+                view.showManualInputOption(false);
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.d(debugTag, "onFailure");
-                if (exception instanceof ApiException) {
-                    ApiException apiException = (ApiException) exception;
-                    Log.d(debugTag, "Place not found: " + apiException.getStatusCode());
-                }
+        }).addOnFailureListener(exception -> {
+            Log.d(debugTag, "onFailure");
+            if (exception instanceof ApiException) {
+                ApiException apiException = (ApiException) exception;
+                Log.d(debugTag, "Place not found: " + apiException.getStatusCode());
             }
         });
-    }
-
-    @Override
-    public void getUserLocation() {
-        ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION}, 1);
-        LocationManager locationManager = new LocationManager(context, this);
-        locationManager.getUserLocation();
     }
 
     @Override
@@ -198,12 +269,9 @@ public class ContainerController extends BaseController implements
             return;
         }
 
-        //Log.d(debugTag, "Event received on container: "+ event.getEventName());
+//        Log.d(debugTag, "Event received on container: "+ event.getEventName());
 
         switch (event.getEventName()) {
-            case "updateContainer":
-                getContainer();
-                break;
             case "itemClick":
                 for(Address address : container.getAddressList()){
                     if(address.getAddress().equals(event.getAddress().getAddress())){
@@ -212,6 +280,12 @@ public class ContainerController extends BaseController implements
                         break;
                     }
                 }
+                break;
+            case "setupRouteOrder":
+                setupRouteOrder(event.getRouteOrder());
+                break;
+            case "updateApiDriveList":
+                updateApiDriveList();
                 break;
             case "showMap":
                 showMap();
@@ -229,14 +303,14 @@ public class ContainerController extends BaseController implements
                 getDrive(event.getDriveRequest());
                 break;
             case "updateEndTime":
-                updateRouteEndTime();
+                updateRouteInfo();
                 break;
             case "driveDirections":
                 view.navigateToDestination(event.getDrive());
                 break;
             case "addressTypeChange":
 
-                Log.d(debugTag, "Changing");
+                //Log.d(debugTag, "Changing");
 
                 if(event.getAddress().isBusiness()){
                     container.setBusinessAddressCount(container.getBusinessAddressCount()+1);
@@ -246,10 +320,14 @@ public class ContainerController extends BaseController implements
                     container.setBusinessAddressCount(container.getBusinessAddressCount()-1);
                 }
 
-                updateContainerInfo();
+                updateStopsInfo();
 
                 break;
         }
+    }
+
+    private void setupRouteOrder(List<Address> routeOrder){
+        this.routeOrder = routeOrder;
     }
 
     private void showInputField(){
@@ -262,10 +340,6 @@ public class ContainerController extends BaseController implements
 
     private void showAddressDetails(Address address){
         createEvent("addressDetails", "addressClicked", address, this);
-    }
-
-    private void showAddressDetailsNewAddress(Address address){
-        createEvent("addressDetails", "addressAdded", address, this);
     }
 
     @Override
@@ -291,13 +365,15 @@ public class ContainerController extends BaseController implements
                     container.setPrivateAddressCount(container.getPrivateAddressCount()+1);
                 }
 
-                updateContainerInfo();
+                updateStopsInfo();
             }
 
-            showAddressDetailsNewAddress(address);
+            createEvent("addressDetails", "addressAdded", address, this);
             view.showTopAddressDetails();
+            createEvent("addressFragment", "addAddress", address, this);
+        }else{
+            view.showToast("Address: " + address.getAddress()+ " is invalid");
         }
-        createEvent("addressFragment", "addAddress", address, this);
     }
 
     private void addDrive(Drive drive) {
@@ -308,27 +384,66 @@ public class ContainerController extends BaseController implements
         }
     }
 
-    //model request
 
+    //model request
     @Override
     public void getContainer() {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                model.containerRequest(session.getUsername(), ContainerController.this);
-            }
-        }, 1000);
+//        model.containerRequest(session.getUsername(), ContainerController.this);
+        handler.postDelayed(() -> model.containerRequest(session.getUsername(), ContainerController.this), 500);
     }
 
     @Override
     public void getAddress(String address) {
-        final AddressRequest request = new AddressRequest(session.getUsername(), address);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                model.addressRequest(request, ContainerController.this);
+        AddressRequest request = new AddressRequest(session.getUsername(), address);
+        model.addressRequest(request, ContainerController.this);
+    }
+
+    @Override
+    public void getOrganizedRoute() {
+
+        if(container.getAddressList().isEmpty()){
+            view.showDialog("There are no addresses to sort");
+            return;
+        }else if(routeOrder.size() == container.getAddressList().size()){
+            view.showDialog("Nothing to sort");
+            return;
+        }else if(((MyApplication) this.activity.getApplication()).isOrganizing()){
+            view.showDialog("Organizing in progress");
+            return;
+        }
+
+        createEvent("mapFragment","organizingRoute", true, this);
+
+        OrganizeRouteRequest request = new OrganizeRouteRequest();
+        request.setUsername(session.getUsername());
+        request.setRouteList(new ArrayList<>());
+        if (routeOrder.size() > 0) {
+            for(Address address : routeOrder){
+                request.getRouteList().add(address.getAddress());
             }
-        }, 1000);
+        } else {
+            request.getRouteList().add(userLocation.getAddress());
+        }
+
+        ((MyApplication) this.activity.getApplication()).setOrganizing(true);
+        model.sortRequest(request, this);
+    }
+
+    private void updateApiDriveList(){
+
+        if(!updatingApiDriveList){
+//            Log.d(debugTag, "Updating drive list in 30 sec");
+
+            UpdateDriveListRequest request = new UpdateDriveListRequest();
+            request.setUsername(session.getUsername());
+            request.setDriveList(container.getDriveList());
+
+            handler.postDelayed(() -> {
+                model.updateApiDriveList(request);
+                updatingApiDriveList = false;
+            }, 30000);
+            updatingApiDriveList = true;
+        }
     }
 
     private void removeAddress(Address address) {
@@ -342,51 +457,79 @@ public class ContainerController extends BaseController implements
             container.setPrivateAddressCount(container.getPrivateAddressCount()-1);
         }
 
-        updateContainerInfo();
+        updateStopsInfo();
 
         model.removeAddress(request);
     }
 
     private void getDrive(DriveRequest request) {
+        createEvent("addressFragment", "gettingDrive", true, this);
         model.driveRequest(request, this);
     }
 
     //model response
 
-    //If the server has an error and sends back a routeResponse with a html page
-    //the response processing will fail! FIX THIS!!!
-
     @Override
     public void containerResponse(Container response) {
         if (response != null) {
             setupContainer(response);
+        }else{
+            view.hideLoader();
         }
     }
 
     @Override
     public void containerResponseFailure() {
-        view.showToast("Unable to fetch container from api");
+        view.hideLoader();
     }
 
     @Override
     public void addressResponse(Address response) {
         if (response != null) {
             addAddress(response);
+        }else{
+            view.hideLoader();
+            view.showToast("Unable to fetch address from api");
         }
     }
 
     @Override
     public void addressResponseFailure() {
-        view.showToast("Unable to fetch address from api");
+        view.hideLoader();
+        view.showDialog("Unable to add the address, please try again");
+//        view.showToast("Unable to fetch address from api");
+    }
+
+    @Override
+    public void organizeRouteResponse(OrganizedRouteResponse response) {
+        if(response != null){
+            RouteInfo routeInfo = new RouteInfo();
+            routeInfo.setDriveList(response.getOrganizedRoute());
+            createEvent("mapFragment", "updateRouteOrder", routeInfo, this);
+            createEvent("driveFragment", "updateDriveList", routeInfo, this);
+            createEvent("mapFragment","organizingRoute", false, this);
+        }else{
+            view.showDialog("Unable to sort addresses, please try again");
+        }
+        ((MyApplication) this.activity.getApplication()).setOrganizing(false);
+    }
+
+    @Override
+    public void organizedRouteFailure() {
+        view.showDialog("Unable to sort addresses, please try again");
+        createEvent("mapFragment","organizingRoute", false, this);
+        ((MyApplication) this.activity.getApplication()).setOrganizing(false);
     }
 
     @Override
     public void driveResponse(Drive response) {
+        createEvent("addressFragment", "gettingDrive", false, this);
         addDrive(response);
     }
 
     @Override
     public void driveResponseFailure() {
+        createEvent("addressFragment", "gettingDrive", false, this);
         addDrive(null);
     }
 }

@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.GenericDialog;
+import com.example.routeplanner.data.pojos.DialogMessage;
 import com.example.routeplanner.data.pojos.Event;
+import com.example.routeplanner.data.pojos.MyApplication;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
 
 import org.greenrobot.eventbus.EventBus;
@@ -64,6 +67,11 @@ public class DriveListFragment extends Fragment implements MvcDriveList.View{
     }
 
     @Override
+    public boolean isOrganising() {
+        return ((MyApplication) getActivity().getApplication()).isOrganizing();
+    }
+
+    @Override
     public void postEvent(Event event) {
         EventBus.getDefault().post(event);
     }
@@ -71,6 +79,16 @@ public class DriveListFragment extends Fragment implements MvcDriveList.View{
     @Override
     public void scrollToItem(int position) {
         recyclerView.smoothScrollToPosition(position);
+    }
+
+    @Override
+    public void showDialog(String message) {
+        DialogMessage dialogMessage = new DialogMessage(message);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("message", dialogMessage);
+        GenericDialog dialog = new GenericDialog();
+        dialog.setArguments(bundle);
+        dialog.show(getActivity().getSupportFragmentManager(), "Generic dialog");
     }
 
     @Override

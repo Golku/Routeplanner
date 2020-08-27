@@ -3,14 +3,13 @@ package com.example.routeplanner.features.container.driveListFragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Debug;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,10 +50,6 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
-    List<Drive> getList(){
-        return this.driveList;
-    }
-
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_drive, parent, false);
@@ -70,13 +65,15 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         String distance = "Distance: "+drive.getDriveDistanceHumanReadable();
         String duration = "Duration: "+drive.getDriveDurationHumanReadable();
         String arrivalTime = drive.getDeliveryTimeHumanReadable();
+        String timeDifference = drive.getTimeDiffString();
 
-        holder.positionTextView.setText(String.valueOf(drive.getPosition()));
+        holder.positionTextView.setText(String.valueOf(driveList.indexOf(drive)+1));
         holder.streetTextView.setText(drive.getDestinationAddress().getStreet());
         holder.cityTextView.setText(city);
         holder.distanceTextView.setText(distance);
         holder.durationTextView.setText(duration);
         holder.estimatedArrivalTime.setText(arrivalTime);
+        holder.timeDiff.setText(timeDifference);
 
         if(drive.isDestinationIsABusiness()){
             holder.addressType.setImageResource(R.drawable.business_ic);
@@ -86,8 +83,17 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
 
         if(drive.getDone() == 1){
             holder.itemView.setAlpha(0.5f);
+
+            if(timeDifference.contains("+")){
+                holder.timeDiff.setTextColor(Color.RED);
+            }else{
+                holder.timeDiff.setTextColor(Color.GREEN);
+            }
+
+            holder.timeDiff.setVisibility(View.VISIBLE);
         }else{
             holder.itemView.setAlpha(1f);
+            holder.timeDiff.setVisibility(View.GONE);
         }
     }
 
@@ -104,6 +110,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         private TextView distanceTextView;
         private TextView durationTextView;
         private TextView estimatedArrivalTime;
+        private TextView timeDiff;
         private ImageView addressType;
 
         private ViewGroup itemWrapper;
@@ -118,6 +125,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
             this.distanceTextView = itemView.findViewById(R.id.distanceTextView);
             this.durationTextView = itemView.findViewById(R.id.durationTextView);
             this.estimatedArrivalTime = itemView.findViewById(R.id.estimatedArrivalTimeTextView);
+            this.timeDiff = itemView.findViewById(R.id.timeDiff_tv);
             this.addressType = itemView.findViewById(R.id.addressTypeImageView);
             this.goIv = itemView.findViewById(R.id.go_iv);
             this.itemWrapper = itemView.findViewById(R.id.item_wrapper);

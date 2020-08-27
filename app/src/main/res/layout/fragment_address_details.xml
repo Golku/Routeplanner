@@ -4,16 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootLayout"
-    android:background="@color/colorFiller"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/address_details_bg"
     tools:context=".features.container.addressDetailsFragment.AddressDetailsFragment">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/subLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/shadows"
+        android:background="@drawable/address_details_header_bg"
+        android:clickable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -175,12 +176,28 @@
             app:layout_constraintStart_toEndOf="@+id/opening_time_tv"
             app:layout_constraintTop_toBottomOf="@+id/opening_time_tv" />
 
+        <TextView
+            android:id="@+id/packageCount_Tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="package count"
+            android:textColor="@color/white"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/googleSearchBtn"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/addressCommentsList"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         android:visibility="visible"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -192,13 +209,13 @@
         android:id="@+id/messageToUserTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="32dp"
         android:text="Fetching address comments"
         android:textColor="@color/colorPrimaryDark"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/subLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -216,8 +233,8 @@
         android:id="@+id/addCommentBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="56dp"
         android:clickable="true"
         android:focusable="true"
         app:backgroundTint="@color/colorDarkBlue"

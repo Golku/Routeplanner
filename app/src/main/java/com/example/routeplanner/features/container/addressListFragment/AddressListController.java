@@ -20,6 +20,7 @@ public class AddressListController extends BaseController implements
     private List<Address> addressList;
     private AddressListAdapter adapter;
 
+    private boolean gettingDrive;
     private boolean addressRestored;
     private int deletedItemPosition;
     private Address deletedAddress;
@@ -28,19 +29,6 @@ public class AddressListController extends BaseController implements
         this.view = view;
         this.addressList = addressList;
         addressRestored = false;
-//        if(addressList == null){
-//            Log.d(debugTag, "address list in f is null");
-//        }else{
-//            Log.d(debugTag, "address list in f is not null");
-//        }
-//
-//        if(addressList.isEmpty()){
-//            Log.d(debugTag, "address list in f is empty");
-//        }else{
-//            for(Address address : addressList){
-//                Log.d(debugTag, "address in f: " + address.getAddress() );
-//            }
-//        }
     }
 
     @Override
@@ -51,6 +39,12 @@ public class AddressListController extends BaseController implements
 
     @Override
     public void showInputField() {
+
+        if(view.isOrganising()){
+            view.showDialog("Can't add new addresses while organising");
+            return;
+        }
+
         createEvent("container", "showInputField", this);
     }
 
@@ -67,6 +61,18 @@ public class AddressListController extends BaseController implements
 
     @Override
     public void removeAddress(Address address) {
+
+        if(gettingDrive){
+            view.showDialog("Can't delete now, getting drive");
+//            view.showToast("Can't delete now, getting drive");
+            adapter.notifyDataSetChanged();
+            return;
+        }else if (view.isOrganising()){
+            view.showDialog("Can't delete address while organizing");
+            adapter.notifyDataSetChanged();
+            return;
+        }
+
         deletedItemPosition = addressList.indexOf(address);
         deletedAddress = address;
         adapter.notifyItemRemoved(addressList.indexOf(address));
@@ -107,6 +113,10 @@ public class AddressListController extends BaseController implements
             case "closingTimeChange" : closingTimeChange(event.getAddress());
                 break;
             case "addAddress" : addAddress(event.getAddress());
+                break;
+            case "gettingDrive" : gettingDrive(event.isGettingDrive());
+                break;
+            case "updateAddressList" : showAddressList();
                 break;
         }
     }
@@ -154,11 +164,6 @@ public class AddressListController extends BaseController implements
 
     private void addAddress(Address address){
 
-        if(!address.isValid()){
-            view.showToast("Address: " + address.getAddress()+ " is invalid");
-            return;
-        }
-
         boolean notFound = true;
         for(Address it : addressList){
             if(it.getAddress().equals(address.getAddress())){
@@ -174,6 +179,10 @@ public class AddressListController extends BaseController implements
             view.scrollToItem(addressList.size());
             createEvent("mapFragment","markAddress", address, this);
         }
+    }
+
+    protected void gettingDrive(boolean gettingDrive){
+        this.gettingDrive = gettingDrive;
     }
 
     @Override

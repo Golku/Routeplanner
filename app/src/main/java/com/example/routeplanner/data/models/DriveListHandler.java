@@ -29,11 +29,6 @@ public class DriveListHandler {
         return adapter;
     }
 
-    public void updateList(List<Drive> driveList) {
-        this.driveList = driveList;
-        createAdapter();
-    }
-
     public int getListSize(){
         return driveList.size();
     }
@@ -59,7 +54,6 @@ public class DriveListHandler {
 
     public void addDriveToList(Drive drive) {
         driveList.add(drive);
-
 
         long deliveryTime;
         long driveTime = drive.getDriveDurationInSeconds() * 1000;
@@ -142,9 +136,32 @@ public class DriveListHandler {
 
         }
 
+        if(completed){
+            calculateTimeDiff(drive);
+        }
+
         adapter.notifyDataSetChanged();
 
         return completed;
+    }
+
+    private void calculateTimeDiff(Drive drive){
+        long timeDif = drive.getDeliveryTimeInMillis() - System.currentTimeMillis();
+
+        String diffSign;
+
+        if(timeDif < 0){
+            diffSign = "+";
+            timeDif = timeDif * -1;
+        }else{
+            diffSign = "-";
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+        String deliveryTimeDifference = sdf.format(timeDif);
+
+        drive.setTimeDiffLong(timeDif);
+        drive.setTimeDiffString(diffSign+" "+deliveryTimeDifference);
     }
 
     public void removeDriveFromList() {

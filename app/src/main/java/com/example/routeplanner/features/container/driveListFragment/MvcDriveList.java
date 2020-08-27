@@ -10,7 +10,11 @@ public interface MvcDriveList {
 
         void postEvent(Event event);
 
+        boolean isOrganising();
+
         void scrollToItem(int position);
+
+        void showDialog(String message);
 
         void showToast(String message);
     }

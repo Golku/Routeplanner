@@ -6,7 +6,11 @@ import com.example.routeplanner.data.pojos.RouteInfoHolder;
 import com.example.routeplanner.data.pojos.api.AddressRequest;
 import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.data.pojos.api.DriveRequest;
+import com.example.routeplanner.data.pojos.api.OrganizeRouteRequest;
+import com.example.routeplanner.data.pojos.api.OrganizedRouteResponse;
 import com.example.routeplanner.data.pojos.api.RemoveAddressRequest;
+import com.example.routeplanner.data.pojos.api.UpdateDriveListRequest;
+import com.example.routeplanner.data.pojos.api.UpdatePackageCountRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import java.util.List;
@@ -27,7 +31,7 @@ public interface MvcContainer {
 
         void updateAddressCount(int privateAddress, int businessAddress);
 
-        void updateRouteEndTimeTv(String endTime);
+        void updateRouteTravelInfo(String totalRouteDistance, String totalRouteDuration, String endTime, String endTimeDifference, String color, boolean displayEndTimeDiff);
 
         void postEvent(Event event);
 
@@ -43,6 +47,8 @@ public interface MvcContainer {
 
         void showLoginScreen();
 
+        void showDialog(String message);
+
         void showToast(String message);
 
         void closeActivity();
@@ -55,6 +61,8 @@ public interface MvcContainer {
         void getPrediction(String address);
 
         void getAddress(String address);
+
+        void getOrganizedRoute();
 
         void getUserLocation();
 
@@ -72,6 +80,10 @@ public interface MvcContainer {
         void containerRequest(String username, ApiCallback.ContainerResponseCallback callback);
 
         void addressRequest(AddressRequest request, ApiCallback.AddAddressCallback callback);
+
+        void sortRequest(OrganizeRouteRequest request, ApiCallback.OrganizeRouteCallback callback);
+
+        void updateApiDriveList(UpdateDriveListRequest request);
 
         void removeAddress(RemoveAddressRequest request);
 

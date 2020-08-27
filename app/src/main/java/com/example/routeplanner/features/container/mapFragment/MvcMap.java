@@ -24,6 +24,12 @@ public interface MvcMap {
 
         void postEvent(Event event);
 
+        boolean getOrganizing();
+
+        void showOrganizingRouteLoader(boolean show);
+
+        void showDialog(String message);
+
         void showToast(String message);
     }
 

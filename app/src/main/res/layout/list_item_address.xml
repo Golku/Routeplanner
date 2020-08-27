@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -36,9 +35,9 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/address_info_wrapper"
         android:layout_width="0dp"
+        android:background="@drawable/list_item_bottom_stripe"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:background="@drawable/list_item_bottom_stripe"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/info_wrapper"
