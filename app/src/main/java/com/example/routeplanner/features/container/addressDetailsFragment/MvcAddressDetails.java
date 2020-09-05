@@ -50,6 +50,8 @@ public interface MvcAddressDetails {
 
         void googleLinkClick();
 
+        void removeStop();
+
         void addCommentButtonClick();
 
         void updatePackageCount();

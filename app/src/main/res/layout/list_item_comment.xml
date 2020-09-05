@@ -4,7 +4,8 @@
     android:id="@+id/item_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_item_bottom_stripe">
+    android:elevation="10dp"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/username_tv"
@@ -14,7 +15,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:text="employee name"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/streetDark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +27,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:text="date"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/streetDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,7 +42,7 @@
         android:ellipsize="end"
         android:maxLines="2"
         android:text="comments"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/streetDark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -17,6 +17,8 @@ public interface MvcAddressList {
 
         boolean isOrganising();
 
+        void showLabel(boolean show);
+
         void showDialog(String message);
 
         void showToast(String message);

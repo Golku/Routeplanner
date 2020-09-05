@@ -39,9 +39,11 @@ public interface MvcContainer {
 
         void showManualInputOption(boolean show);
 
-        void showBottomAddressDetails();
+        void showAddressDetails();
 
-        void showTopAddressDetails();
+        void showNewAddressDetails();
+
+        void hideAddressDetails();
 
         void navigateToDestination(Drive drive);
 

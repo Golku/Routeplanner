@@ -1,8 +1,10 @@
 package com.example.routeplanner.features.commentInput;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -10,7 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.GenericDialog;
+import com.example.routeplanner.data.models.Utils;
 import com.example.routeplanner.data.pojos.Address;
+import com.example.routeplanner.data.pojos.DialogMessage;
 import com.example.routeplanner.data.pojos.Session;
 
 import butterknife.BindView;
@@ -43,6 +48,7 @@ public class CommentInputActivity extends AppCompatActivity implements MvcCommen
     }
 
     private void init(){
+        Utils.darkenStatusBar(this, R.color.blueLight);
         controller = new CommentInputController(this);
         Address address = getIntent().getParcelableExtra("address");
         controller.setUpInfo(new Session(this), address);
@@ -77,11 +83,22 @@ public class CommentInputActivity extends AppCompatActivity implements MvcCommen
     }
 
     @Override
+    public void showDialog(String message) {
+        DialogMessage dialogMessage = new DialogMessage(message);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("message", dialogMessage);
+        GenericDialog dialog = new GenericDialog();
+        dialog.setArguments(bundle);
+        dialog.show(getSupportFragmentManager(), "Generic dialog");
+    }
+
+    @Override
     public void showToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         toast.show();
     }
 
+    @OnClick(R.id.back_arrow_btn)
     @Override
     public void closeActivity() {
         finish();

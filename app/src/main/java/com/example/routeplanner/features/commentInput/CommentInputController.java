@@ -39,6 +39,12 @@ public class CommentInputController extends BaseController implements MvcComment
 
     @Override
     public void onAddCommentBtnClick(String comment) {
+
+        if(comment.isEmpty()){
+            view.showDialog("Please write something first");
+            return;
+        }
+
         view.onStartNetworkOperation();
         model.addCommentToAddress(address, session.getUserId(), comment, date, this);
     }
@@ -50,13 +56,13 @@ public class CommentInputController extends BaseController implements MvcComment
         if(!response.isError()){
             view.closeActivity();
         }else{
-            view.showToast("Failed to add comment, please try again");
+            view.showDialog("Failed to add comment, please try again");
         }
     }
 
     @Override
     public void onCommentInputResponseFailure() {
         view.onFinishNetworkOperation();
-        view.showToast("Failed to add comment, please try again");
+        view.showDialog("Failed to add comment, please try again");
     }
 }

@@ -1,5 +1,7 @@
 package com.example.routeplanner.data.models;
 
+import android.annotation.SuppressLint;
+
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.api.Drive;
 import com.example.routeplanner.features.container.driveListFragment.DriveListAdapter;
@@ -7,6 +9,7 @@ import com.example.routeplanner.features.container.driveListFragment.DriveListCo
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class DriveListHandler {
 
@@ -145,6 +148,7 @@ public class DriveListHandler {
         return completed;
     }
 
+    @SuppressLint("DefaultLocale")
     private void calculateTimeDiff(Drive drive){
         long timeDif = drive.getDeliveryTimeInMillis() - System.currentTimeMillis();
 
@@ -157,8 +161,24 @@ public class DriveListHandler {
             diffSign = "-";
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-        String deliveryTimeDifference = sdf.format(timeDif);
+        String deliveryTimeDifference;
+
+        if(timeDif>3600000){
+            deliveryTimeDifference = String.format("%02d:%02d:%02d",
+                    TimeUnit.MILLISECONDS.toHours(timeDif),
+                    TimeUnit.MILLISECONDS.toMinutes(timeDif) -
+                            TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeDif)),
+                    TimeUnit.MILLISECONDS.toSeconds(timeDif) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDif)));
+        }else{
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            deliveryTimeDifference = sdf.format(timeDif);
+        }
+
+        long arrivedAtTime = System.currentTimeMillis();
+        drive.setArrivedAtTimeInMillis(arrivedAtTime);
+        SimpleDateFormat sdf2 = new SimpleDateFormat("kk:mm");
+        drive.setArrivedAtTimeHumanReadable(sdf2.format(arrivedAtTime));
 
         drive.setTimeDiffLong(timeDif);
         drive.setTimeDiffString(diffSign+" "+deliveryTimeDifference);

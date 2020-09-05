@@ -43,9 +43,9 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
 
-//        if(position == addressInformation.getCommentsCount()-1){
-//            holder.itemWrapper.setBackgroundResource(R.drawable.last_comment_item_bg);
-//        }
+        if(position > 0){
+            holder.itemWrapper.setBackgroundResource(R.drawable.list_item_bg);
+        }
 
         holder.employedName.setText(addressInformation.getEmployeeId().get(position));
         holder.date.setText(addressInformation.getDates().get(position));

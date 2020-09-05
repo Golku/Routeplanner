@@ -6,24 +6,41 @@
     android:id="@+id/item_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/overcast">
+    android:background="@drawable/generic_dialog_bg">
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:text="Add new address"
+        android:textAlignment="center"
+        android:textColor="@color/streetDark"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    blueLight
 
     <EditText
         android:id="@+id/street_input"
         android:layout_width="0dp"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:ems="10"
-        android:hint="Street"
+        android:hint="Street and house number"
         android:inputType="text"
-        android:textColor="@color/colorPrimaryDark"
-        android:textColorHint="@color/colorPrimary"
+        android:textColor="@color/streetDark"
+        android:textColorHint="@color/streetDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <EditText
         android:id="@+id/postcode_numbers_input"
@@ -35,8 +52,8 @@
         android:ems="10"
         android:hint="1234"
         android:inputType="numberSigned"
-        android:textColor="@color/colorPrimaryDark"
-        android:textColorHint="@color/colorPrimary"
+        android:textColor="@color/streetDark"
+        android:textColorHint="@color/streetDark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/street_input"/>
 
@@ -44,36 +61,58 @@
         android:id="@+id/postcode_letters_input"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="AA"
         android:inputType="textPersonName"
-        android:textColor="@color/colorPrimaryDark"
-        android:textColorHint="@color/colorPrimary"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/streetDark"
+        android:textColorHint="@color/streetDark"
         app:layout_constraintStart_toEndOf="@+id/postcode_numbers_input"
-        app:layout_constraintTop_toBottomOf="@+id/street_input"/>
+        app:layout_constraintTop_toBottomOf="@+id/street_input" />
 
     <EditText
         android:id="@+id/city_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
         android:ems="10"
         android:hint="City"
         android:inputType="textPersonName"
-        android:textColor="@color/colorPrimaryDark"
-        android:textColorHint="@color/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/streetDark"
+        android:textColorHint="@color/streetDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postcode_numbers_input" />
+
+    <Button
+        android:id="@+id/addAddressBtn"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/dialog_ok_btn_bg"
+        android:text="Add"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/city_input" />
+
+    <Button
+        android:id="@+id/cancelAddressInputBtn"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/dialog_cancel_btn_bg"
+        android:text="Cancel"
+        android:textColor="@color/blueLight"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/city_input" />
 
 </android.support.constraint.ConstraintLayout>

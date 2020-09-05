@@ -128,6 +128,11 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     }
 
     @Override
+    public void removeStop() {
+        createEvent("addressFragment", "removeAddress", this.address, this);
+    }
+
+    @Override
     public void addCommentButtonClick() {
         view.showCommentInput(address);
     }

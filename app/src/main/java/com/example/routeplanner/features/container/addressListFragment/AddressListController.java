@@ -35,6 +35,7 @@ public class AddressListController extends BaseController implements
     public void showAddressList() {
         adapter = new AddressListAdapter(this, addressList);
         view.setupAdapter(adapter);
+        showLabel();
     }
 
     @Override
@@ -59,7 +60,6 @@ public class AddressListController extends BaseController implements
         createEvent("mapFragment", "showMarker", address, this);
     }
 
-    @Override
     public void removeAddress(Address address) {
 
         if(gettingDrive){
@@ -73,11 +73,15 @@ public class AddressListController extends BaseController implements
             return;
         }
 
+        createEvent("container", "hideAddressDetails", this);
+
         deletedItemPosition = addressList.indexOf(address);
         deletedAddress = address;
         adapter.notifyItemRemoved(addressList.indexOf(address));
         addressList.remove(address);
         view.addressDeleted(deletedItemPosition, address);
+
+        showLabel();
     }
 
     @Override
@@ -85,6 +89,8 @@ public class AddressListController extends BaseController implements
         addressRestored = true;
         addressList.add(deletedItemPosition, deletedAddress);
         adapter.notifyItemInserted(deletedItemPosition);
+
+        showLabel();
     }
 
     @Override
@@ -94,6 +100,8 @@ public class AddressListController extends BaseController implements
             createEvent("container", "removeAddress", address,this);
         }
         addressRestored = false;
+
+        showLabel();
     }
 
     @Override
@@ -113,6 +121,8 @@ public class AddressListController extends BaseController implements
             case "closingTimeChange" : closingTimeChange(event.getAddress());
                 break;
             case "addAddress" : addAddress(event.getAddress());
+                break;
+            case "removeAddress" : removeAddress(event.getAddress());
                 break;
             case "gettingDrive" : gettingDrive(event.isGettingDrive());
                 break;
@@ -178,6 +188,16 @@ public class AddressListController extends BaseController implements
             adapter.notifyItemInserted(addressList.indexOf(address));
             view.scrollToItem(addressList.size());
             createEvent("mapFragment","markAddress", address, this);
+        }
+
+        showLabel();
+    }
+
+    private void showLabel(){
+        if(addressList.size()==0){
+            view.showLabel(true);
+        }else{
+            view.showLabel(false);
         }
     }
 

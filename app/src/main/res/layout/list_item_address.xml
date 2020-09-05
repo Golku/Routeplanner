@@ -1,99 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
+    android:elevation="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <LinearLayout
-        android:id="@+id/info_wrapper"
-        android:layout_width="30dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
-
-        <ImageView
-            android:id="@+id/address_type_iv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            app:srcCompat="@drawable/home_ic"/>
-
-        <ImageView
-            android:id="@+id/status_iv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/home_ic"/>
-    </LinearLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/address_info_wrapper"
         android:layout_width="0dp"
-        android:background="@drawable/list_item_bottom_stripe"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/info_wrapper"
+        app:layout_constraintStart_toEndOf="@+id/address_type_iv"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TextView
-            android:id="@+id/city_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="City"
-            android:textColor="@color/colorPrimaryDark"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/packageCount_tv"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/street_tv" />
+        app:layout_constraintVertical_bias="1.0">
 
         <TextView
             android:id="@+id/street_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Street and house number"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/streetDark"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/packageCount_tv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/packeIcon_iv"
+            android:layout_width="24sp"
+            android:layout_height="24sp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/package_128_ic" />
+
+        <TextView
+            android:id="@+id/city_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="16dp"
+            android:text="City"
+            android:textColor="@color/greyPlace"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/street_tv" />
 
         <TextView
             android:id="@+id/packageCount_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="1"
-            android:textColor="@color/colorPrimaryDark"
-            android:textStyle="bold"
+            android:layout_marginEnd="4dp"
+            android:text="1 x"
+            android:textColor="@color/streetDark"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/packeIcon_iv"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/packeIcon_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/package_ic" />
     </android.support.constraint.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/address_type_iv"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/house_outline3_128_ic" />
 
 </android.support.constraint.ConstraintLayout>

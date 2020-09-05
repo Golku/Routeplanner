@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.example.routeplanner.R;
+import com.example.routeplanner.data.models.Utils;
 import com.example.routeplanner.data.pojos.CommentInformation;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class CommentDisplayActivity extends AppCompatActivity {
 
@@ -28,9 +30,15 @@ public class CommentDisplayActivity extends AppCompatActivity {
     }
 
     private void init(){
+        Utils.darkenStatusBar(this, R.color.blueLight);
         CommentInformation commentInformation = getIntent().getParcelableExtra("commentInformation");
         usernameTv.setText(commentInformation.getEmployeeId());
         dateTv.setText(commentInformation.getDate());
         comment_tv.setText(commentInformation.getComment());
+    }
+
+    @OnClick(R.id.back_arrow_btn)
+    public void closeActivity() {
+        finish();
     }
 }

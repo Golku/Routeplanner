@@ -17,4 +17,16 @@
     <color name="colorGold">#c5a56a</color>
     <color name="colorDarkBlue">#1f304a</color>
     <color name="colorFiller">#f1f2f7</color>
+    <color name="blueLight">#167ef9</color>
+    <color name="stGrey">#FF4A4B4E</color>
+    <color name="whiteGrey">#f3f4f8</color>
+    <color name="greyPlace">#9aa1b4</color>
+    <color name="greyBottomLine">#ccd2e2</color>
+    <color name="streetDark">#1f2022</color>
+    <color name="greyDot">#777778</color>
+    <color name="redStop">#f13943</color>
+    <color name="redStopBtnBorder">#e03f47</color>
+    <color name="blackScreen">#59000000</color>
+    <color name="darkStatusBar">#083264</color>
+    <color name="niceGreen">#5fcc71</color>
 </resources>

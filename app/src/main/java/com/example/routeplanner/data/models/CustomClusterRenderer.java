@@ -77,10 +77,15 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
                 }
 
             }else{
+
+                if(address.isCompleted()){
+                    address.setCompleted(false);
+                }
+
                 if(address.isBusiness()){
-                    iconName = "business_ic";
+                    iconName = "company_24_black_ic";
                 }else{
-                    iconName = "home_ic";
+                    iconName = "house_24_black2_ic";
                 }
             }
         }
@@ -94,12 +99,13 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
         }
 
         Resources res = context.getResources();
+        //Log.d(debugTag, "iconName: " + iconName);
         int resID = res.getIdentifier(iconName, "drawable", context.getPackageName());
         try{
-            //Log.d(debugTag, "set icon");
+            //Log.d(debugTag, "ResID: " + resID);
             marker.setIcon(BitmapDescriptorFactory.fromResource(resID));
         }catch (NullPointerException e){
-            Log.d(debugTag, "CustomClusterRenderer line 103 exception: " + e.getMessage());
+            Log.d(debugTag, "CustomClusterRenderer changeMarkerIcon: " + e.getMessage());
         }
     }
 

@@ -14,6 +14,7 @@ import com.example.routeplanner.data.pojos.api.DriveRequest;
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -53,9 +54,16 @@ public abstract class BaseController {
         return currentTime < (session.getLoginTime() + TIME_OUT);
     }
 
+    private OkHttpClient createOkHttpClient(){
+        return new OkHttpClient.Builder()
+                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .build();
+    }
+
     protected ApiService createApiService(){
         Retrofit retrofit = new Retrofit.Builder()
-                .client(new OkHttpClient())//192.168.0.16 - 217.103.231.118
+                .client(createOkHttpClient())//192.168.0.16 - 217.103.231.118
                 .baseUrl("http://212.187.39.139:8080/RouteApi_war/webapi/")
                 .addConverterFactory(GsonConverterFactory.create(new Gson()))
                 .build();

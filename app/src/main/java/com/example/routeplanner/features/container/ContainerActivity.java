@@ -2,15 +2,15 @@ package com.example.routeplanner.features.container;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,18 +18,18 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.routeplanner.R;
 import com.example.routeplanner.data.models.GenericDialog;
+import com.example.routeplanner.data.models.LoadingDialog;
+import com.example.routeplanner.data.models.RetryDialog;
 import com.example.routeplanner.data.models.Utils;
 import com.example.routeplanner.data.pojos.DialogMessage;
 import com.example.routeplanner.data.pojos.Event;
@@ -54,18 +54,31 @@ import butterknife.OnClick;
 
 public class ContainerActivity extends AppCompatActivity implements MvcContainer.View,
         PredictionsAdapter.AdapterCallback,
+        RetryDialog.retryDialogCallback,
         AddressInputDialog.AddressInputDialogCallback{
 
     @BindView(R.id.container)
     ConstraintLayout container;
+    @BindView(R.id.topBlackScreen)
+    ConstraintLayout topBlackScreen;
+    @BindView(R.id.action_menu_btn)
+    ImageView actionMenuBtn;
+    @BindView(R.id.add_stops_iv)
+    ImageView add_stops_iv;
     @BindView(R.id.topBarWrapper)
     ConstraintLayout topBarWrapper;
     @BindView(R.id.loaderWrapper)
     ConstraintLayout loaderWrapper;
-    @BindView(R.id.retryWrapper)
-    ConstraintLayout retryWrapper;
     @BindView(R.id.inputAddressComLo)
     ConstraintLayout inputAddressComLo;
+    @BindView(R.id.travel_info_wrapper)
+    ConstraintLayout travel_info_wrapper;
+    @BindView(R.id.company_icon_wrapper)
+    ConstraintLayout company_icon_wrapper;
+    @BindView(R.id.house_icon_wrapper)
+    ConstraintLayout house_icon_wrapper;
+    @BindView(R.id.end_time_wrapper)
+    ConstraintLayout end_time_wrapper;
     @BindView(R.id.addressDetailsWrapper)
     ConstraintLayout addressDetailsWrapper;
     @BindView(R.id.nav_bar)
@@ -108,6 +121,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     private boolean showingDetails;
     private boolean backPress;
     private boolean typing;
+    private boolean addingAddress;
+    private LoadingDialog loadingDialog;
 
     @Override
     public void onBackPressed() {
@@ -168,33 +183,11 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         init();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.sortRoute:
-                if(containerLoaded){
-                    controller.getOrganizedRoute();
-                }
-                return true;
-            case R.id.logOut:
-                controller.logOut();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void init() {
-        changeTopBarColor("colorDarkBlue");
-        showLoader("Loading container, please wait...");
+        Utils.darkenStatusBar(this, R.color.blueLight);
+
+        this.loadingDialog = new LoadingDialog();
+        loadingDialog.show(getSupportFragmentManager(), "Loading dialog");
 
         controller = new ContainerController(this, this, new Session(this));
 
@@ -211,6 +204,9 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
             hideAddressDetails();
             hideAddressInputField();
             hideLoader();
+
+            inputAddressComLo.setVisibility(View.GONE);
+            add_stops_iv.setVisibility(View.GONE);
 
             switch(item.getItemId()){
 
@@ -233,18 +229,21 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
             // the user's changes are saved here
             public void onTextChanged(CharSequence c, int start, int before, int count) {
 
+                if(addingAddress){
+                    return;
+                }
+
                 if(typing){
-
                     hideAddressDetails();
-
                     predictionsList.setVisibility(View.VISIBLE);
                     typing = false;
                 }
 
                 if(inputText.getText().toString().length() >= 3){
-//                    showLoader("Powered by Google");
+                    add_stops_iv.setVisibility(View.GONE);
                     controller.getPrediction(inputText.getText().toString());
                 }else if(inputText.getText().toString().length() <= 3){
+                    add_stops_iv.setVisibility(View.VISIBLE);
                     setupPredictionAdapter(new ArrayList<AutocompletePrediction>());
                     showManualInputOption(false);
                 }
@@ -273,17 +272,23 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @Override
     public void hideLoader() {
         loaderWrapper.setVisibility(View.GONE);
+        loadingDialog.dismiss();
+        addingAddress = false;
         if(!containerLoaded){
-            retryWrapper.setVisibility(View.VISIBLE);
-            retryWrapper.bringToFront();
+            RetryDialog retryDialog = new RetryDialog();
+            retryDialog.show(getSupportFragmentManager(), "Retry dialog");
         }
     }
 
-    @OnClick(R.id.retryBtn)
-    public void getContainer(){
-        retryWrapper.setVisibility(View.GONE);
-        showLoader("Loading container, please wait...");
+    @Override
+    public void getContainer() {
+        loadingDialog.show(getSupportFragmentManager(), "Loading dialog");
         controller.getContainer();
+    }
+
+    @Override
+    public void backToLogInScreen() {
+        logOut();
     }
 
     @Override
@@ -312,7 +317,12 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         navBar.setVisibility(View.VISIBLE);
 
         containerLoaded = true;
-        hideLoader();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadingDialog.dismiss();
+            }
+        },750);
     }
 
     @Override
@@ -339,7 +349,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @OnClick(R.id.openAddressInputDialogBtn)
     public void manualAddressInput(){
         AddressInputDialog addressInputDialog = new AddressInputDialog();
-        addressInputDialog.show(getSupportFragmentManager(), "Add new address");
+        addressInputDialog.show(getSupportFragmentManager(), "Address dialog");
     }
 
     @Override
@@ -347,10 +357,12 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         showManualInputOption(false);
         inputText.getText().clear();
         predictionsList.setVisibility(View.GONE);
+        add_stops_iv.setVisibility(View.GONE);
 
         showLoader("Adding address, please wait...");
 
         typing = true;
+        addingAddress = true;
         controller.getAddress(address);
     }
 
@@ -358,31 +370,45 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     public void showInputField() {
 
         inputting = true;
-
+        inputText.getText().clear();
         fragmentContainer.setVisibility(View.GONE);
         info_bar_wrapper.setVisibility(View.GONE);
         input_wrapper.setVisibility(View.VISIBLE);
         predictionsList.setVisibility(View.VISIBLE);
+        add_stops_iv.setVisibility(View.VISIBLE);
+        add_stops_iv.bringToFront();
 
         inputText.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
         if (imm != null) {
             imm.showSoftInput(inputText, InputMethodManager.SHOW_IMPLICIT);
         }
-
         inputText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
 
     @Override
     public void updateAddressCount(int privateAddress, int businessAddress) {
-        privateCountTv.setText(String.valueOf(privateAddress));
-        businessCountTv.setText(String.valueOf(businessAddress));
-        totalStopsNumber.setText(String.valueOf(privateAddress+businessAddress));
+
+        totalStopsNumber.setText(String.valueOf(privateAddress+businessAddress)+" stops");
+
+        if(privateAddress > 0){
+            privateCountTv.setText(String.valueOf(privateAddress));
+            house_icon_wrapper.setVisibility(View.VISIBLE);
+        }else{
+            house_icon_wrapper.setVisibility(View.GONE);
+        }
+
+        if(businessAddress > 0){
+            businessCountTv.setText(String.valueOf(businessAddress));
+            company_icon_wrapper.setVisibility(View.VISIBLE);
+        }else{
+            company_icon_wrapper.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void updateRouteTravelInfo(String totalRouteDistance, String totalRouteDuration, String endTime, String endTimeDifference, String color, boolean endTimeDiff) {
+
         routeDistanceTv.setText(totalRouteDistance);
         routeDurationTv.setText(totalRouteDuration);
         routeEndTime.setText(endTime);
@@ -391,14 +417,23 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
             routeEndTimeDiffTv.setText(endTimeDifference);
 
             if(color.equals("red")){
-                routeEndTimeDiffTv.setTextColor(Color.RED);
+                routeEndTimeDiffTv.setTextColor(ContextCompat.getColor(this, R.color.redStop));
             }else{
-                routeEndTimeDiffTv.setTextColor(Color.GREEN);
+                routeEndTimeDiffTv.setTextColor(ContextCompat.getColor(this, R.color.niceGreen));
             }
 
             routeEndTimeDiffTv.setVisibility(View.VISIBLE);
         }else{
             routeEndTimeDiffTv.setVisibility(View.GONE);
+        }
+
+
+        if(!color.isEmpty()){
+            travel_info_wrapper.setVisibility(View.VISIBLE);
+            end_time_wrapper.setVisibility(View.VISIBLE);
+        }else{
+            travel_info_wrapper.setVisibility(View.GONE);
+            end_time_wrapper.setVisibility(View.GONE);
         }
 
     }
@@ -413,12 +448,13 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @Override
     public void predictionSelected(String address) {
         inputText.getText().clear();
-
         predictionsList.setVisibility(View.GONE);
+        add_stops_iv.setVisibility(View.GONE);
 
         showLoader("Adding address, please wait...");
 
         typing = true;
+        addingAddress = true;
         controller.getAddress(address);
     }
 
@@ -433,28 +469,27 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     }
 
     @Override
-    public void showTopAddressDetails() {
-
-        fragmentContainer.setVisibility(View.GONE);
+    public void showAddressDetails() {
+        Utils.darkenStatusBar(this, R.color.darkStatusBar);
+        topBlackScreen.setVisibility(View.VISIBLE);
+        topBlackScreen.bringToFront();
         addressDetailsWrapper.setVisibility(View.VISIBLE);
         addressDetailsWrapper.bringToFront();
         showingDetails = true;
     }
 
     @Override
-    public void showBottomAddressDetails() {
-
-        fragmentContainer.setVisibility(View.GONE);
+    public void showNewAddressDetails() {
         addressDetailsWrapper.setVisibility(View.VISIBLE);
         addressDetailsWrapper.bringToFront();
         showingDetails = true;
     }
 
+    @OnClick(R.id.topBlackScreen)
     public void hideAddressDetails(){
+        Utils.darkenStatusBar(this, R.color.blueLight);
         addressDetailsWrapper.setVisibility(View.GONE);
-        if(!typing){
-            fragmentContainer.setVisibility(View.VISIBLE);
-        }
+        topBlackScreen.setVisibility(View.GONE);
         showingDetails = false;
     }
 
@@ -463,17 +498,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         input_wrapper.setVisibility(View.GONE);
         info_bar_wrapper.setVisibility(View.VISIBLE);
         predictionsList.setVisibility(View.GONE);
-    }
-
-    private void changeTopBarColor(String color){
-        switch (color){
-            case "colorDarkBlue":
-                Utils.darkenStatusBar(this, R.color.colorDarkBlue);
-                break;
-            case "colorBlack":
-                Utils.darkenStatusBar(this, R.color.colorBlack);
-                break;
-        }
+        typing = false;
     }
 
     @Override
@@ -504,6 +529,13 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     public void showToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
+    }
+
+
+
+    @OnClick(R.id.action_menu_btn)
+    public void logOut(){
+        controller.logOut();
     }
 
     @Override

@@ -212,6 +212,11 @@ public class MapController extends BaseController implements
         createEvent("driveFragment", "RemoveMultipleDrive", currentAddress.getAddress(), this);
     }
 
+    @Override
+    public void optimiseRoute() {
+        createEvent("container", "optimiseRoute", this);
+    }
+
     private Address findAddress(String addressString){
         Address address = null;
         for(Address it : addressList){

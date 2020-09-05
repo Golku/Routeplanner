@@ -7,8 +7,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatDialogFragment;
+import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.routeplanner.R;
@@ -16,11 +20,6 @@ import com.example.routeplanner.R;
 public class AddressInputDialog extends AppCompatDialogFragment {
 
     private final String debugTag = "debugTag";
-
-    private EditText streetInput;
-    private EditText postcodeLettersInput;
-    private EditText postcodeNumbersInput;
-    private EditText cityInput;
 
     private AddressInputDialogCallback callback;
 
@@ -34,29 +33,36 @@ public class AddressInputDialog extends AppCompatDialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.address_input_dialog, null);
 
-        builder.setView(view)
-                .setTitle("Add new address")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+        EditText streetInput = view.findViewById(R.id.street_input);
+        EditText postcodeNumbersInput = view.findViewById(R.id.postcode_numbers_input);
+        EditText postcodeLettersInput = view.findViewById(R.id.postcode_letters_input);
+        EditText cityInput = view.findViewById(R.id.city_input);
 
-                    }
-                })
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        callback.addAddress(streetInput.getText().toString()+", "+
-                                postcodeNumbersInput.getText().toString()+" "+
-                                postcodeLettersInput.getText().toString()+" "+
-                                cityInput.getText().toString()+", Netherlands");
-                    }
-                });
+        Button addBtn = view.findViewById(R.id.addAddressBtn);
+        Button cancelBtn = view.findViewById(R.id.cancelAddressInputBtn);
 
-        streetInput = view.findViewById(R.id.street_input);
-        postcodeNumbersInput = view.findViewById(R.id.postcode_numbers_input);
-        postcodeLettersInput = view.findViewById(R.id.postcode_letters_input);
-        cityInput = view.findViewById(R.id.city_input);
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callback.addAddress(streetInput.getText().toString()+", "+
+                postcodeNumbersInput.getText().toString()+" "+
+                postcodeLettersInput.getText().toString()+" "+
+                cityInput.getText().toString()+", Netherlands");
+                dismiss();
+            }
+        });
 
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+
+        streetInput.requestFocus();
+        streetInput.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+        builder.setView(view);
         return builder.create();
     }
 

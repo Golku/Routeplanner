@@ -38,12 +38,15 @@
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <activity android:name=".features.container.ContainerActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="adjustPan"/>
 
         <activity android:name=".features.commentInput.CommentInputActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="adjustPan"/>
 
-        <activity android:name=".features.commentDisplay.CommentDisplayActivity" />
+        <activity android:name=".features.commentDisplay.CommentDisplayActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
     </application>
 

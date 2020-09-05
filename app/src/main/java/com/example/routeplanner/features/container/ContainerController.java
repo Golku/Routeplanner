@@ -1,13 +1,11 @@
 package com.example.routeplanner.features.container;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Debug;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import com.example.routeplanner.data.api.ApiCallback;
-import com.example.routeplanner.data.api.ApiService;
 import com.example.routeplanner.data.models.LocationManager;
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.Event;
@@ -23,29 +21,21 @@ import com.example.routeplanner.data.pojos.api.OrganizeRouteRequest;
 import com.example.routeplanner.data.pojos.api.OrganizedRouteResponse;
 import com.example.routeplanner.data.pojos.api.RemoveAddressRequest;
 import com.example.routeplanner.data.pojos.api.UpdateDriveListRequest;
-import com.example.routeplanner.data.pojos.api.UpdatePackageCountRequest;
 import com.example.routeplanner.features.shared.BaseController;
 import com.example.routeplanner.features.shared.MvcBaseController;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import java.util.concurrent.TimeUnit;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -68,8 +58,7 @@ public class ContainerController extends BaseController implements
     private Session session;
     private Container container;
     private PlacesClient placesClient;
-    private SimpleDateFormat sdf;
-    private SimpleDateFormat sdf2;
+    private SimpleDateFormat minutesFormat;
     private Address userLocation;
     private List<Address> routeOrder;
     private boolean updatingApiDriveList;
@@ -81,8 +70,7 @@ public class ContainerController extends BaseController implements
         this.handler = new Handler();
         this.session = session;
         this.context = activity;
-        this.sdf = new SimpleDateFormat("mm:ss");
-        this.sdf2 = new SimpleDateFormat("hh:mm:ss");
+        this.minutesFormat = new SimpleDateFormat("mm:ss");
 
 
         if (!Places.isInitialized()) {
@@ -119,6 +107,7 @@ public class ContainerController extends BaseController implements
         view.updateAddressCount(privateAddressCount, businessAddressCount);
     }
 
+    @SuppressLint("DefaultLocale")
     private void updateRouteInfo() {
         boolean displayEndTimeDiff = false;
         if (container.getDriveList().size() > 0) {
@@ -141,8 +130,6 @@ public class ContainerController extends BaseController implements
                 }
             }
 
-//            Log.d(debugTag, "TimeDiff: "+ timeDifference);
-
             String diffSign;
             String color;
 
@@ -158,9 +145,14 @@ public class ContainerController extends BaseController implements
             String endTimeDifference;
 
             if(timeDifference >= 3600000){
-                endTimeDifference = sdf2.format(timeDifference);
+                endTimeDifference = String.format("%02d:%02d:%02d",
+                        TimeUnit.MILLISECONDS.toHours(timeDifference),
+                        TimeUnit.MILLISECONDS.toMinutes(timeDifference) -
+                                TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(timeDifference)),
+                        TimeUnit.MILLISECONDS.toSeconds(timeDifference) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDifference)));
             }else{
-                endTimeDifference = sdf.format(timeDifference);
+                endTimeDifference = minutesFormat.format(timeDifference);
             }
 
             double routeDistanceInKM = (double) (routeDistanceInM/1000);
@@ -276,7 +268,7 @@ public class ContainerController extends BaseController implements
                 for(Address address : container.getAddressList()){
                     if(address.getAddress().equals(event.getAddress().getAddress())){
                         showAddressDetails(address);
-                        view.showBottomAddressDetails();
+                        view.showAddressDetails();
                         break;
                     }
                 }
@@ -299,8 +291,14 @@ public class ContainerController extends BaseController implements
             case "removeAddress":
                 removeAddress(event.getAddress());
                 break;
+            case "hideAddressDetails":
+                view.hideAddressDetails();
+                break;
             case "getDrive":
                 getDrive(event.getDriveRequest());
+                break;
+            case "optimiseRoute":
+                getOrganizedRoute();
                 break;
             case "updateEndTime":
                 updateRouteInfo();
@@ -348,7 +346,6 @@ public class ContainerController extends BaseController implements
     }
 
     private void addAddress(Address address) {
-        view.hideLoader();
         if(address.isValid()){
 
             boolean notFound = true;
@@ -369,10 +366,11 @@ public class ContainerController extends BaseController implements
             }
 
             createEvent("addressDetails", "addressAdded", address, this);
-            view.showTopAddressDetails();
+            view.showNewAddressDetails();
             createEvent("addressFragment", "addAddress", address, this);
         }else{
-            view.showToast("Address: " + address.getAddress()+ " is invalid");
+            view.showDialog(address.getAddress() + " is invalid");
+            view.showInputField();
         }
     }
 
@@ -406,9 +404,6 @@ public class ContainerController extends BaseController implements
             return;
         }else if(routeOrder.size() == container.getAddressList().size()){
             view.showDialog("Nothing to sort");
-            return;
-        }else if(((MyApplication) this.activity.getApplication()).isOrganizing()){
-            view.showDialog("Organizing in progress");
             return;
         }
 
@@ -485,10 +480,10 @@ public class ContainerController extends BaseController implements
 
     @Override
     public void addressResponse(Address response) {
+        view.hideLoader();
         if (response != null) {
             addAddress(response);
         }else{
-            view.hideLoader();
             view.showToast("Unable to fetch address from api");
         }
     }

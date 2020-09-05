@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -52,9 +53,10 @@ public class LoginActivity extends AppCompatActivity implements MvcLogin.View{
     }
 
     private void init() {
-        Utils.darkenStatusBar(this, R.color.colorBlack);
+        Utils.darkenStatusBar(this, R.color.blueLight);
         controller = new LoginController(this);
     }
+
 
     @Override
     public Session getSession() {
@@ -77,6 +79,8 @@ public class LoginActivity extends AppCompatActivity implements MvcLogin.View{
         }
 
         controller.loginBtnClick(username, password);
+//        showContainer();
+//        closeActivity();
     }
 
     @Override

@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +37,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.time.LocalDate;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,6 +47,10 @@ public class AddressDetailsFragment extends Fragment implements
 
     @BindView(R.id.addressCommentsList)
     RecyclerView recyclerView;
+    @BindView(R.id.removeStopBtn)
+    ConstraintLayout removeStopBtn;
+    @BindView(R.id.subLayout)
+    ConstraintLayout subLayout;
     @BindView(R.id.streetTextView)
     TextView streetTextView;
     @BindView(R.id.postcodeTextView)
@@ -60,7 +62,7 @@ public class AddressDetailsFragment extends Fragment implements
     @BindView(R.id.messageToUserTextView)
     TextView messageToUserTextView;
     @BindView(R.id.addCommentBtn)
-    FloatingActionButton addCommentBtn;
+    ConstraintLayout addCommentBtn;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.typeChangeProgress_pb)
@@ -79,6 +81,9 @@ public class AddressDetailsFragment extends Fragment implements
     TextView closingHoursHolder;
     @BindView(R.id.packageCount_Tv)
     TextView packageCount_Tv;
+    @BindView(R.id.added_iv)
+    ImageView added_iv;
+
 
     private final String debugTag = "debugTag";
 
@@ -108,16 +113,29 @@ public class AddressDetailsFragment extends Fragment implements
 
     private void init() {
         controller = new AddressDetailsController(this, new Session(getActivity()));
+
+        subLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
     public void updateAddressInfo(Address address, boolean newAddress) {
         recyclerView.setAdapter(null);
 
+        if(newAddress){
+            added_iv.setVisibility(View.VISIBLE);
+        }else{
+            added_iv.setVisibility(View.GONE);
+        }
+
         streetTextView.setText(address.getStreet());
         postcodeTextView.setText(address.getPostCode());
         cityTextView.setText(address.getCity());
-        packageCount_Tv.setText(String.valueOf(address.getPackageCount()));
+        packageCount_Tv.setText(String.valueOf(address.getPackageCount())+" x");
 
         if (address.isBusiness()) {
             openingTimeTv.setVisibility(View.VISIBLE);
@@ -128,7 +146,7 @@ public class AddressDetailsFragment extends Fragment implements
             closingHoursHolder.setVisibility(View.VISIBLE);
             openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
             closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
-            addressTypeImageView.setImageResource(R.drawable.business_ic_white);
+            addressTypeImageView.setImageResource(R.drawable.company_outline_128_ic);
         }else{
             openingTimeTv.setVisibility(View.GONE);
             changeOpeningTimeTv.setVisibility(View.GONE);
@@ -136,7 +154,7 @@ public class AddressDetailsFragment extends Fragment implements
             changeClosingTimeTv.setVisibility(View.GONE);
             openingHoursHolder.setVisibility(View.GONE);
             closingHoursHolder.setVisibility(View.GONE);
-            addressTypeImageView.setImageResource(R.drawable.home_ic_white);
+            addressTypeImageView.setImageResource(R.drawable.house_outline3_128_ic);
         }
 
         controller.getAddressInformation();
@@ -178,7 +196,7 @@ public class AddressDetailsFragment extends Fragment implements
 
     @Override
     public void changePackageCountTextView(String count) {
-        packageCount_Tv.setText(count);
+        packageCount_Tv.setText(count+" x");
     }
 
     @SuppressLint("SetTextI18n")
@@ -186,7 +204,7 @@ public class AddressDetailsFragment extends Fragment implements
     public void changeAddressType(Address address) {
 
         if(address.isBusiness()){
-            addressTypeImageView.setImageResource(R.drawable.business_ic_white);
+            addressTypeImageView.setImageResource(R.drawable.company_outline_128_ic);
             openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
             closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
             openingHoursHolder.setVisibility(View.VISIBLE);
@@ -196,7 +214,7 @@ public class AddressDetailsFragment extends Fragment implements
             closingTimeTv.setVisibility(View.VISIBLE);
             changeClosingTimeTv.setVisibility(View.VISIBLE);
         }else{
-            addressTypeImageView.setImageResource(R.drawable.home_ic_white);
+            addressTypeImageView.setImageResource(R.drawable.house_outline3_128_ic);
             openingHoursHolder.setVisibility(View.GONE);
             closingHoursHolder.setVisibility(View.GONE);
             openingTimeTv.setVisibility(View.GONE);
@@ -235,6 +253,11 @@ public class AddressDetailsFragment extends Fragment implements
         workingHours = "close";
         DialogFragment timePicker = new DialogCreator(this);
         timePicker.show(getActivity().getSupportFragmentManager(), "Time Picker");
+    }
+
+    @OnClick(R.id.removeStopBtn)
+    public void onRemoveStopBtnClick(){
+        controller.removeStop();
     }
 
     @SuppressLint("SetTextI18n")

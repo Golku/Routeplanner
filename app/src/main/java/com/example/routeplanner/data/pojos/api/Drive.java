@@ -22,6 +22,9 @@ public class Drive{
     private long deliveryTimeInMillis;
     private String deliveryTimeHumanReadable;
 
+    private long arrivedAtTimeInMillis;
+    private String arrivedAtTimeHumanReadable;
+
     private long timeDiffLong;
     private String timeDiffString;
 
@@ -113,6 +116,22 @@ public class Drive{
 
     public void setDeliveryTimeHumanReadable(String deliveryTimeHumanReadable) {
         this.deliveryTimeHumanReadable = deliveryTimeHumanReadable;
+    }
+
+    public long getArrivedAtTimeInMillis() {
+        return arrivedAtTimeInMillis;
+    }
+
+    public void setArrivedAtTimeInMillis(long arrivedAtTimeInMillis) {
+        this.arrivedAtTimeInMillis = arrivedAtTimeInMillis;
+    }
+
+    public String getArrivedAtTimeHumanReadable() {
+        return arrivedAtTimeHumanReadable;
+    }
+
+    public void setArrivedAtTimeHumanReadable(String arrivedAtTimeHumanReadable) {
+        this.arrivedAtTimeHumanReadable = arrivedAtTimeHumanReadable;
     }
 
     public long getTimeDiffLong() {

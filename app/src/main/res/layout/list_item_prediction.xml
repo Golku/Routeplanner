@@ -5,7 +5,8 @@
     android:id="@+id/prediction_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_item_bottom_stripe">
+    android:background="@color/white"
+    android:elevation="10dp">
 
     <TextView
         android:id="@+id/addressPrimaryText"
@@ -17,7 +18,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="addressPrimaryText"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/streetDark"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/addressSecondaryText"
         app:layout_constraintEnd_toStartOf="@+id/addPredictionBtnWrapper"
@@ -35,8 +36,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="addressSecondaryText"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
+        android:textColor="@color/greyPlace"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/addPredictionBtnWrapper"
         app:layout_constraintStart_toStartOf="parent"
@@ -52,13 +52,13 @@
 
         <ImageView
             android:id="@+id/addPredictionBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/add_ic" />
+            app:srcCompat="@drawable/prediction_arrow_128_ic" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

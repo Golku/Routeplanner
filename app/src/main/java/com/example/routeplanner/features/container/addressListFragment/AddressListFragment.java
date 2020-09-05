@@ -3,11 +3,13 @@ package com.example.routeplanner.features.container.addressListFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +38,11 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
     @BindView(R.id.snack_bar_container)
     CoordinatorLayout snackBarContainer;
     @BindView(R.id.address_input_btn)
-    FloatingActionButton address_input_btn;
+    ConstraintLayout address_input_btn;
+    @BindView(R.id.add_stop_label)
+    ConstraintLayout add_stop_label;
+    @BindView(R.id.no_stops_message)
+    ConstraintLayout no_stops_message;
 
     private final String debugTag = "debugTag";
 
@@ -71,7 +77,6 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
     @Override
     public void setupAdapter(AddressListAdapter adapter) {
         adapter.addContext(this.getContext());
-        adapter.addTouchHelper(recyclerView);
         recyclerView.setAdapter(adapter);
     }
 
@@ -112,6 +117,19 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
     public void scrollToItem(int position) {
         recyclerView.smoothScrollToPosition(position);
         address_input_btn.bringToFront();
+    }
+
+    @Override
+    public void showLabel(boolean show) {
+        if(show){
+            no_stops_message.setVisibility(View.VISIBLE);
+            add_stop_label.setVisibility(View.VISIBLE);
+            no_stops_message.bringToFront();
+            add_stop_label.bringToFront();
+        }else {
+            no_stops_message.setVisibility(View.GONE);
+            add_stop_label.setVisibility(View.GONE);
+        }
     }
 
     @Override

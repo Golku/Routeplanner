@@ -18,6 +18,8 @@ public interface MvcCommentInput {
 
         void onFinishNetworkOperation();
 
+        void showDialog(String message);
+
         void showToast(String message);
     }
 

@@ -2,6 +2,7 @@ package com.example.routeplanner.features.container;
 
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,13 +39,23 @@ public class PredictionsAdapter extends RecyclerView.Adapter<PredictionsAdapter.
     @Override
     public void onBindViewHolder(PredictionsAdapter.CustomViewHolder holder, int position) {
         AutocompletePrediction currentAddress = predictions.get(position);
+
+        if(position > 0){
+            holder.wrapper.setBackgroundResource(R.drawable.list_item_bg);
+        }
+
         holder.addressPrimaryText.setText(currentAddress.getPrimaryText(null).toString());
         holder.addressSecondaryText.setText(currentAddress.getSecondaryText(null).toString());
     }
 
     @Override
     public int getItemCount() {
-        return predictions.size();
+
+        if(predictions.size() > 4){
+            return predictions.size()-1;
+        }else{
+            return predictions.size();
+        }
     }
 
     class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

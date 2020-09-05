@@ -5,179 +5,268 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/overcast"
+    android:background="@color/whiteGrey"
     tools:context=".features.container.ContainerActivity">
+
+    <ImageView
+        android:id="@+id/add_stops_iv"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="40dp"
+        android:contentDescription="TODO"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topBarWrapper"
+        app:srcCompat="@drawable/add_stops_ic" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/topBlackScreen"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/blackScreen"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/topBarWrapper"
         android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:background="@drawable/shadows"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
-
-            android:id="@+id/info_bar_wrapper"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blueLight"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0">
-
-            <ImageView
-                android:id="@+id/privateIconIv"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toEndOf="@+id/totalStops"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/home_ic_white" />
-
-            <ImageView
-                android:id="@+id/routeDistanceIv"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toEndOf="@+id/privateCountTv"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/distance_white" />
-
-            <ImageView
-                android:id="@+id/routeDriveTimeIv"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/businessCountTv"
-                app:srcCompat="@drawable/clock_white" />
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/routeDistanceTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="0"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/routeDistanceIv"
-                app:layout_constraintStart_toEndOf="@+id/routeDistanceIv"
-                app:layout_constraintTop_toTopOf="@+id/routeDistanceIv" />
-
-            <TextView
-                android:id="@+id/routeDurationTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="--:--"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/routeDriveTimeIv"
-                app:layout_constraintStart_toEndOf="@+id/routeDriveTimeIv"
-                app:layout_constraintTop_toTopOf="@+id/routeDriveTimeIv" />
-
-            <TextView
-                android:id="@+id/privateCountTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="0"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/privateIconIv"
-                app:layout_constraintStart_toEndOf="@+id/privateIconIv"
-                app:layout_constraintTop_toTopOf="@+id/privateIconIv" />
-
-            <ImageView
-                android:id="@+id/businessIconIv"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/totalStops"
-                app:srcCompat="@drawable/business_ic_white" />
-
-            <TextView
-                android:id="@+id/totalStops"
+                android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="Stops"
+                android:layout_marginBottom="16dp"
+                android:text="My Route"
                 android:textColor="@color/white"
                 android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/action_menu_btn"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <ImageView
+                android:id="@+id/action_menu_btn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/action_menu1_white_128_ic" />
+        </android.support.constraint.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/businessCountTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="0"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="@+id/businessIconIv"
-                app:layout_constraintStart_toEndOf="@+id/businessIconIv"
-                app:layout_constraintTop_toTopOf="@+id/businessIconIv" />
+        <android.support.constraint.ConstraintLayout
 
-            <TextView
-                android:id="@+id/end_time_tv"
+            android:id="@+id/info_bar_wrapper"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/info_bar_wrapper_bg"
+            android:paddingBottom="16dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/action_bar"
+            app:layout_constraintVertical_bias="0.0">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/end_time_wrapper"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="16dp"
-                android:text="Last stop"
-                android:textColor="@color/white"
-                android:textSize="20sp"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/route_end_time"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/routeEndTimeDiff_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textColor="@color/colorBlack"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@+id/route_end_time"
+                    app:layout_constraintStart_toStartOf="@+id/route_end_time"
+                    app:layout_constraintTop_toBottomOf="@+id/route_end_time"
+                    tools:text="diff" />
+
+                <TextView
+                    android:id="@+id/route_end_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="32dp"
+                    android:text="--:--"
+                    android:textColor="@color/stGrey"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toTopOf="@+id/routeEndTimeDiff_tv"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/company_icon_wrapper"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="--:--"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintEnd_toEndOf="@+id/end_time_tv"
-                app:layout_constraintStart_toStartOf="@+id/end_time_tv"
-                app:layout_constraintTop_toBottomOf="@+id/end_time_tv" />
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:visibility="visible"
+                app:layout_constraintStart_toEndOf="@+id/house_icon_wrapper"
+                app:layout_constraintTop_toBottomOf="@+id/totalStopsNumber">
+
+                <TextView
+                    android:id="@+id/businessCountTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="3dp"
+                    android:text="0"
+                    android:textColor="@color/stGrey"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/businessIconIv"
+                    app:layout_constraintTop_toTopOf="@+id/businessIconIv" />
+
+                <ImageView
+                    android:id="@+id/businessIconIv"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/company_outline_128_ic" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/house_icon_wrapper"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/totalStopsNumber">
+
+                <ImageView
+                    android:id="@+id/privateIconIv"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/house_outline3_128_ic" />
+
+                <TextView
+                    android:id="@+id/privateCountTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="3dp"
+                    android:text="0"
+                    android:textColor="@color/stGrey"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/privateIconIv"
+                    app:layout_constraintStart_toEndOf="@+id/privateIconIv"
+                    app:layout_constraintTop_toTopOf="@+id/privateIconIv" />
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/travel_info_wrapper"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="1dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/totalStopsNumber"
+                app:layout_constraintStart_toEndOf="@+id/totalStopsNumber"
+                app:layout_constraintTop_toTopOf="@+id/totalStopsNumber">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="9dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="4dp"
+                    android:text="•"
+                    android:textColor="@color/stGrey"
+                    android:textSize="25sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/routeDistanceTv"
+                    app:layout_constraintStart_toEndOf="@+id/routeDistanceTv"
+                    app:layout_constraintTop_toTopOf="@+id/routeDistanceTv" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="•"
+                    android:textColor="@color/stGrey"
+                    android:textSize="25sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/routeDurationTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="0 min"
+                    android:textColor="@color/stGrey"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView5"
+                    app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+                <TextView
+                    android:id="@+id/routeDistanceTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="0 Km"
+                    android:textColor="@color/stGrey"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView4"
+                    app:layout_constraintStart_toEndOf="@+id/textView4"
+                    app:layout_constraintTop_toTopOf="@+id/textView4" />
+
+            </android.support.constraint.ConstraintLayout>
 
             <TextView
                 android:id="@+id/totalStopsNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:text="0"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/totalStops"
-                app:layout_constraintStart_toStartOf="@+id/totalStops" />
-
-            <TextView
-                android:id="@+id/routeEndTimeDiff_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="+ 01:23"
-                android:textColor="@color/white"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/end_time_tv"
-                app:layout_constraintStart_toStartOf="@+id/end_time_tv" />
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="0 stops"
+                android:textColor="@color/stGrey"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 
@@ -185,21 +274,22 @@
 
             android:id="@+id/input_wrapper"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="68dp"
+            android:background="@drawable/info_bar_wrapper_bg"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/action_bar">
 
             <EditText
                 android:id="@+id/inputText"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_marginStart="32dp"
-                android:layout_marginLeft="32dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="32dp"
-                android:layout_marginRight="32dp"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/input_field"
                 android:ems="10"
                 android:hint="Add address"
@@ -219,72 +309,39 @@
         android:id="@+id/loaderWrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/nav_bar"
+        android:layout_marginTop="30dp"
+        android:background="@color/white"
+        android:elevation="10dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topBarWrapper">
-
-        <TextView
-            android:id="@+id/loadingMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:layout_marginBottom="16dp"
-            android:text="TextView"
-            android:textColor="@color/colorBlack"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loadingAnimation" />
 
         <ProgressBar
             android:id="@+id/loadingAnimation"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/retryWrapper"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/nav_bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/topBarWrapper">
-
-        <ImageView
-            android:id="@+id/retryBtn"
+        <TextView
+            android:id="@+id/loadingMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/retry_ic"
-            tools:layout_editor_absoluteX="180dp" />
-
-        <TextView
-            android:id="@+id/retryMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:layout_marginBottom="16dp"
-            android:text="Failed to load the container, please try again"
-            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="32dp"
+            android:text="TextView"
+            android:textColor="@color/streetDark"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/retryBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/loadingAnimation" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -305,10 +362,7 @@
         android:id="@+id/addressDetailsWrapper"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="32dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
@@ -330,11 +384,11 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/predictionsList"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/shadows"
-        android:elevation="16dp"
+        android:layout_height="0dp"
+        android:background="@color/whiteGrey"
         android:visibility="gone"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topBarWrapper" />
@@ -353,7 +407,7 @@
         android:id="@+id/nav_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorDarkBlue"
+        android:background="@drawable/nav_bar_bg"
         android:visibility="gone"
         app:itemIconTint="@menu/bottom_nav_color"
         app:itemTextColor="@menu/bottom_nav_color"
@@ -366,8 +420,10 @@
         android:id="@+id/inputAddressComLo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="140dp"
-        android:visibility="gone"
+        android:layout_marginTop="30dp"
+        android:background="@color/white"
+        android:elevation="10dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -377,23 +433,25 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Zero matches"
+            android:layout_marginTop="32dp"
+            android:text="No autocomplete results"
             android:textColor="@color/colorBlack"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <TextView
             android:id="@+id/openAddressInputDialogBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="32dp"
             android:text="Add manually"
+            android:textColor="@color/blueLight"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/textView2"
+            app:layout_constraintStart_toStartOf="@+id/textView2"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     </android.support.constraint.ConstraintLayout>

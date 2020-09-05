@@ -43,6 +43,8 @@ public interface MvcMap {
 
         void multipleMarkersDeselected();
 
+        void optimiseRoute();
+
         void eventReceived(Event event);
     }
 

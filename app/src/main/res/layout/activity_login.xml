@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient"
+    android:background="@color/white"
     tools:context=".features.login.LoginActivity">
 
     <ImageView
@@ -25,6 +25,8 @@
         android:layout_marginTop="32dp"
         android:inputType="textPersonName"
         android:hint="username"
+        android:textColor="@color/streetDark"
+        android:textColorHint="@color/white"
         android:ems="10"
         android:background="#11000000"
         android:drawableLeft="@drawable/ic_action_user"
@@ -41,6 +43,8 @@
         android:layout_marginTop="16dp"
         android:inputType="numberPassword"
         android:hint="password"
+        android:textColor="@color/streetDark"
+        android:textColorHint="@color/white"
         android:ems="10"
         android:drawableLeft="@drawable/ic_action_password"
         android:background="#11000000"

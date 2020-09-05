@@ -5,14 +5,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.example.routeplanner.R;
 import com.example.routeplanner.data.models.GenericDialog;
@@ -46,13 +46,19 @@ public class MapFragment extends Fragment implements
     MapView mapView;
 
     @BindView(R.id.get_user_location_btn)
-    FloatingActionButton getUserLocationBtn;
+    ConstraintLayout getUserLocationBtn;
+
+    @BindView(R.id.optimise_route_btn)
+    ConstraintLayout optimise_route_btn;
+
+    @BindView(R.id.optimising_route_pb)
+    ProgressBar optimising_route_pb;
+
+    @BindView(R.id.optimise_route_iv)
+    ImageView optimise_route_iv;
 
     @BindView(R.id.snack_bar_container)
     CoordinatorLayout snackBarContainer;
-
-    @BindView(R.id.organizingRouteWrapper)
-    ConstraintLayout organizingRouteWrapper;
 
     private final String debugTag = "debugTag";
 
@@ -96,6 +102,11 @@ public class MapFragment extends Fragment implements
     @OnClick(R.id.get_user_location_btn)
     public void updateUserLocation(){
         controller.getUserLocation();
+    }
+
+    @OnClick(R.id.optimise_route_btn)
+    public void optimiseRoute(){
+        controller.optimiseRoute();
     }
 
     @Override
@@ -145,13 +156,15 @@ public class MapFragment extends Fragment implements
     @Override
     public void showOrganizingRouteLoader(boolean show) {
         if(show){
-//            mapView.setVisibility(View.GONE);
             getUserLocationBtn.setClickable(false);
-            organizingRouteWrapper.setVisibility(View.VISIBLE);
+            optimise_route_btn.setClickable(false);
+            optimise_route_iv.setVisibility(View.GONE);
+            optimising_route_pb.setVisibility(View.VISIBLE);
         }else{
-            organizingRouteWrapper.setVisibility(View.GONE);
+            optimising_route_pb.setVisibility(View.GONE);
+            optimise_route_iv.setVisibility(View.VISIBLE);
             getUserLocationBtn.setClickable(true);
-//            mapView.setVisibility(View.VISIBLE);
+            optimise_route_btn.setClickable(true);
         }
     }
 
@@ -168,5 +181,11 @@ public class MapFragment extends Fragment implements
     @Override
     public void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }
