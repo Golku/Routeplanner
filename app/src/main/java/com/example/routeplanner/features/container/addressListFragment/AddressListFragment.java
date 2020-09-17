@@ -38,7 +38,7 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
     @BindView(R.id.snack_bar_container)
     CoordinatorLayout snackBarContainer;
     @BindView(R.id.address_input_btn)
-    ConstraintLayout address_input_btn;
+    FloatingActionButton address_input_btn;
     @BindView(R.id.add_stop_label)
     ConstraintLayout add_stop_label;
     @BindView(R.id.no_stops_message)
@@ -77,6 +77,7 @@ public class AddressListFragment extends Fragment implements MvcAddressList.View
     @Override
     public void setupAdapter(AddressListAdapter adapter) {
         adapter.addContext(this.getContext());
+        adapter.addTouchHelper(recyclerView);
         recyclerView.setAdapter(adapter);
     }
 

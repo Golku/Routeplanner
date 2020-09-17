@@ -407,6 +407,8 @@ public class ContainerController extends BaseController implements
             return;
         }
 
+        view.showOptimisingDialog(true);
+
         createEvent("mapFragment","organizingRoute", true, this);
 
         OrganizeRouteRequest request = new OrganizeRouteRequest();
@@ -497,6 +499,7 @@ public class ContainerController extends BaseController implements
 
     @Override
     public void organizeRouteResponse(OrganizedRouteResponse response) {
+        view.showOptimisingDialog(false);
         if(response != null){
             RouteInfo routeInfo = new RouteInfo();
             routeInfo.setDriveList(response.getOrganizedRoute());
@@ -511,6 +514,7 @@ public class ContainerController extends BaseController implements
 
     @Override
     public void organizedRouteFailure() {
+        view.showOptimisingDialog(false);
         view.showDialog("Unable to sort addresses, please try again");
         createEvent("mapFragment","organizingRoute", false, this);
         ((MyApplication) this.activity.getApplication()).setOrganizing(false);

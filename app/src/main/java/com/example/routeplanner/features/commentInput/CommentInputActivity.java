@@ -49,6 +49,7 @@ public class CommentInputActivity extends AppCompatActivity implements MvcCommen
 
     private void init(){
         Utils.darkenStatusBar(this, R.color.blueLight);
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.whiteGrey));
         controller = new CommentInputController(this);
         Address address = getIntent().getParcelableExtra("address");
         controller.setUpInfo(new Session(this), address);

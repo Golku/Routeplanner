@@ -2,8 +2,8 @@ package com.example.routeplanner.features.container;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.example.routeplanner.R;
 import com.example.routeplanner.data.models.GenericDialog;
 import com.example.routeplanner.data.models.LoadingDialog;
+import com.example.routeplanner.data.models.OptimisingDialog;
 import com.example.routeplanner.data.models.RetryDialog;
 import com.example.routeplanner.data.models.Utils;
 import com.example.routeplanner.data.pojos.DialogMessage;
@@ -123,6 +124,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     private boolean typing;
     private boolean addingAddress;
     private LoadingDialog loadingDialog;
+    private OptimisingDialog optimisingDialog;
 
     @Override
     public void onBackPressed() {
@@ -135,6 +137,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
             predictionsList.setVisibility(View.GONE);
         }
 
+        add_stops_iv.setVisibility(View.GONE);
         inputText.getText().clear();
         showManualInputOption(false);
 
@@ -186,7 +189,10 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     private void init() {
         Utils.darkenStatusBar(this, R.color.blueLight);
 
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.white));
+
         this.loadingDialog = new LoadingDialog();
+        this.optimisingDialog = new OptimisingDialog();
         loadingDialog.show(getSupportFragmentManager(), "Loading dialog");
 
         controller = new ContainerController(this, this, new Session(this));
@@ -272,7 +278,6 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @Override
     public void hideLoader() {
         loaderWrapper.setVisibility(View.GONE);
-        loadingDialog.dismiss();
         addingAddress = false;
         if(!containerLoaded){
             RetryDialog retryDialog = new RetryDialog();
@@ -516,6 +521,15 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     }
 
     @Override
+    public void showOptimisingDialog(boolean show) {
+        if(show){
+            optimisingDialog.show(getSupportFragmentManager(), "Loading dialog");
+        }else{
+            optimisingDialog.dismiss();
+        }
+    }
+
+    @Override
     public void showDialog(String message) {
         DialogMessage dialogMessage = new DialogMessage(message);
         Bundle bundle = new Bundle();
@@ -530,8 +544,6 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
-
 
     @OnClick(R.id.action_menu_btn)
     public void logOut(){

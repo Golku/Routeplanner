@@ -41,7 +41,7 @@ public class PredictionsAdapter extends RecyclerView.Adapter<PredictionsAdapter.
         AutocompletePrediction currentAddress = predictions.get(position);
 
         if(position > 0){
-            holder.wrapper.setBackgroundResource(R.drawable.list_item_bg);
+            holder.info_holder.setBackgroundResource(R.drawable.list_item_bg);
         }
 
         holder.addressPrimaryText.setText(currentAddress.getPrimaryText(null).toString());
@@ -61,6 +61,7 @@ public class PredictionsAdapter extends RecyclerView.Adapter<PredictionsAdapter.
     class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ConstraintLayout wrapper;
+        private ConstraintLayout info_holder;
         private ConstraintLayout addPredictionBtnWrapper;
         private TextView addressPrimaryText;
         private TextView addressSecondaryText;
@@ -69,6 +70,7 @@ public class PredictionsAdapter extends RecyclerView.Adapter<PredictionsAdapter.
         CustomViewHolder(View itemView) {
             super(itemView);
             this.wrapper = itemView.findViewById(R.id.prediction_wrapper);
+            this.info_holder = itemView.findViewById(R.id.info_holder);
             this.addPredictionBtnWrapper = itemView.findViewById(R.id.addPredictionBtnWrapper);
             this.addressPrimaryText = itemView.findViewById(R.id.addressPrimaryText);
             this.addressSecondaryText = itemView.findViewById(R.id.addressSecondaryText);

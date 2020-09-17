@@ -1,5 +1,6 @@
 package com.example.routeplanner.features.container.addressDetailsFragment;
 
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,7 +45,7 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
     public void onBindViewHolder(CustomViewHolder holder, int position) {
 
         if(position > 0){
-            holder.itemWrapper.setBackgroundResource(R.drawable.list_item_bg);
+            holder.infoWrapper.setBackgroundResource(R.drawable.list_item_bg);
         }
 
         holder.employedName.setText(addressInformation.getEmployeeId().get(position));
@@ -60,6 +61,7 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
     class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ViewGroup itemWrapper;
+        private ConstraintLayout infoWrapper;
         private TextView employedName;
         private TextView date;
         private TextView comment;
@@ -67,6 +69,7 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
         CustomViewHolder(View itemView) {
             super(itemView);
             this.employedName = itemView.findViewById(R.id.username_tv);
+            this.infoWrapper = itemView.findViewById(R.id.infoWrapper);
             this.date = itemView.findViewById(R.id.date_tv);
             this.comment = itemView.findViewById(R.id.comment_tv);
             this.itemWrapper = itemView.findViewById(R.id.item_wrapper);

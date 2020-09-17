@@ -39,10 +39,16 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
     interface AdapterCallback{
         void itemClick(Address address);
         void showAddress(Address address);
+        void removeAddressFromSwipe(Address address);
     }
 
     void addContext(Context context){
         this.context = context;
+    }
+
+    void addTouchHelper(RecyclerView recyclerView){
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(createHelperCallback());
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     @NonNull
@@ -63,13 +69,19 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
 
         if(address.isValid()){
             holder.streetTv.setText(address.getStreet());
-            holder.cityTv.setText(address.getPostCode() +" "+ address.getCity());
+
+            if(address.getPostCode().isEmpty()){
+                holder.cityTv.setText(address.getCity());
+            }else{
+                holder.cityTv.setText(address.getPostCode() +" "+ address.getCity());
+            }
+
             holder.packageCountTv.setText(String.valueOf(address.getPackageCount()) + " x");
 
             if(address.isBusiness()){
-                holder.addressType.setImageResource(R.drawable.company_outline_128_ic);
+                holder.addressType.setImageResource(R.drawable.company);
             }else{
-                holder.addressType.setImageResource(R.drawable.house_outline3_128_ic);
+                holder.addressType.setImageResource(R.drawable.house);
             }
 
         }else{
@@ -115,5 +127,68 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
                 callback.itemClick(addressList.get(getAdapterPosition()));
             }
         }
+    }
+
+    private ItemTouchHelper.Callback createHelperCallback(){
+
+        return new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+
+            //not used, as the first parameter above is 0
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int position = viewHolder.getAdapterPosition();
+                callback.removeAddressFromSwipe(addressList.get(position));
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+
+                    View itemView = viewHolder.itemView;
+
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 3;
+
+                    Paint backgroundPaint = new Paint();
+                    Paint textPaint = new Paint();
+                    Bitmap icon;
+
+                    if (dX > 0) {
+
+                        backgroundPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.redStop, null));
+
+                        textPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.white, null));
+                        textPaint.setTextSize(50f);
+
+                        RectF background = new RectF((float) itemView.getLeft(), (float) itemView.getTop(), dX, (float) itemView.getBottom());
+                        c.drawRect(background, backgroundPaint);
+
+                        c.drawText("X   Delete",
+                                (float) itemView.getLeft() + width,
+                                (float) itemView.getTop() + (height*(float)0.6),
+                                textPaint);
+
+//                        icon = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ic_delete_white_24dp);
+//                        RectF iconDest = new RectF((float) itemView.getLeft() + width, (float) itemView.getTop() + width, (float) itemView.getLeft() + 2 * width, (float) itemView.getBottom() - width);
+//                        c.drawBitmap(icon, null, iconDest, p);
+
+
+//                        Log.d("debug", "Top: "+itemView.getTop());
+//                        Log.d("debug", "Bottom: "+itemView.getBottom());
+//                        Log.d("debug", "Left: "+itemView.getLeft());
+//                        Log.d("debug", "Right: "+itemView.getRight());
+//                        Log.d("debug", "Height: "+height);
+                    }
+
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
+            }
+        };
     }
 }

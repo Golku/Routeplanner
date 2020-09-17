@@ -26,6 +26,7 @@ public class SplashActivity extends AppCompatActivity implements MvcSplash.View{
 
     private void init(){
         Utils.darkenStatusBar(this, R.color.blueLight);
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.whiteGrey));
         controller = new SplashController(this);
         handler.postDelayed(new Runnable() {
             @Override

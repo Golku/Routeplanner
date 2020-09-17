@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -46,16 +47,10 @@ public class MapFragment extends Fragment implements
     MapView mapView;
 
     @BindView(R.id.get_user_location_btn)
-    ConstraintLayout getUserLocationBtn;
+    FloatingActionButton getUserLocationBtn;
 
     @BindView(R.id.optimise_route_btn)
-    ConstraintLayout optimise_route_btn;
-
-    @BindView(R.id.optimising_route_pb)
-    ProgressBar optimising_route_pb;
-
-    @BindView(R.id.optimise_route_iv)
-    ImageView optimise_route_iv;
+    FloatingActionButton optimise_route_btn;
 
     @BindView(R.id.snack_bar_container)
     CoordinatorLayout snackBarContainer;
@@ -154,15 +149,11 @@ public class MapFragment extends Fragment implements
     }
 
     @Override
-    public void showOrganizingRouteLoader(boolean show) {
+    public void disableMapBtn(boolean show) {
         if(show){
             getUserLocationBtn.setClickable(false);
             optimise_route_btn.setClickable(false);
-            optimise_route_iv.setVisibility(View.GONE);
-            optimising_route_pb.setVisibility(View.VISIBLE);
         }else{
-            optimising_route_pb.setVisibility(View.GONE);
-            optimise_route_iv.setVisibility(View.VISIBLE);
             getUserLocationBtn.setClickable(true);
             optimise_route_btn.setClickable(true);
         }

@@ -7,11 +7,13 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,8 +55,6 @@ public class AddressDetailsFragment extends Fragment implements
     ConstraintLayout subLayout;
     @BindView(R.id.streetTextView)
     TextView streetTextView;
-    @BindView(R.id.postcodeTextView)
-    TextView postcodeTextView;
     @BindView(R.id.cityTextView)
     TextView cityTextView;
     @BindView(R.id.addressTypeImageView)
@@ -62,7 +62,7 @@ public class AddressDetailsFragment extends Fragment implements
     @BindView(R.id.messageToUserTextView)
     TextView messageToUserTextView;
     @BindView(R.id.addCommentBtn)
-    ConstraintLayout addCommentBtn;
+    FloatingActionButton addCommentBtn;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     @BindView(R.id.typeChangeProgress_pb)
@@ -133,30 +133,15 @@ public class AddressDetailsFragment extends Fragment implements
         }
 
         streetTextView.setText(address.getStreet());
-        postcodeTextView.setText(address.getPostCode());
-        cityTextView.setText(address.getCity());
         packageCount_Tv.setText(String.valueOf(address.getPackageCount())+" x");
 
-        if (address.isBusiness()) {
-            openingTimeTv.setVisibility(View.VISIBLE);
-            changeOpeningTimeTv.setVisibility(View.VISIBLE);
-            closingTimeTv.setVisibility(View.VISIBLE);
-            changeClosingTimeTv.setVisibility(View.VISIBLE);
-            openingHoursHolder.setVisibility(View.VISIBLE);
-            closingHoursHolder.setVisibility(View.VISIBLE);
-            openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
-            closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
-            addressTypeImageView.setImageResource(R.drawable.company_outline_128_ic);
+        if(address.getPostCode().isEmpty()){
+            cityTextView.setText(address.getCity());
         }else{
-            openingTimeTv.setVisibility(View.GONE);
-            changeOpeningTimeTv.setVisibility(View.GONE);
-            closingTimeTv.setVisibility(View.GONE);
-            changeClosingTimeTv.setVisibility(View.GONE);
-            openingHoursHolder.setVisibility(View.GONE);
-            closingHoursHolder.setVisibility(View.GONE);
-            addressTypeImageView.setImageResource(R.drawable.house_outline3_128_ic);
+            cityTextView.setText(address.getPostCode() + " " + address.getCity());
         }
 
+        changeAddressType(address);
         controller.getAddressInformation();
     }
 
@@ -170,23 +155,6 @@ public class AddressDetailsFragment extends Fragment implements
         addressTypeImageView.setVisibility(View.INVISIBLE);
         typeChangeProgress_pb.setVisibility(View.VISIBLE);
         controller.changeAddressType();
-
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setMessage("Are you sure?")
-//                .setTitle("Change address type")
-//                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        addressTypeImageView.setVisibility(View.INVISIBLE);
-//                        typeChangeProgress_pb.setVisibility(View.VISIBLE);
-//                        controller.changeAddressType();
-//                    }
-//                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int id) {
-//                // User cancelled the dialog
-//            }
-//        });
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
     }
 
     @OnClick(R.id.packageCount_Tv)
@@ -204,7 +172,7 @@ public class AddressDetailsFragment extends Fragment implements
     public void changeAddressType(Address address) {
 
         if(address.isBusiness()){
-            addressTypeImageView.setImageResource(R.drawable.company_outline_128_ic);
+            addressTypeImageView.setImageResource(R.drawable.company);
             openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
             closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
             openingHoursHolder.setVisibility(View.VISIBLE);
@@ -214,7 +182,7 @@ public class AddressDetailsFragment extends Fragment implements
             closingTimeTv.setVisibility(View.VISIBLE);
             changeClosingTimeTv.setVisibility(View.VISIBLE);
         }else{
-            addressTypeImageView.setImageResource(R.drawable.house_outline3_128_ic);
+            addressTypeImageView.setImageResource(R.drawable.house);
             openingHoursHolder.setVisibility(View.GONE);
             closingHoursHolder.setVisibility(View.GONE);
             openingTimeTv.setVisibility(View.GONE);

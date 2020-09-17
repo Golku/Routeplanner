@@ -60,6 +60,11 @@ public class AddressListController extends BaseController implements
         createEvent("mapFragment", "showMarker", address, this);
     }
 
+    @Override
+    public void removeAddressFromSwipe(Address address) {
+        removeAddress(address);
+    }
+
     public void removeAddress(Address address) {
 
         if(gettingDrive){

@@ -66,7 +66,14 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
             holder.drive_info_wrapper.setBackgroundResource(R.drawable.list_item_bg);
         }
 
-        String city = drive.getDestinationAddress().getPostCode() + " " + drive.getDestinationAddress().getCity();
+        String city;
+
+        if(drive.getDestinationAddress().getPostCode().isEmpty()){
+            city = drive.getDestinationAddress().getCity();
+        }else{
+            city = drive.getDestinationAddress().getPostCode() + " " + drive.getDestinationAddress().getCity();
+        }
+
         String distance = drive.getDriveDistanceHumanReadable();
         String duration = drive.getDriveDurationHumanReadable();
         String arrivalTime = "ETA "+drive.getDeliveryTimeHumanReadable();
@@ -81,9 +88,9 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         holder.timeDiff.setText(timeDifference);
 
         if(drive.isDestinationIsABusiness()){
-            holder.addressType.setImageResource(R.drawable.company_outline_128_ic);
+            holder.addressType.setImageResource(R.drawable.company);
         }else{
-            holder.addressType.setImageResource(R.drawable.house_outline3_128_ic);
+            holder.addressType.setImageResource(R.drawable.house);
         }
 
         if(drive.getDone() == 1){
@@ -147,7 +154,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         public void onClick(View v) {
 
             if(v == this.itemWrapper){
-                //callback.itemClick(driveList.get(this.getAdapterPosition()).getDestinationAddress());
+                callback.itemClick(driveList.get(this.getAdapterPosition()).getDestinationAddress());
             }
             else if(v == this.goIvWrapper){
                 callback.goButtonClick(driveList.get(this.getAdapterPosition()));
@@ -187,7 +194,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
 
                     if (dX > 0) {
 
-                        backgroundPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.green, null));
+                        backgroundPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.niceGreen, null));
 
                         textPaint.setColor(ResourcesCompat.getColor(context.getResources(), R.color.white, null));
                         textPaint.setTextSize(50f);

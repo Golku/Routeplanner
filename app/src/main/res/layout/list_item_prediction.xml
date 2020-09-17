@@ -8,57 +8,77 @@
     android:background="@color/white"
     android:elevation="10dp">
 
-    <TextView
-        android:id="@+id/addressPrimaryText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/imageView6"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="addressPrimaryText"
-        android:textColor="@color/streetDark"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/addressSecondaryText"
-        app:layout_constraintEnd_toStartOf="@+id/addPredictionBtnWrapper"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/addressSecondaryText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="addressSecondaryText"
-        android:textColor="@color/greyPlace"
+        android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addPredictionBtnWrapper"
+        app:layout_constraintEnd_toStartOf="@+id/info_holder"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addressPrimaryText" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/marker_blue" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/addPredictionBtnWrapper"
-        android:layout_width="80dp"
-        android:layout_height="0dp"
+        android:id="@+id/info_holder"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView6"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/addPredictionBtn"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/addPredictionBtnWrapper"
+            android:layout_width="80dp"
+            android:layout_height="0dp"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/addPredictionBtn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/prediction_arrow" />
+        </android.support.constraint.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/addressPrimaryText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="addressPrimaryText"
+            android:textColor="@color/streetDark"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/addPredictionBtnWrapper"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/prediction_arrow_128_ic" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/addressSecondaryText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="16dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="addressSecondaryText"
+            android:textColor="@color/greyPlace"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/addPredictionBtnWrapper"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addressPrimaryText" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

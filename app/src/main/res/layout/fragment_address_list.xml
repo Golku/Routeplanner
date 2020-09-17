@@ -3,31 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/whiteGrey"
+    android:background="@color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-    <android.support.constraint.ConstraintLayout
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/address_input_btn"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/blueLight"
+        android:clickable="true"
         android:elevation="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/address_list"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@drawable/add_stop_btn_bg">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/plus2_128_ic" />
-    </android.support.constraint.ConstraintLayout>
+        app:srcCompat="@drawable/plus" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/no_stops_message"
@@ -59,6 +50,7 @@
         android:id="@+id/address_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="105dp"
         android:visibility="visible"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/snack_bar_container"
@@ -81,7 +73,7 @@
         android:id="@+id/add_stop_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/add_stop_label"
         app:layout_constraintBottom_toBottomOf="@+id/address_input_btn"
         app:layout_constraintEnd_toStartOf="@+id/address_input_btn"

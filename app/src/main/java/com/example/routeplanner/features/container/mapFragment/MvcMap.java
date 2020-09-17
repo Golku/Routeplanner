@@ -26,7 +26,7 @@ public interface MvcMap {
 
         boolean getOrganizing();
 
-        void showOrganizingRouteLoader(boolean show);
+        void disableMapBtn(boolean show);
 
         void showDialog(String message);
 

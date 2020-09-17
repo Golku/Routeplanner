@@ -49,6 +49,8 @@ public interface MvcContainer {
 
         void showLoginScreen();
 
+        void showOptimisingDialog(boolean show);
+
         void showDialog(String message);
 
         void showToast(String message);

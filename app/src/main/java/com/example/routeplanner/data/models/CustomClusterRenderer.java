@@ -41,7 +41,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
         Marker marker = getMarker(address);
 
         if(address.isFetchingDriveInfo()){
-            iconName = "time_ic";
+            iconName = "hourglass";
         }else{
 
             if(address.isSelected()){
@@ -68,12 +68,12 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
 
                 if(address.isBusiness() && openingTime>0 && closingTime>0){
                     if(arrivalTime > address.getOpeningTime() && arrivalTime < address.getClosingTime()){
-                        iconName = "ic_pending_marker_"+String.valueOf(routeOrder.indexOf(address)+1);
+                        iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
                     }else{
-                        iconName = "ic_invalid_marker_"+String.valueOf(routeOrder.indexOf(address)+1);
+                        iconName = "marker_invalid_"+String.valueOf(routeOrder.indexOf(address)+1);
                     }
                 }else{
-                    iconName = "ic_pending_marker_"+String.valueOf(routeOrder.indexOf(address)+1);
+                    iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
                 }
 
             }else{
@@ -83,19 +83,19 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
                 }
 
                 if(address.isBusiness()){
-                    iconName = "company_24_black_ic";
+                    iconName = "marker_company";
                 }else{
-                    iconName = "house_24_black2_ic";
+                    iconName = "marker_house";
                 }
             }
         }
 
         if(address.isCompleted()){
-            iconName = "ic_done_marker_"+String.valueOf(routeOrder.indexOf(address)+1);
+            iconName = "marker_done_"+String.valueOf(routeOrder.indexOf(address)+1);
         }
 
         if(address.isUserLocation()){
-            iconName = "ic_marker_origin";
+            iconName = "user_location";
         }
 
         Resources res = context.getResources();

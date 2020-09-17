@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.example.routeplanner.R;
 import com.example.routeplanner.features.container.addressDetailsFragment.AddressDetailsFragment;
 
 import java.util.Calendar;
@@ -29,6 +30,7 @@ public class DialogCreator extends DialogFragment {
 
         return new TimePickerDialog(
                 getActivity(),
+                R.style.TimePicker,
                 addressDetailsFragment,
                 hour,
                 minute,

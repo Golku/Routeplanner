@@ -362,7 +362,7 @@ public class MapController extends BaseController implements
         }else{
             googleMap.setOnMarkerClickListener(this);
         }
-        view.showOrganizingRouteLoader(organizingRoute);
+        view.disableMapBtn(organizingRoute);
     }
 
     private void driveSuccess() {
