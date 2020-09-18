@@ -436,7 +436,7 @@ public class ContainerController extends BaseController implements
             request.setDriveList(container.getDriveList());
 
             handler.postDelayed(() -> {
-                model.updateApiDriveList(request);
+                //model.updateApiDriveList(request);
                 updatingApiDriveList = false;
             }, 30000);
             updatingApiDriveList = true;
