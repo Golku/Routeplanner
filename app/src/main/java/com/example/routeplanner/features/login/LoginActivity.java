@@ -1,15 +1,11 @@
 package com.example.routeplanner.features.login;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -53,7 +49,7 @@ public class LoginActivity extends AppCompatActivity implements MvcLogin.View{
     }
 
     private void init() {
-        Utils.darkenStatusBar(this, R.color.blueLight);
+        Utils.darkenStatusBar(this, R.color.blue);
         getWindow().setNavigationBarColor(getResources().getColor(R.color.whiteGrey));
         controller = new LoginController(this);
     }

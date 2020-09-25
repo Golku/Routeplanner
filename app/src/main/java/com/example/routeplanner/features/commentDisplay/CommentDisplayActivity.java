@@ -30,7 +30,7 @@ public class CommentDisplayActivity extends AppCompatActivity {
     }
 
     private void init(){
-        Utils.darkenStatusBar(this, R.color.blueLight);
+        Utils.darkenStatusBar(this, R.color.blue);
         getWindow().setNavigationBarColor(getResources().getColor(R.color.whiteGrey));
         CommentInformation commentInformation = getIntent().getParcelableExtra("commentInformation");
         usernameTv.setText(commentInformation.getEmployeeId());

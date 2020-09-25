@@ -1,10 +1,8 @@
 package com.example.routeplanner.features.commentInput;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -48,7 +46,7 @@ public class CommentInputActivity extends AppCompatActivity implements MvcCommen
     }
 
     private void init(){
-        Utils.darkenStatusBar(this, R.color.blueLight);
+        Utils.darkenStatusBar(this, R.color.blue);
         getWindow().setNavigationBarColor(getResources().getColor(R.color.whiteGrey));
         controller = new CommentInputController(this);
         Address address = getIntent().getParcelableExtra("address");

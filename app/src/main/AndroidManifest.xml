@@ -39,7 +39,8 @@
 
         <activity android:name=".features.container.ContainerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".features.commentInput.CommentInputActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"

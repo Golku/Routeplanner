@@ -3,7 +3,6 @@ package com.example.routeplanner.features.container;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
@@ -18,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -187,7 +185,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     }
 
     private void init() {
-        Utils.darkenStatusBar(this, R.color.blueLight);
+        Utils.darkenStatusBar(this, R.color.blue);
 
         getWindow().setNavigationBarColor(getResources().getColor(R.color.white));
 
@@ -318,6 +316,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         fragmentContainer.setAdapter(containerSectionPagerAdapter);
 
         topBarWrapper.setVisibility(View.VISIBLE);
+        info_bar_wrapper.setVisibility(View.VISIBLE);
         fragmentContainer.setVisibility(View.VISIBLE);
         navBar.setVisibility(View.VISIBLE);
 
@@ -492,7 +491,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @OnClick(R.id.topBlackScreen)
     public void hideAddressDetails(){
-        Utils.darkenStatusBar(this, R.color.blueLight);
+        Utils.darkenStatusBar(this, R.color.blue);
         addressDetailsWrapper.setVisibility(View.GONE);
         topBlackScreen.setVisibility(View.GONE);
         showingDetails = false;

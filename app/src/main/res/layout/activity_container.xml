@@ -19,7 +19,7 @@
         android:background="@drawable/info_bar_wrapper_bg"
         android:elevation="5dp"
         android:paddingBottom="16dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topBarWrapper">
@@ -37,39 +37,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Last stop:"
+                android:layout_marginEnd="16dp"
+                android:text="Last stop"
                 android:textColor="@color/stGrey"
                 android:textSize="15sp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/routeEndTimeDiff_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="8dp"
                 android:textColor="@color/stGrey"
                 android:textSize="15sp"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/route_end_time"
+                app:layout_constraintBottom_toBottomOf="@+id/route_end_time"
+                app:layout_constraintEnd_toStartOf="@+id/route_end_time"
+                app:layout_constraintTop_toTopOf="@+id/route_end_time"
                 tools:text="-11:57" />
 
             <TextView
                 android:id="@+id/route_end_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
                 android:text="19:40"
                 android:textColor="@color/stGrey"
                 android:textSize="15sp"
-                app:layout_constraintBottom_toBottomOf="@+id/textView14"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView14"
-                app:layout_constraintTop_toTopOf="@+id/textView14" />
+                app:layout_constraintEnd_toEndOf="@+id/textView14"
+                app:layout_constraintStart_toStartOf="@+id/textView14"
+                app:layout_constraintTop_toBottomOf="@+id/textView14" />
         </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
@@ -252,7 +250,7 @@
         android:id="@+id/topBarWrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -261,7 +259,7 @@
             android:id="@+id/action_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blueLight"
+            android:background="@color/blue"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -386,12 +384,11 @@
         android:id="@+id/addressDetailsWrapper"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/nav_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/info_bar_wrapper">
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <fragment
@@ -472,7 +469,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="32dp"
             android:text="Add manually"
-            android:textColor="@color/blueLight"
+            android:textColor="@color/blue"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/textView2"
             app:layout_constraintStart_toStartOf="@+id/textView2"

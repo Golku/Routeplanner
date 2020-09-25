@@ -68,22 +68,12 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
 
                 if(address.isBusiness() && openingTime>0 && closingTime>0){
                     if(arrivalTime > address.getOpeningTime() && arrivalTime < address.getClosingTime()){
-
-                        if((routeOrder.indexOf(address)+1) >= 3){
-                            iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
-                        }else{
-                            iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1)+"_full";
-                        }
-
-                    }else{
-                        iconName = "marker_invalid_"+String.valueOf(routeOrder.indexOf(address)+1)+"_full";
-                    }
-                }else{
-                    if((routeOrder.indexOf(address)+1) >= 3){
                         iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
                     }else{
-                        iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1)+"_full";
+                        iconName = "marker_invalid_"+String.valueOf(routeOrder.indexOf(address)+1);
                     }
+                }else{
+                    iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
                 }
 
             }else{
@@ -93,19 +83,15 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
                 }
 
                 if(address.isBusiness()){
-                    iconName = "marker_company_full";
+                    iconName = "marker_company";
                 }else{
-                    iconName = "marker_house_full";
+                    iconName = "marker_house";
                 }
             }
         }
 
         if(address.isCompleted()){
-            if((routeOrder.indexOf(address)+1) >= 3){
-                iconName = "marker_done_"+String.valueOf(routeOrder.indexOf(address)+1);
-            }else{
-                iconName = "marker_done_"+String.valueOf(routeOrder.indexOf(address)+1)+"_full";
-            }
+            iconName = "marker_done_"+String.valueOf(routeOrder.indexOf(address)+1);
         }
 
         if(address.isUserLocation()){
