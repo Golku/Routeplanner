@@ -133,6 +133,12 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     }
 
     @Override
+    public void showOnMap() {
+        createEvent("container", "showMap", this);
+        createEvent("mapFragment", "showMarker", address, this);
+    }
+
+    @Override
     public void addCommentButtonClick() {
         view.showCommentInput(address);
     }
@@ -172,8 +178,13 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     }
 
     @Override
-    public void updatePackageCount() {
-        address.setPackageCount(address.getPackageCount()+1);
+    public void updatePackageCount(int count) {
+
+        if(address.getPackageCount()+count < 1){
+            return;
+        }
+
+        address.setPackageCount(address.getPackageCount()+count);
         view.changePackageCountTextView(String.valueOf(address.getPackageCount()));
 
         if(!addressList.contains(address.getAddress())){
@@ -223,6 +234,11 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     @Override
     public void onAddressInformationResponseFailure() {
         view.networkOperationFinish(1,"Failed to get address information");
+    }
+
+    @Override
+    public void hideAddressDetails() {
+        createEvent("container", "hideAddressDetails", this);
     }
 
     @Override

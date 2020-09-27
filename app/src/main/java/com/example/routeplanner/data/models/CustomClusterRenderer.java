@@ -41,7 +41,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
         Marker marker = getMarker(address);
 
         if(address.isFetchingDriveInfo()){
-            iconName = "hourglass";
+            iconName = "clock";
         }else{
 
             if(address.isSelected()){

@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity implements MvcLogin.View{
 
     private void init() {
         Utils.darkenStatusBar(this, R.color.blue);
-        getWindow().setNavigationBarColor(getResources().getColor(R.color.whiteGrey));
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.white));
         controller = new LoginController(this);
     }
 

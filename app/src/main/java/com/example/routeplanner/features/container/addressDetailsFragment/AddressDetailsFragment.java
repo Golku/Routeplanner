@@ -7,13 +7,11 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +51,12 @@ public class AddressDetailsFragment extends Fragment implements
     ConstraintLayout removeStopBtn;
     @BindView(R.id.subLayout)
     ConstraintLayout subLayout;
+    @BindView(R.id.workingHours_layout)
+    ConstraintLayout workingHours_layout;
+    @BindView(R.id.searchAddress)
+    ConstraintLayout showOnMapLayout;
+    @BindView(R.id.action_bar)
+    ConstraintLayout action_bar;
     @BindView(R.id.streetTextView)
     TextView streetTextView;
     @BindView(R.id.cityTextView)
@@ -81,8 +85,6 @@ public class AddressDetailsFragment extends Fragment implements
     TextView closingHoursHolder;
     @BindView(R.id.packageCount_Tv)
     TextView packageCount_Tv;
-    @BindView(R.id.added_iv)
-    ImageView added_iv;
 
 
     private final String debugTag = "debugTag";
@@ -114,10 +116,27 @@ public class AddressDetailsFragment extends Fragment implements
     private void init() {
         controller = new AddressDetailsController(this, new Session(getActivity()));
 
+        action_bar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         subLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+            }
+        });
+        workingHours_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        showOnMapLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
             }
         });
     }
@@ -126,20 +145,21 @@ public class AddressDetailsFragment extends Fragment implements
     public void updateAddressInfo(Address address, boolean newAddress) {
         recyclerView.setAdapter(null);
 
-        if(newAddress){
-            added_iv.setVisibility(View.VISIBLE);
+        if(address.isBusiness()){
+            workingHours_layout.setVisibility(View.VISIBLE);
         }else{
-            added_iv.setVisibility(View.GONE);
+            workingHours_layout.setVisibility(View.GONE);
         }
 
         streetTextView.setText(address.getStreet());
-        packageCount_Tv.setText(String.valueOf(address.getPackageCount())+" x");
+        packageCount_Tv.setText(String.valueOf(address.getPackageCount()));
 
         if(address.getPostCode().isEmpty()){
             cityTextView.setText(address.getCity());
         }else{
             cityTextView.setText(address.getPostCode() + " " + address.getCity());
         }
+
 
         changeAddressType(address);
         controller.getAddressInformation();
@@ -150,6 +170,12 @@ public class AddressDetailsFragment extends Fragment implements
         recyclerView.setAdapter(adapter);
     }
 
+    @OnClick(R.id.back_arrow_btn)
+    public void backArrow(){
+        workingHours_layout.setVisibility(View.GONE);
+        controller.hideAddressDetails();
+    }
+
     @OnClick(R.id.addressTypeImageView)
     public void typeChangeRequest() {
         addressTypeImageView.setVisibility(View.INVISIBLE);
@@ -157,39 +183,39 @@ public class AddressDetailsFragment extends Fragment implements
         controller.changeAddressType();
     }
 
-    @OnClick(R.id.packageCount_Tv)
-    public void updatePackageCount(){
-        controller.updatePackageCount();
+    @OnClick(R.id.minusBtn)
+    public void subFromPackageCount(){
+        controller.updatePackageCount(-1);
+    }
+
+    @OnClick(R.id.addBtn)
+    public void addToPackageCount(){
+        controller.updatePackageCount(1);
     }
 
     @Override
     public void changePackageCountTextView(String count) {
-        packageCount_Tv.setText(count+" x");
+        packageCount_Tv.setText(count);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void changeAddressType(Address address) {
 
         if(address.isBusiness()){
             addressTypeImageView.setImageResource(R.drawable.company);
+            workingHours_layout.setVisibility(View.VISIBLE);
             openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
             closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
-            openingHoursHolder.setVisibility(View.VISIBLE);
-            closingHoursHolder.setVisibility(View.VISIBLE);
-            openingTimeTv.setVisibility(View.VISIBLE);
-            changeOpeningTimeTv.setVisibility(View.VISIBLE);
-            closingTimeTv.setVisibility(View.VISIBLE);
-            changeClosingTimeTv.setVisibility(View.VISIBLE);
         }else{
             addressTypeImageView.setImageResource(R.drawable.house);
-            openingHoursHolder.setVisibility(View.GONE);
-            closingHoursHolder.setVisibility(View.GONE);
-            openingTimeTv.setVisibility(View.GONE);
-            changeOpeningTimeTv.setVisibility(View.GONE);
-            closingTimeTv.setVisibility(View.GONE);
-            changeClosingTimeTv.setVisibility(View.GONE);
+            workingHours_layout.setVisibility(View.GONE);
         }
+    }
+
+    @OnClick(R.id.showOnMapBtn)
+    public void onShowOnMapBtnClick(){
+        controller.hideAddressDetails();
+        controller.showOnMap();
     }
 
     @OnClick(R.id.googleSearchBtn)

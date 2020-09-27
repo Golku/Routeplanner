@@ -1,6 +1,7 @@
 package com.example.routeplanner.features.container;
 
 import com.example.routeplanner.data.api.ApiCallback;
+import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
 import com.example.routeplanner.data.pojos.api.AddressRequest;
@@ -41,7 +42,7 @@ public interface MvcContainer {
 
         void showAddressDetails();
 
-        void showNewAddressDetails();
+        void showNewAddressDetails(Address address);
 
         void hideAddressDetails();
 
@@ -70,9 +71,13 @@ public interface MvcContainer {
 
         void getUserLocation();
 
+        void showAddressDetails();
+
         void updateUserLocation(String userAddress, LatLng userLocation);
 
         void updateCommentsList();
+
+        String convertTime(int timeInMinutes);
 
         void logOut();
 

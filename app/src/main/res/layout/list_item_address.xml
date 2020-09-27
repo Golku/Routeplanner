@@ -42,7 +42,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/package_count" />
+            app:srcCompat="@drawable/box" />
 
         <TextView
             android:id="@+id/city_tv"

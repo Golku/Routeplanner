@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import com.example.routeplanner.data.models.LoadingDialog;
 import com.example.routeplanner.data.models.OptimisingDialog;
 import com.example.routeplanner.data.models.RetryDialog;
 import com.example.routeplanner.data.models.Utils;
+import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.DialogMessage;
 import com.example.routeplanner.data.pojos.Event;
 import com.example.routeplanner.data.pojos.RouteInfoHolder;
@@ -58,8 +61,6 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @BindView(R.id.container)
     ConstraintLayout container;
-    @BindView(R.id.topBlackScreen)
-    ConstraintLayout topBlackScreen;
     @BindView(R.id.action_menu_btn)
     ImageView actionMenuBtn;
     @BindView(R.id.add_stops_iv)
@@ -70,6 +71,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     ConstraintLayout loaderWrapper;
     @BindView(R.id.inputAddressComLo)
     ConstraintLayout inputAddressComLo;
+    @BindView(R.id.subLayout)
+    ConstraintLayout subLayout;
     @BindView(R.id.travel_info_wrapper)
     ConstraintLayout travel_info_wrapper;
     @BindView(R.id.company_icon_wrapper)
@@ -110,6 +113,30 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     TextView routeDistanceTv;
     @BindView(R.id.routeDurationTv)
     TextView routeDurationTv;
+    @BindView(R.id.streetTextView)
+    TextView streetTextView;
+    @BindView(R.id.cityTextView)
+    TextView cityTextView;
+    @BindView(R.id.addressTypeImageView)
+    ImageView addressTypeImageView;
+    @BindView(R.id.messageToUserTextView)
+    TextView messageToUserTextView;
+    @BindView(R.id.addCommentBtn)
+    FloatingActionButton addCommentBtn;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
+    @BindView(R.id.typeChangeProgress_pb)
+    ProgressBar typeChangeProgress_pb;
+    @BindView(R.id.opening_time_tv)
+    TextView openingTimeTv;
+    @BindView(R.id.closing_time_tv)
+    TextView closingTimeTv;
+    @BindView(R.id.opening_time_holder)
+    TextView openingHoursHolder;
+    @BindView(R.id.closing_time_holder)
+    TextView closingHoursHolder;
+    @BindView(R.id.packageCount_Tv)
+    TextView packageCount_Tv;
 
     private ContainerController controller;
 
@@ -137,6 +164,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
         add_stops_iv.setVisibility(View.GONE);
         inputText.getText().clear();
+        subLayout.setVisibility(View.GONE);
         showManualInputOption(false);
 
         if(showingDetails){
@@ -474,26 +502,55 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @Override
     public void showAddressDetails() {
-        Utils.darkenStatusBar(this, R.color.darkStatusBar);
-        topBlackScreen.setVisibility(View.VISIBLE);
-        topBlackScreen.bringToFront();
+        info_bar_wrapper.setVisibility(View.GONE);
         addressDetailsWrapper.setVisibility(View.VISIBLE);
         addressDetailsWrapper.bringToFront();
         showingDetails = true;
+    }
+
+    @OnClick(R.id.subLayout)
+    public void onNewAddressClick(){
+        InputMethodManager mgr = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        mgr.hideSoftInputFromWindow(inputText.getWindowToken(), 0);
+        subLayout.setVisibility(View.GONE);
+        add_stops_iv.setVisibility(View.VISIBLE);
+        controller.showAddressDetails();
     }
 
     @Override
-    public void showNewAddressDetails() {
-        addressDetailsWrapper.setVisibility(View.VISIBLE);
-        addressDetailsWrapper.bringToFront();
-        showingDetails = true;
+    public void showNewAddressDetails(Address address) {
+        if(address.isBusiness()){
+            addressTypeImageView.setImageResource(R.drawable.company);
+            openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
+            closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
+            openingHoursHolder.setVisibility(View.VISIBLE);
+            closingHoursHolder.setVisibility(View.VISIBLE);
+            openingTimeTv.setVisibility(View.VISIBLE);
+            closingTimeTv.setVisibility(View.VISIBLE);
+        }else{
+            addressTypeImageView.setImageResource(R.drawable.house);
+            openingHoursHolder.setVisibility(View.GONE);
+            closingHoursHolder.setVisibility(View.GONE);
+            openingTimeTv.setVisibility(View.GONE);
+            closingTimeTv.setVisibility(View.GONE);
+        }
+        streetTextView.setText(address.getStreet());
+        if(address.getPostCode().isEmpty()){
+            cityTextView.setText(address.getCity());
+        }else{
+            cityTextView.setText(address.getPostCode() + " " + address.getCity());
+        }
+        packageCount_Tv.setText(String.valueOf(address.getPackageCount())+" x");
+        subLayout.setVisibility(View.VISIBLE);
+        subLayout.bringToFront();
     }
 
-    @OnClick(R.id.topBlackScreen)
     public void hideAddressDetails(){
-        Utils.darkenStatusBar(this, R.color.blue);
         addressDetailsWrapper.setVisibility(View.GONE);
-        topBlackScreen.setVisibility(View.GONE);
+        subLayout.setVisibility(View.GONE);
+        if(!typing || !inputting){
+            info_bar_wrapper.setVisibility(View.VISIBLE);
+        }
         showingDetails = false;
     }
 

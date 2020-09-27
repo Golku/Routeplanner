@@ -106,12 +106,14 @@ public class MapController extends BaseController implements
                     .build();
         }
 
-        moveMapCamera(userLocation.getLat(), userLocation.getLng());
+        CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(userLocation.getLat(), userLocation.getLng())).zoom(12f).build();
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         getUserLocation();
     }
 
     private void moveMapCamera(double lat, double lng) {
-        CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(lat, lng)).zoom(12f).build();
+        float zoom = googleMap.getCameraPosition().zoom;
+        CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(lat, lng)).zoom(zoom).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 

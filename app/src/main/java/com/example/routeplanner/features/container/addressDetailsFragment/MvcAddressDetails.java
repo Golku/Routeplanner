@@ -50,11 +50,15 @@ public interface MvcAddressDetails {
 
         void googleLinkClick();
 
+        void hideAddressDetails();
+
+        void showOnMap();
+
         void removeStop();
 
         void addCommentButtonClick();
 
-        void updatePackageCount();
+        void updatePackageCount(int count);
 
         void eventReceived(Event event);
     }

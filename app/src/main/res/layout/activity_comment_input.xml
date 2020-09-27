@@ -52,6 +52,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="employee_name"
+        android:textStyle="bold"
         android:textColor="@color/streetDark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/action_bar" />

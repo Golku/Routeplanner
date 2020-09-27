@@ -64,6 +64,8 @@ public class ContainerController extends BaseController implements
     private boolean updatingApiDriveList;
     private boolean organizingRoute;
 
+    private Address tempNewAddress;
+
     ContainerController(MvcContainer.View view, ContainerActivity activity, Session session) {
         this.view = view;
         this.activity = activity;
@@ -191,6 +193,28 @@ public class ContainerController extends BaseController implements
     }
 
     @Override
+    public String convertTime(int timeInMinutes) {
+
+        double timeFraction = ((double)timeInMinutes) / 60;
+
+        int hour = (int) timeFraction;
+        int minute = (int) ((timeFraction - hour) * 60);
+
+        int length = String.valueOf(minute).length();
+
+        if(length == 1){
+
+            if(minute > 0){
+                return String.valueOf(hour)+":"+"0"+(String.valueOf(minute));
+            }else{
+                return String.valueOf(hour)+":"+(String.valueOf(minute)+"0");
+            }
+        }else{
+            return String.valueOf(hour)+":"+(String.valueOf(minute));
+        }
+    }
+
+    @Override
     public void updateUserLocation(String userAddress, LatLng userLocation) {
         Address address = new Address();
         address.setValid(true);
@@ -232,12 +256,18 @@ public class ContainerController extends BaseController implements
                 view.showManualInputOption(false);
             }
         }).addOnFailureListener(exception -> {
-            Log.d(debugTag, "onFailure");
+            Log.d(debugTag, "Places api failure");
             if (exception instanceof ApiException) {
                 ApiException apiException = (ApiException) exception;
                 Log.d(debugTag, "Place not found: " + apiException.getStatusCode());
             }
         });
+    }
+
+    @Override
+    public void showAddressDetails() {
+        showAddressDetails(tempNewAddress);
+        view.showAddressDetails();
     }
 
     @Override
@@ -366,7 +396,8 @@ public class ContainerController extends BaseController implements
             }
 
             createEvent("addressDetails", "addressAdded", address, this);
-            view.showNewAddressDetails();
+            view.showNewAddressDetails(address);
+            tempNewAddress = address;
             createEvent("addressFragment", "addAddress", address, this);
         }else{
             view.showDialog(address.getAddress() + " is invalid");

@@ -26,7 +26,8 @@
             android:value="AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY"/>
 
         <activity android:name=".features.splash.SplashActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,7 +36,8 @@
         </activity>
 
         <activity android:name=".features.login.LoginActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".features.container.ContainerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
@@ -44,10 +46,12 @@
 
         <activity android:name=".features.commentInput.CommentInputActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"/>
 
         <activity android:name=".features.commentDisplay.CommentDisplayActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:screenOrientation="portrait"/>
 
     </application>
 
