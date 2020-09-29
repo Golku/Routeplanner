@@ -59,7 +59,7 @@ public class AddressDetailsController extends BaseController implements MvcAddre
 
     @Override
     public void getAddressInformation() {
-        view.networkOperationStarted("Fetching address comments");
+        view.networkOperationStarted("fetching address comments");
 //        model.getAddressInformation(address, AddressDetailsController.this);
         handler.postDelayed(() -> model.getAddressInformation(address, AddressDetailsController.this), 500);
     }
@@ -218,16 +218,16 @@ public class AddressDetailsController extends BaseController implements MvcAddre
                 if(response.getAddressInformation().getCommentsCount() > 0){
                     view.networkOperationFinish(1, "");
                 }else{
-                    view.networkOperationFinish(1,"No comments");
+                    view.networkOperationFinish(1,"no comments");
                 }
 
                 view.setUpAdapter(adapter = new AddressDetailsAdapter(response.getAddressInformation(), this));
                 view.scrollToComment(response.getAddressInformation().getCommentsCount());
             }else{
-                view.networkOperationFinish(1,"No comments");
+                view.networkOperationFinish(1,"no comments");
             }
         }else{
-            view.networkOperationFinish(1,"No comments");
+            view.networkOperationFinish(1,"no comments");
         }
     }
 

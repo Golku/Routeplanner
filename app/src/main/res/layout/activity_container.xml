@@ -118,7 +118,7 @@
             app:srcCompat="@drawable/added_ic" />
 
         <TextView
-            android:id="@+id/streetTextView"
+            android:id="@+id/primaryAddressInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -132,7 +132,7 @@
             app:layout_constraintTop_toTopOf="@+id/subLayout" />
 
         <TextView
-            android:id="@+id/cityTextView"
+            android:id="@+id/secondaryAddressInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -140,7 +140,7 @@
             android:text="city"
             android:textColor="@color/streetDark"
             app:layout_constraintStart_toEndOf="@+id/addressTypeImageView"
-            app:layout_constraintTop_toBottomOf="@+id/streetTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/primaryAddressInfo" />
 
         <ImageView
             android:id="@+id/addressTypeImageView"
@@ -164,7 +164,7 @@
             android:textColor="@color/streetDark"
             android:visibility="visible"
             app:layout_constraintStart_toEndOf="@+id/addressTypeImageView"
-            app:layout_constraintTop_toBottomOf="@+id/cityTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/secondaryAddressInfo" />
 
         <TextView
             android:id="@+id/closing_time_holder"
@@ -187,7 +187,7 @@
             android:textColor="@color/streetDark"
             android:visibility="visible"
             app:layout_constraintStart_toEndOf="@+id/opening_time_holder"
-            app:layout_constraintTop_toBottomOf="@+id/cityTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/secondaryAddressInfo" />
 
         <TextView
             android:id="@+id/closing_time_tv"
@@ -459,6 +459,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
+            android:theme="@style/progressColorBlue"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

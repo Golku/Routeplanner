@@ -113,9 +113,9 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     TextView routeDistanceTv;
     @BindView(R.id.routeDurationTv)
     TextView routeDurationTv;
-    @BindView(R.id.streetTextView)
+    @BindView(R.id.primaryAddressInfo)
     TextView streetTextView;
-    @BindView(R.id.cityTextView)
+    @BindView(R.id.secondaryAddressInfo)
     TextView cityTextView;
     @BindView(R.id.addressTypeImageView)
     ImageView addressTypeImageView;

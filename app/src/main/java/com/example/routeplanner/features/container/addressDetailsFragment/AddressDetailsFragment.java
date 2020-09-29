@@ -3,6 +3,7 @@ package com.example.routeplanner.features.container.addressDetailsFragment;
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,7 +12,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,12 +58,16 @@ public class AddressDetailsFragment extends Fragment implements
     ConstraintLayout workingHours_layout;
     @BindView(R.id.searchAddress)
     ConstraintLayout showOnMapLayout;
+    @BindView(R.id.packageCount_layout)
+    ConstraintLayout packageCount_layout;
     @BindView(R.id.action_bar)
     ConstraintLayout action_bar;
-    @BindView(R.id.streetTextView)
-    TextView streetTextView;
-    @BindView(R.id.cityTextView)
-    TextView cityTextView;
+    @BindView(R.id.primaryAddressInfo)
+    TextView primaryAddressInfo;
+    @BindView(R.id.secondaryAddressInfo)
+    TextView secondaryAddressInfo;
+    @BindView(R.id.thirdAddressInfo)
+    TextView thirdAddressInfo;
     @BindView(R.id.addressTypeImageView)
     ImageView addressTypeImageView;
     @BindView(R.id.messageToUserTextView)
@@ -71,20 +78,22 @@ public class AddressDetailsFragment extends Fragment implements
     ProgressBar progressBar;
     @BindView(R.id.typeChangeProgress_pb)
     ProgressBar typeChangeProgress_pb;
-    @BindView(R.id.opening_time_tv)
-    TextView openingTimeTv;
-    @BindView(R.id.closing_time_tv)
-    TextView closingTimeTv;
-    @BindView(R.id.change_opening_time_tv)
-    TextView changeOpeningTimeTv;
-    @BindView(R.id.change_closing_time_tv)
-    TextView changeClosingTimeTv;
-    @BindView(R.id.opening_time_holder)
-    TextView openingHoursHolder;
-    @BindView(R.id.closing_time_holder)
-    TextView closingHoursHolder;
     @BindView(R.id.packageCount_Tv)
     TextView packageCount_Tv;
+    @BindView(R.id.monday)
+    TextView monday;
+    @BindView(R.id.tuesday)
+    TextView tuesday;
+    @BindView(R.id.wednesday)
+    TextView wednesday;
+    @BindView(R.id.thursday)
+    TextView thursday;
+    @BindView(R.id.friday)
+    TextView friday;
+    @BindView(R.id.saturday)
+    TextView saturday;
+    @BindView(R.id.sunday)
+    TextView sunday;
 
 
     private final String debugTag = "debugTag";
@@ -134,6 +143,11 @@ public class AddressDetailsFragment extends Fragment implements
 
             }
         });
+        packageCount_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
         showOnMapLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,22 +160,49 @@ public class AddressDetailsFragment extends Fragment implements
         recyclerView.setAdapter(null);
 
         if(address.isBusiness()){
-            workingHours_layout.setVisibility(View.VISIBLE);
-        }else{
+            addressTypeImageView.setImageResource(R.drawable.company);
+            primaryAddressInfo.setText(address.getBusinessName());
+            secondaryAddressInfo.setText(address.getStreet());
+            secondaryAddressInfo.setTextColor(ContextCompat.getColor(getActivity(), R.color.streetDark));
+            thirdAddressInfo.setVisibility(View.VISIBLE);
+            if(address.getPostCode().isEmpty()){
+                thirdAddressInfo.setText(address.getCity());
+            }else{
+                thirdAddressInfo.setText(address.getPostCode() + " " + address.getCity());
+            }
+
             workingHours_layout.setVisibility(View.GONE);
+
+            if(address.getWeekdayText().length > 0){
+                monday.setText(address.getWeekdayText()[0]);
+                tuesday.setText(address.getWeekdayText()[1]);
+                wednesday.setText(address.getWeekdayText()[2]);
+                thursday.setText(address.getWeekdayText()[3]);
+                friday.setText(address.getWeekdayText()[4]);
+                saturday.setText(address.getWeekdayText()[5]);
+                sunday.setText(address.getWeekdayText()[6]);
+                workingHours_layout.setVisibility(View.VISIBLE);
+            }
+
+        }else{
+            addressTypeImageView.setImageResource(R.drawable.house);
+            workingHours_layout.setVisibility(View.GONE);
+            thirdAddressInfo.setVisibility(View.GONE);
+
+            secondaryAddressInfo.setTextColor(ContextCompat.getColor(getActivity(), R.color.greyDot));
+
+            primaryAddressInfo.setText(address.getStreet());
+            if(address.getPostCode().isEmpty()){
+                secondaryAddressInfo.setText(address.getCity());
+            }else{
+                secondaryAddressInfo.setText(address.getPostCode() + " " + address.getCity());
+            }
+
         }
 
-        streetTextView.setText(address.getStreet());
         packageCount_Tv.setText(String.valueOf(address.getPackageCount()));
 
-        if(address.getPostCode().isEmpty()){
-            cityTextView.setText(address.getCity());
-        }else{
-            cityTextView.setText(address.getPostCode() + " " + address.getCity());
-        }
-
-
-        changeAddressType(address);
+//        changeAddressType(address);
         controller.getAddressInformation();
     }
 
@@ -176,7 +217,7 @@ public class AddressDetailsFragment extends Fragment implements
         controller.hideAddressDetails();
     }
 
-    @OnClick(R.id.addressTypeImageView)
+    //@OnClick(R.id.addressTypeImageView)
     public void typeChangeRequest() {
         addressTypeImageView.setVisibility(View.INVISIBLE);
         typeChangeProgress_pb.setVisibility(View.VISIBLE);
@@ -203,12 +244,10 @@ public class AddressDetailsFragment extends Fragment implements
 
         if(address.isBusiness()){
             addressTypeImageView.setImageResource(R.drawable.company);
-            workingHours_layout.setVisibility(View.VISIBLE);
-            openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
-            closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
+//            openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
+//            closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
         }else{
             addressTypeImageView.setImageResource(R.drawable.house);
-            workingHours_layout.setVisibility(View.GONE);
         }
     }
 
@@ -223,7 +262,7 @@ public class AddressDetailsFragment extends Fragment implements
         controller.googleLinkClick();
     }
 
-    @OnClick(R.id.change_opening_time_tv)
+//    @OnClick(R.id.change_opening_time_tv)
     public void onChangeOpeningHoursClick(){
 
         if(((MyApplication) getActivity().getApplication()).isOrganizing()){
@@ -236,7 +275,7 @@ public class AddressDetailsFragment extends Fragment implements
         timePicker.show(getActivity().getSupportFragmentManager(), "Time Picker");
     }
 
-    @OnClick(R.id.change_closing_time_tv)
+//    @OnClick(R.id.change_closing_time_tv)
     public void onOChangeClosingHoursClick(){
 
         if(((MyApplication) getActivity().getApplication()).isOrganizing()){
@@ -262,11 +301,11 @@ public class AddressDetailsFragment extends Fragment implements
 
         String timeString = controller.convertTime(timeInMinutes);
 
-        switch (workingHours){
-            case "open" : openingTimeTv.setText(timeString);
-                break;
-            case "close" : closingTimeTv.setText(timeString);
-        }
+//        switch (workingHours){
+//            case "open" : openingTimeTv.setText(timeString);
+//                break;
+//            case "close" : closingTimeTv.setText(timeString);
+//        }
         controller.changeOpeningHours(hourOfDay, minute, workingHours);
     }
 
@@ -286,7 +325,12 @@ public class AddressDetailsFragment extends Fragment implements
     }
     @Override
     public void showAddressInGoogle(Address address) {
-        String url = "http://www.google.com/search?q=" + address.getStreet() + " " + address.getCity();
+        String url = "";
+        if(address.isBusiness()){
+            url = "http://www.google.com/search?q=" + address.getBusinessName()+ " " +address.getStreet() + " " + address.getCity();
+        }else{
+            url = "http://www.google.com/search?q=" + address.getStreet() + " " + address.getCity();
+        }
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         startActivity(intent);

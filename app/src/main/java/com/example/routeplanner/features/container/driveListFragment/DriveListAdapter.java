@@ -3,7 +3,6 @@ package com.example.routeplanner.features.container.driveListFragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.constraint.ConstraintLayout;
@@ -135,8 +134,8 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         CustomViewHolder(View itemView) {
             super(itemView);
             this.positionTextView = itemView.findViewById(R.id.positionTextView);
-            this.streetTextView = itemView.findViewById(R.id.streetTextView);
-            this.cityTextView = itemView.findViewById(R.id.cityTextView);
+            this.streetTextView = itemView.findViewById(R.id.primaryAddressInfo);
+            this.cityTextView = itemView.findViewById(R.id.secondaryAddressInfo);
             this.distanceTextView = itemView.findViewById(R.id.distanceTextView);
             this.durationTextView = itemView.findViewById(R.id.durationTextView);
             this.estimatedArrivalTime = itemView.findViewById(R.id.estimatedArrivalTimeTextView);

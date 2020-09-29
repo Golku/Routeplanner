@@ -88,11 +88,11 @@ public class MapController extends BaseController implements
         googleMap.setOnInfoWindowClickListener(this);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-        clusterManager.addItem(userLocation);
+//        clusterManager.addItem(userLocation);
 
         for (Address address : addressList) {
             if (address.isValid()) {
-                clusterManager.addItem(address);
+//                clusterManager.addItem(address);
             }
         }
 

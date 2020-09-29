@@ -18,6 +18,8 @@ public class Address implements Parcelable, ClusterItem {
     private double lng;
     private int packageCount;
     private boolean business;
+    private String businessName;
+    private String[] weekdayText;
     private int openingTime;
     private int closingTime;
     private boolean userLocation;
@@ -39,37 +41,14 @@ public class Address implements Parcelable, ClusterItem {
         lng = in.readDouble();
         packageCount = in.readInt();
         business = in.readByte() != 0;
+        businessName = in.readString();
+        weekdayText = in.createStringArray();
         openingTime = in.readInt();
         closingTime = in.readInt();
         userLocation = in.readByte() != 0;
         selected = in.readByte() != 0;
         completed = in.readByte() != 0;
         fetchingDriveInfo = in.readByte() != 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeByte((byte) (valid ? 1 : 0));
-        dest.writeString(address);
-        dest.writeString(street);
-        dest.writeString(postCode);
-        dest.writeString(city);
-        dest.writeString(country);
-        dest.writeDouble(lat);
-        dest.writeDouble(lng);
-        dest.writeInt(packageCount);
-        dest.writeByte((byte) (business ? 1 : 0));
-        dest.writeInt(openingTime);
-        dest.writeInt(closingTime);
-        dest.writeByte((byte) (userLocation ? 1 : 0));
-        dest.writeByte((byte) (selected ? 1 : 0));
-        dest.writeByte((byte) (completed ? 1 : 0));
-        dest.writeByte((byte) (fetchingDriveInfo ? 1 : 0));
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     public static final Creator<Address> CREATOR = new Creator<Address>() {
@@ -164,6 +143,22 @@ public class Address implements Parcelable, ClusterItem {
         this.business = business;
     }
 
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
+    public String[] getWeekdayText() {
+        return weekdayText;
+    }
+
+    public void setWeekdayText(String[] weekdayText) {
+        this.weekdayText = weekdayText;
+    }
+
     public int getOpeningTime() {
         return openingTime;
     }
@@ -213,13 +208,40 @@ public class Address implements Parcelable, ClusterItem {
     }
 
     @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeByte((byte) (valid ? 1 : 0));
+        dest.writeString(address);
+        dest.writeString(street);
+        dest.writeString(postCode);
+        dest.writeString(city);
+        dest.writeString(country);
+        dest.writeDouble(lat);
+        dest.writeDouble(lng);
+        dest.writeInt(packageCount);
+        dest.writeByte((byte) (business ? 1 : 0));
+        dest.writeString(businessName);
+        dest.writeStringArray(weekdayText);
+        dest.writeInt(openingTime);
+        dest.writeInt(closingTime);
+        dest.writeByte((byte) (userLocation ? 1 : 0));
+        dest.writeByte((byte) (selected ? 1 : 0));
+        dest.writeByte((byte) (completed ? 1 : 0));
+        dest.writeByte((byte) (fetchingDriveInfo ? 1 : 0));
+    }
+
+    @Override
     public LatLng getPosition() {
-        return new LatLng(getLat(), getLng());
+        return null;
     }
 
     @Override
     public String getTitle() {
-        return getAddress();
+        return null;
     }
 
     @Override
