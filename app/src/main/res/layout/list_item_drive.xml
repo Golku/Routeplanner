@@ -74,7 +74,7 @@
             android:id="@+id/secondaryAddressInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="city"
@@ -87,13 +87,13 @@
             android:id="@+id/distanceTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"
             android:text="5 km"
             android:textColor="@color/greyPlace"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/secondaryAddressInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/thirdAddressInfo" />
 
         <TextView
             android:id="@+id/primaryAddressInfo"
@@ -110,26 +110,37 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/thirdAddressInfo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="TextView"
+            android:textColor="@color/greyDot"
+            app:layout_constraintEnd_toStartOf="@+id/goIvWrapper"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/secondaryAddressInfo" />
+
+        <TextView
             android:id="@+id/durationTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:text="15 min"
             android:textColor="@color/greyPlace"
             app:layout_constraintStart_toEndOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/secondaryAddressInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/thirdAddressInfo" />
 
         <TextView
             android:id="@+id/estimatedArrivalTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:text="ETA 16:20"
             android:textColor="@color/greyPlace"
             app:layout_constraintStart_toEndOf="@+id/textView7"
-            app:layout_constraintTop_toBottomOf="@+id/secondaryAddressInfo" />
+            app:layout_constraintTop_toBottomOf="@+id/thirdAddressInfo" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/goIvWrapper"

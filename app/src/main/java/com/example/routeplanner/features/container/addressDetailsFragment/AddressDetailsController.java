@@ -3,7 +3,6 @@ package com.example.routeplanner.features.container.addressDetailsFragment;
 import android.os.Handler;
 import android.util.Log;
 import com.example.routeplanner.data.database.DatabaseCallback;
-import com.example.routeplanner.data.database.DatabaseService;
 import com.example.routeplanner.data.pojos.Address;
 import com.example.routeplanner.data.pojos.CommentInformation;
 import com.example.routeplanner.data.pojos.Event;
@@ -13,15 +12,10 @@ import com.example.routeplanner.data.pojos.database.AddressInformationResponse;
 import com.example.routeplanner.data.pojos.database.AddressTypeResponse;
 import com.example.routeplanner.features.shared.BaseController;
 import com.example.routeplanner.features.shared.MvcBaseController;
-import com.example.routeplanner.features.splash.SplashActivity;
-import com.google.gson.Gson;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AddressDetailsController extends BaseController implements MvcAddressDetails.Controller,
         MvcBaseController,
@@ -65,6 +59,13 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     }
 
     @Override
+    public void updateBusinessName(String name) {
+        address.setChosenBusinessName(name);
+        view.updateOpeningHours(address);
+        createEvent("addressFragment" ,"updateAddressList", this);
+    }
+
+    @Override
     public String convertTime(int timeInMinutes) {
 
         double timeFraction = ((double)timeInMinutes) / 60;
@@ -95,31 +96,31 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     @Override
     public void changeOpeningHours(int hourOfDay, int minute, String workingHours) {
 
-        Log.d(debugTag, "WorkingHours: " + workingHours);
-        Log.d(debugTag, "HourOfDay: " + workingHours);
-        Log.d(debugTag, "Minute: " + workingHours);
-
-        int timeInMinutes = ((hourOfDay*60)+minute);
-        Log.d(debugTag, "TimeInMinutes: " + timeInMinutes);
-        Event event = new Event();
-
-        switch (workingHours){
-            case "open" :
-                address.setOpeningTime(timeInMinutes);
-                model.changeOpeningTime(address, timeInMinutes);
-                event.setReceiver("addressFragment");
-                event.setEventName("openingTimeChange");
-                event.setAddress(address);
-                break;
-            case "close" :
-                address.setClosingTime(timeInMinutes);
-                model.changeClosingTime(address, timeInMinutes);
-                event.setReceiver("addressFragment");
-                event.setEventName("closingTimeChange");
-                event.setAddress(address);
-                break;
-        }
-        EventBus.getDefault().post(event);
+//        Log.d(debugTag, "WorkingHours: " + workingHours);
+//        Log.d(debugTag, "HourOfDay: " + workingHours);
+//        Log.d(debugTag, "Minute: " + workingHours);
+//
+//        int timeInMinutes = ((hourOfDay*60)+minute);
+//        Log.d(debugTag, "TimeInMinutes: " + timeInMinutes);
+//        Event event = new Event();
+//
+//        switch (workingHours){
+//            case "open" :
+//                address.setOpeningTime(timeInMinutes);
+//                model.changeOpeningTime(address, timeInMinutes);
+//                event.setReceiver("addressFragment");
+//                event.setEventName("openingTimeChange");
+//                event.setAddress(address);
+//                break;
+//            case "close" :
+//                address.setClosingTime(timeInMinutes);
+//                model.changeClosingTime(address, timeInMinutes);
+//                event.setReceiver("addressFragment");
+//                event.setEventName("closingTimeChange");
+//                event.setAddress(address);
+//                break;
+//        }
+//        EventBus.getDefault().post(event);
     }
 
     @Override
@@ -212,22 +213,17 @@ public class AddressDetailsController extends BaseController implements MvcAddre
     @Override
     public void onAddressInformationResponse(AddressInformationResponse response) {
 
-        if (response.isInformationAvailable()) {
-            if (response.getAddressInformation() != null) {
-
-                if(response.getAddressInformation().getCommentsCount() > 0){
-                    view.networkOperationFinish(1, "");
-                }else{
-                    view.networkOperationFinish(1,"no comments");
-                }
-
-                view.setUpAdapter(adapter = new AddressDetailsAdapter(response.getAddressInformation(), this));
-                view.scrollToComment(response.getAddressInformation().getCommentsCount());
-            }else{
-                view.networkOperationFinish(1,"no comments");
+        if (response.getNotes() != null) {
+            if (response.getNotes().getNotesCount() > 0) {
+                view.networkOperationFinish(1, "");
+            } else {
+                view.networkOperationFinish(1, "no comments");
             }
-        }else{
-            view.networkOperationFinish(1,"no comments");
+
+            view.setUpAdapter(adapter = new AddressDetailsAdapter(response.getNotes(), this));
+//            view.scrollToComment(response.getNotes().getNotesCount());
+        } else {
+            view.networkOperationFinish(1, "no comments");
         }
     }
 
@@ -243,29 +239,29 @@ public class AddressDetailsController extends BaseController implements MvcAddre
 
     @Override
     public void typeChangeResponse(AddressTypeResponse response) {
-        if (!response.isError()) {
-
-            if (address.isBusiness()) {
-                address.setBusiness(false);
-            } else {
-                address.setBusiness(true);
-
-                if(address.getOpeningTime() == 0){
-                    address.setOpeningTime(480);
-                }
-
-                if(address.getClosingTime() == 0){
-                    address.setClosingTime(1020);
-                }
-            }
-
-            createEvent("all", "addressTypeChange", this.address, this);
-        }else{
-            view.showToast("Failed to change address type, please try again");
-        }
-
-        view.changeAddressType(address);
-        view.networkOperationFinish(2, "");
+//        if (!response.isError()) {
+//
+//            if (address.isBusiness()) {
+//                address.setBusiness(false);
+//            } else {
+//                address.setBusiness(true);
+//
+//                if(address.getOpeningTime() == 0){
+//                    address.setOpeningTime(480);
+//                }
+//
+//                if(address.getClosingTime() == 0){
+//                    address.setClosingTime(1020);
+//                }
+//            }
+//
+//            createEvent("all", "addressTypeChange", this.address, this);
+//        }else{
+//            view.showToast("Failed to change address type, please try again");
+//        }
+//
+//        view.changeAddressType(address);
+//        view.networkOperationFinish(2, "");
     }
 
     @Override

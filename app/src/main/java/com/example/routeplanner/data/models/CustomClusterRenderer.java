@@ -46,35 +46,35 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<Address> {
 
             if(address.isSelected()){
 
-                int arrivalTime = 0;
-                int openingTime = address.getOpeningTime();
-                int closingTime = address.getClosingTime();
+//                int arrivalTime = 0;
+//                int openingTime = address.getOpeningTime();
+//                int closingTime = address.getClosingTime();
 
-                for(Drive drive : driveList){
+//                for(Drive drive : driveList){
+//
+//                    if(drive.getDestinationAddress().getAddress().equals(address.getAddress())){
+//
+//                        String[] deliveryTime = drive.getDeliveryTimeHumanReadable().split(":");
+//                        String hourString = deliveryTime[0];
+//                        String minuteString = deliveryTime[1];
+//
+//                        int hour = Integer.parseInt(hourString);
+//                        int minute = Integer.parseInt(minuteString);
+//
+//                        arrivalTime = (hour*60) + minute;
+//
+//                    }
+//                }
 
-                    if(drive.getDestinationAddress().getAddress().equals(address.getAddress())){
-
-                        String[] deliveryTime = drive.getDeliveryTimeHumanReadable().split(":");
-                        String hourString = deliveryTime[0];
-                        String minuteString = deliveryTime[1];
-
-                        int hour = Integer.parseInt(hourString);
-                        int minute = Integer.parseInt(minuteString);
-
-                        arrivalTime = (hour*60) + minute;
-
-                    }
-                }
-
-                if(address.isBusiness() && openingTime>0 && closingTime>0){
-                    if(arrivalTime > address.getOpeningTime() && arrivalTime < address.getClosingTime()){
-                        iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
-                    }else{
-                        iconName = "marker_invalid_"+String.valueOf(routeOrder.indexOf(address)+1);
-                    }
-                }else{
+//                if(address.isBusiness() && openingTime>0 && closingTime>0){
+//                    if(arrivalTime > address.getOpeningTime() && arrivalTime < address.getClosingTime()){
+//                        iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
+//                    }else{
+//                        iconName = "marker_invalid_"+String.valueOf(routeOrder.indexOf(address)+1);
+//                    }
+//                }else{
                     iconName = "marker_pending_"+String.valueOf(routeOrder.indexOf(address)+1);
-                }
+//                }
 
             }else{
 

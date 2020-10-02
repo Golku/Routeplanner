@@ -18,8 +18,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -50,6 +53,8 @@ public class AddressDetailsFragment extends Fragment implements
 
     @BindView(R.id.addressCommentsList)
     RecyclerView recyclerView;
+    @BindView(R.id.businessNamesSpinner)
+    Spinner businessNamesSpinner;
     @BindView(R.id.removeStopBtn)
     ConstraintLayout removeStopBtn;
     @BindView(R.id.subLayout)
@@ -153,6 +158,36 @@ public class AddressDetailsFragment extends Fragment implements
             public void onClick(View v) {
             }
         });
+
+        businessNamesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                controller.updateBusinessName(businessNamesSpinner.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+    }
+
+    @Override
+    public void updateOpeningHours(Address address) {
+        String businessName = address.getChosenBusinessName();
+        if(address.getWeekdayText().get(businessName) != null){
+            monday.setText(address.getWeekdayText().get(businessName)[0]);
+            tuesday.setText(address.getWeekdayText().get(businessName)[1]);
+            wednesday.setText(address.getWeekdayText().get(businessName)[2]);
+            thursday.setText(address.getWeekdayText().get(businessName)[3]);
+            friday.setText(address.getWeekdayText().get(businessName)[4]);
+            saturday.setText(address.getWeekdayText().get(businessName)[5]);
+            sunday.setText(address.getWeekdayText().get(businessName)[6]);
+            workingHours_layout.setVisibility(View.VISIBLE);
+        }else{
+            workingHours_layout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -160,8 +195,9 @@ public class AddressDetailsFragment extends Fragment implements
         recyclerView.setAdapter(null);
 
         if(address.isBusiness()){
+            String businessName = address.getChosenBusinessName();
             addressTypeImageView.setImageResource(R.drawable.company);
-            primaryAddressInfo.setText(address.getBusinessName());
+            primaryAddressInfo.setText(businessName);
             secondaryAddressInfo.setText(address.getStreet());
             secondaryAddressInfo.setTextColor(ContextCompat.getColor(getActivity(), R.color.streetDark));
             thirdAddressInfo.setVisibility(View.VISIBLE);
@@ -173,19 +209,32 @@ public class AddressDetailsFragment extends Fragment implements
 
             workingHours_layout.setVisibility(View.GONE);
 
-            if(address.getWeekdayText().length > 0){
-                monday.setText(address.getWeekdayText()[0]);
-                tuesday.setText(address.getWeekdayText()[1]);
-                wednesday.setText(address.getWeekdayText()[2]);
-                thursday.setText(address.getWeekdayText()[3]);
-                friday.setText(address.getWeekdayText()[4]);
-                saturday.setText(address.getWeekdayText()[5]);
-                sunday.setText(address.getWeekdayText()[6]);
+            if(address.getWeekdayText().get(businessName) != null){
+                monday.setText(address.getWeekdayText().get(businessName)[0]);
+                tuesday.setText(address.getWeekdayText().get(businessName)[1]);
+                wednesday.setText(address.getWeekdayText().get(businessName)[2]);
+                thursday.setText(address.getWeekdayText().get(businessName)[3]);
+                friday.setText(address.getWeekdayText().get(businessName)[4]);
+                saturday.setText(address.getWeekdayText().get(businessName)[5]);
+                sunday.setText(address.getWeekdayText().get(businessName)[6]);
                 workingHours_layout.setVisibility(View.VISIBLE);
             }
 
+            if(address.getBusinessName().size() > 1){
+                ArrayAdapter<String> businessNameAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, address.getBusinessName());
+                businessNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+                businessNamesSpinner.setAdapter(businessNameAdapter);
+                primaryAddressInfo.setVisibility(View.INVISIBLE);
+                businessNamesSpinner.setVisibility(View.VISIBLE);
+                businessNamesSpinner.setSelection(address.getBusinessName().indexOf(businessName));
+            }else{
+                primaryAddressInfo.setVisibility(View.VISIBLE);
+                businessNamesSpinner.setVisibility(View.GONE);
+            }
         }else{
             addressTypeImageView.setImageResource(R.drawable.house);
+            primaryAddressInfo.setVisibility(View.VISIBLE);
+            businessNamesSpinner.setVisibility(View.GONE);
             workingHours_layout.setVisibility(View.GONE);
             thirdAddressInfo.setVisibility(View.GONE);
 
@@ -327,7 +376,7 @@ public class AddressDetailsFragment extends Fragment implements
     public void showAddressInGoogle(Address address) {
         String url = "";
         if(address.isBusiness()){
-            url = "http://www.google.com/search?q=" + address.getBusinessName()+ " " +address.getStreet() + " " + address.getCity();
+            url = "http://www.google.com/search?q=" + address.getChosenBusinessName()+ " " +address.getStreet() + " " + address.getCity();
         }else{
             url = "http://www.google.com/search?q=" + address.getStreet() + " " + address.getCity();
         }

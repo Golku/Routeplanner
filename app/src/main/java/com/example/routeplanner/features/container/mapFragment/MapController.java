@@ -88,11 +88,11 @@ public class MapController extends BaseController implements
         googleMap.setOnInfoWindowClickListener(this);
         googleMap.getUiSettings().setMapToolbarEnabled(false);
 
-//        clusterManager.addItem(userLocation);
+        clusterManager.addItem(userLocation);
 
         for (Address address : addressList) {
             if (address.isValid()) {
-//                clusterManager.addItem(address);
+                clusterManager.addItem(address);
             }
         }
 
@@ -390,53 +390,53 @@ public class MapController extends BaseController implements
 
 //        Log.d(debugTag, "calculateDirections from: " + previousSelectedAddress.getAddress() + " to " + currentAddress.getAddress());
 
-        com.google.maps.model.LatLng origin = new com.google.maps.model.LatLng(
-                previousSelectedAddress.getLat(),
-                previousSelectedAddress.getLng()
-        );
-
-        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
-                currentAddress.getLat(),
-                currentAddress.getLng()
-        );
-
-        DirectionsApiRequest directions = new DirectionsApiRequest(geoApiContext);
-        directions.origin(origin);
-        directions.destination(destination);
-        directions.alternatives(false);
-
-        directions.setCallback(new PendingResult.Callback<DirectionsResult>() {
-            @Override
-            public void onResult(DirectionsResult result) {
+//        com.google.maps.model.LatLng origin = new com.google.maps.model.LatLng(
+//                previousSelectedAddress.getLat(),
+//                previousSelectedAddress.getLng()
+//        );
+//
+//        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
+//                currentAddress.getLat(),
+//                currentAddress.getLng()
+//        );
+//
+//        DirectionsApiRequest directions = new DirectionsApiRequest(geoApiContext);
+//        directions.origin(origin);
+//        directions.destination(destination);
+//        directions.alternatives(false);
+//
+//        directions.setCallback(new PendingResult.Callback<DirectionsResult>() {
+//            @Override
+//            public void onResult(DirectionsResult result) {
 //                Log.d(debugTag, "calculateDirections: routes: " + result.routes[0].toString());
 //                Log.d(debugTag, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
 //                Log.d(debugTag, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
 //                Log.d(debugTag, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
-
-                for (DirectionsRoute route : result.routes) {
-                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
-
-                    List<LatLng> newDecodedPath = new ArrayList<>();
-
-                    // This loops through all the LatLng coordinates of ONE polyline.
-                    for (com.google.maps.model.LatLng latLng : decodedPath) {
-
-                        newDecodedPath.add(new LatLng(
-                                latLng.lat,
-                                latLng.lng
-                        ));
-                    }
-
-                    view.addPolylineToMap(newDecodedPath, googleMap);
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable e) {
-                Log.e(debugTag, "calculateDirections: Failed to get directions: " + e.getMessage() );
-
-            }
-        });
+//
+//                for (DirectionsRoute route : result.routes) {
+//                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+//
+//                    List<LatLng> newDecodedPath = new ArrayList<>();
+//
+//                    // This loops through all the LatLng coordinates of ONE polyline.
+//                    for (com.google.maps.model.LatLng latLng : decodedPath) {
+//
+//                        newDecodedPath.add(new LatLng(
+//                                latLng.lat,
+//                                latLng.lng
+//                        ));
+//                    }
+//
+//                    view.addPolylineToMap(newDecodedPath, googleMap);
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable e) {
+//                Log.e(debugTag, "calculateDirections: Failed to get directions: " + e.getMessage() );
+//
+//            }
+//        });
     }
 
     @Override
@@ -474,14 +474,14 @@ public class MapController extends BaseController implements
     }
 
     private void driveCompleted(Address address) {
-        for (Address it: routeOrder) {
-            if (it.getAddress().equals(address.getAddress())) {
-                it.setCompleted(true);
-                removePolyline(address.getAddress());
-                view.updatePolyline(polylineHashMap.get(routeOrder.get(routeOrder.indexOf(it)+1).getAddress()));
-                renderer.changeMarkerIcon(it);
-                break;
-            }
-        }
+//        for (Address it: routeOrder) {
+//            if (it.getAddress().equals(address.getAddress())) {
+//                it.setCompleted(true);
+//                removePolyline(address.getAddress());
+//                view.updatePolyline(polylineHashMap.get(routeOrder.get(routeOrder.indexOf(it)+1).getAddress()));
+//                renderer.changeMarkerIcon(it);
+//                break;
+//            }
+//        }
     }
 }

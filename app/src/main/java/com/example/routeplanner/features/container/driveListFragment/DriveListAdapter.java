@@ -3,6 +3,7 @@ package com.example.routeplanner.features.container.driveListFragment;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.constraint.ConstraintLayout;
@@ -61,16 +62,37 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
 
         Drive drive = driveList.get(position);
 
+        holder.positionTextView.setText(String.valueOf(position+1));
+
         if(driveList.indexOf(drive) > 0){
             holder.drive_info_wrapper.setBackgroundResource(R.drawable.list_item_bg);
         }
 
-        String city;
+        Address address = drive.getDestinationAddress();
 
-        if(drive.getDestinationAddress().getPostCode().isEmpty()){
-            city = drive.getDestinationAddress().getCity();
-        }else{
-            city = drive.getDestinationAddress().getPostCode() + " " + drive.getDestinationAddress().getCity();
+        if (address.isBusiness()) {
+            holder.addressType.setImageResource(R.drawable.company);
+            holder.primaryAddressInfo.setText(address.getChosenBusinessName());
+            holder.secondaryAddressInfo.setText(address.getStreet());
+            holder.secondaryAddressInfo.setTextColor(Color.parseColor("#1f2022"));
+            holder.thirdAddressInfo.setVisibility(View.VISIBLE);
+            if (address.getPostCode().isEmpty()) {
+                holder.thirdAddressInfo.setText(address.getCity());
+            } else {
+                holder.thirdAddressInfo.setText(address.getPostCode() + " " + address.getCity());
+            }
+        } else {
+            holder.addressType.setImageResource(R.drawable.house);
+            holder.thirdAddressInfo.setVisibility(View.GONE);
+
+            holder.secondaryAddressInfo.setTextColor(Color.parseColor("#777778"));
+
+            holder.primaryAddressInfo.setText(address.getStreet());
+            if (address.getPostCode().isEmpty()) {
+                holder.secondaryAddressInfo.setText(address.getCity());
+            } else {
+                holder.secondaryAddressInfo.setText(address.getPostCode() + " " + address.getCity());
+            }
         }
 
         String distance = drive.getDriveDistanceHumanReadable();
@@ -78,19 +100,10 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         String arrivalTime = "ETA "+drive.getDeliveryTimeHumanReadable();
         String timeDifference = drive.getTimeDiffString();
 
-        holder.positionTextView.setText(String.valueOf(driveList.indexOf(drive)+1));
-        holder.streetTextView.setText(drive.getDestinationAddress().getStreet());
-        holder.cityTextView.setText(city);
         holder.distanceTextView.setText(distance);
         holder.durationTextView.setText(duration);
         holder.estimatedArrivalTime.setText(arrivalTime);
         holder.timeDiff.setText(timeDifference);
-
-        if(drive.isDestinationIsABusiness()){
-            holder.addressType.setImageResource(R.drawable.company);
-        }else{
-            holder.addressType.setImageResource(R.drawable.house);
-        }
 
         if(drive.getDone() == 1){
             holder.itemView.setAlpha(0.5f);
@@ -118,8 +131,9 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
     class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView positionTextView;
-        private TextView streetTextView;
-        private TextView cityTextView;
+        private TextView primaryAddressInfo;
+        private TextView secondaryAddressInfo;
+        private TextView thirdAddressInfo;
         private TextView distanceTextView;
         private TextView durationTextView;
         private TextView estimatedArrivalTime;
@@ -134,8 +148,9 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         CustomViewHolder(View itemView) {
             super(itemView);
             this.positionTextView = itemView.findViewById(R.id.positionTextView);
-            this.streetTextView = itemView.findViewById(R.id.primaryAddressInfo);
-            this.cityTextView = itemView.findViewById(R.id.secondaryAddressInfo);
+            this.primaryAddressInfo = itemView.findViewById(R.id.primaryAddressInfo);
+            this.secondaryAddressInfo = itemView.findViewById(R.id.secondaryAddressInfo);
+            this.thirdAddressInfo = itemView.findViewById(R.id.thirdAddressInfo);
             this.distanceTextView = itemView.findViewById(R.id.distanceTextView);
             this.durationTextView = itemView.findViewById(R.id.durationTextView);
             this.estimatedArrivalTime = itemView.findViewById(R.id.estimatedArrivalTimeTextView);

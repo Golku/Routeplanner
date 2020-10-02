@@ -4,14 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,27 +68,33 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
             holder.address_info_wrapper.setBackgroundResource(R.drawable.list_item_bg);
         }
 
-        if(address.isValid()){
-            holder.streetTv.setText(address.getStreet());
 
-            if(address.getPostCode().isEmpty()){
-                holder.cityTv.setText(address.getCity());
-            }else{
-                holder.cityTv.setText(address.getPostCode() +" "+ address.getCity());
+        if (address.isBusiness()) {
+            holder.addressType.setImageResource(R.drawable.company);
+            holder.primaryAddressInfo.setText(address.getChosenBusinessName());
+            holder.secondaryAddressInfo.setText(address.getStreet());
+            holder.secondaryAddressInfo.setTextColor(Color.parseColor("#1f2022"));
+            holder.thirdAddressInfo.setVisibility(View.VISIBLE);
+            if (address.getPostCode().isEmpty()) {
+                holder.thirdAddressInfo.setText(address.getCity());
+            } else {
+                holder.thirdAddressInfo.setText(address.getPostCode() + " " + address.getCity());
             }
+        } else {
+            holder.addressType.setImageResource(R.drawable.house);
+            holder.thirdAddressInfo.setVisibility(View.GONE);
 
-            holder.packageCountTv.setText(String.valueOf(address.getPackageCount()) + " x");
+            holder.secondaryAddressInfo.setTextColor(Color.parseColor("#777778"));
 
-            if(address.isBusiness()){
-                holder.addressType.setImageResource(R.drawable.company);
-            }else{
-                holder.addressType.setImageResource(R.drawable.house);
+            holder.primaryAddressInfo.setText(address.getStreet());
+            if (address.getPostCode().isEmpty()) {
+                holder.secondaryAddressInfo.setText(address.getCity());
+            } else {
+                holder.secondaryAddressInfo.setText(address.getPostCode() + " " + address.getCity());
             }
-
-        }else{
-            holder.streetTv.setText(address.getAddress());
         }
 
+        holder.packageCountTv.setText(String.valueOf(address.getPackageCount() + " x"));
     }
 
     @Override
@@ -99,8 +106,9 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
 
         private ViewGroup itemWrapper;
         private ConstraintLayout address_info_wrapper;
-        private TextView streetTv;
-        private TextView cityTv;
+        private TextView primaryAddressInfo;
+        private TextView secondaryAddressInfo;
+        private TextView thirdAddressInfo;
         private TextView packageCountTv;
         private ImageView addressType;
 
@@ -108,8 +116,9 @@ public class AddressListAdapter extends RecyclerView.Adapter<AddressListAdapter.
             super(itemView);
             itemWrapper = itemView.findViewById(R.id.item_wrapper);
             address_info_wrapper = itemView.findViewById(R.id.address_info_wrapper);
-            streetTv = itemView.findViewById(R.id.street_tv);
-            cityTv = itemView.findViewById(R.id.city_tv);
+            primaryAddressInfo = itemView.findViewById(R.id.primaryAddressInfo);
+            secondaryAddressInfo = itemView.findViewById(R.id.secondaryAddressInfo);
+            thirdAddressInfo = itemView.findViewById(R.id.thirdAddressInfo);
             packageCountTv = itemView.findViewById(R.id.packageCount_tv);
             addressType = itemView.findViewById(R.id.address_type_iv);
             itemWrapper.setOnClickListener(this);

@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -87,6 +88,8 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     BottomNavigationView navBar;
     @BindView(R.id.snack_bar_container)
     CoordinatorLayout snackBarContainer;
+    @BindView(R.id.workingHours_layout)
+    ConstraintLayout workingHours_layout;
     @BindView(R.id.fragment_container)
     ViewPager fragmentContainer;
     @BindView(R.id.route_end_time)
@@ -114,9 +117,11 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @BindView(R.id.routeDurationTv)
     TextView routeDurationTv;
     @BindView(R.id.primaryAddressInfo)
-    TextView streetTextView;
+    TextView primaryAddressInfo;
     @BindView(R.id.secondaryAddressInfo)
-    TextView cityTextView;
+    TextView secondaryAddressInfo;
+    @BindView(R.id.thirdAddressInfo)
+    TextView thirdAddressInfo;
     @BindView(R.id.addressTypeImageView)
     ImageView addressTypeImageView;
     @BindView(R.id.messageToUserTextView)
@@ -127,14 +132,20 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     ProgressBar progressBar;
     @BindView(R.id.typeChangeProgress_pb)
     ProgressBar typeChangeProgress_pb;
-    @BindView(R.id.opening_time_tv)
-    TextView openingTimeTv;
-    @BindView(R.id.closing_time_tv)
-    TextView closingTimeTv;
-    @BindView(R.id.opening_time_holder)
-    TextView openingHoursHolder;
-    @BindView(R.id.closing_time_holder)
-    TextView closingHoursHolder;
+    @BindView(R.id.monday)
+    TextView monday;
+    @BindView(R.id.tuesday)
+    TextView tuesday;
+    @BindView(R.id.wednesday)
+    TextView wednesday;
+    @BindView(R.id.thursday)
+    TextView thursday;
+    @BindView(R.id.friday)
+    TextView friday;
+    @BindView(R.id.saturday)
+    TextView saturday;
+    @BindView(R.id.sunday)
+    TextView sunday;
     @BindView(R.id.packageCount_Tv)
     TextView packageCount_Tv;
 
@@ -520,27 +531,51 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     @Override
     public void showNewAddressDetails(Address address) {
         if(address.isBusiness()){
+            String businessName = address.getChosenBusinessName();
             addressTypeImageView.setImageResource(R.drawable.company);
-            openingTimeTv.setText(controller.convertTime(address.getOpeningTime()));
-            closingTimeTv.setText(controller.convertTime(address.getClosingTime()));
-            openingHoursHolder.setVisibility(View.VISIBLE);
-            closingHoursHolder.setVisibility(View.VISIBLE);
-            openingTimeTv.setVisibility(View.VISIBLE);
-            closingTimeTv.setVisibility(View.VISIBLE);
+            primaryAddressInfo.setText(businessName);
+            secondaryAddressInfo.setText(address.getStreet());
+            secondaryAddressInfo.setTextColor(ContextCompat.getColor(this, R.color.streetDark));
+            thirdAddressInfo.setVisibility(View.VISIBLE);
+            if(address.getPostCode().isEmpty()){
+                thirdAddressInfo.setText(address.getCity());
+            }else{
+                thirdAddressInfo.setText(address.getPostCode() + " " + address.getCity());
+            }
+
+            workingHours_layout.setVisibility(View.GONE);
+
+            try{
+                if(address.getWeekdayText().get(businessName) != null){
+                    monday.setText(address.getWeekdayText().get(businessName)[0]);
+                    tuesday.setText(address.getWeekdayText().get(businessName)[1]);
+                    wednesday.setText(address.getWeekdayText().get(businessName)[2]);
+                    thursday.setText(address.getWeekdayText().get(businessName)[3]);
+                    friday.setText(address.getWeekdayText().get(businessName)[4]);
+                    saturday.setText(address.getWeekdayText().get(businessName)[5]);
+                    sunday.setText(address.getWeekdayText().get(businessName)[6]);
+                    workingHours_layout.setVisibility(View.VISIBLE);
+                }
+            }catch (NullPointerException e){
+                Log.d(debugTag, "Failed to load times");
+            }
+
         }else{
             addressTypeImageView.setImageResource(R.drawable.house);
-            openingHoursHolder.setVisibility(View.GONE);
-            closingHoursHolder.setVisibility(View.GONE);
-            openingTimeTv.setVisibility(View.GONE);
-            closingTimeTv.setVisibility(View.GONE);
+            workingHours_layout.setVisibility(View.GONE);
+            thirdAddressInfo.setVisibility(View.GONE);
+
+            secondaryAddressInfo.setTextColor(ContextCompat.getColor(this, R.color.greyDot));
+
+            primaryAddressInfo.setText(address.getStreet());
+            if(address.getPostCode().isEmpty()){
+                secondaryAddressInfo.setText(address.getCity());
+            }else{
+                secondaryAddressInfo.setText(address.getPostCode() + " " + address.getCity());
+            }
         }
-        streetTextView.setText(address.getStreet());
-        if(address.getPostCode().isEmpty()){
-            cityTextView.setText(address.getCity());
-        }else{
-            cityTextView.setText(address.getPostCode() + " " + address.getCity());
-        }
-        packageCount_Tv.setText(String.valueOf(address.getPackageCount())+" x");
+
+        packageCount_Tv.setText(String.valueOf(address.getPackageCount()));
         subLayout.setVisibility(View.VISIBLE);
         subLayout.bringToFront();
     }

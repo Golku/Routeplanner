@@ -137,44 +137,44 @@ public class AddressListController extends BaseController implements
     }
 
     private void addressTypeChange(Address address){
-        for(Address it: addressList){
-            if(it.getAddress().equals(address.getAddress())){
-                it.setBusiness(address.isBusiness());
-
-                if(it.isBusiness()){
-                    if(it.getOpeningTime() == 0){
-                        it.setOpeningTime(480);
-                    }
-
-                    if(it.getClosingTime() == 0){
-                        it.setClosingTime(1020);
-                    }
-                }
-
-                showAddressList();
-                break;
-            }
-        }
+//        for(Address it: addressList){
+//            if(it.getAddress().equals(address.getAddress())){
+//                it.setBusiness(address.isBusiness());
+//
+//                if(it.isBusiness()){
+//                    if(it.getOpeningTime() == 0){
+//                        it.setOpeningTime(480);
+//                    }
+//
+//                    if(it.getClosingTime() == 0){
+//                        it.setClosingTime(1020);
+//                    }
+//                }
+//
+//                showAddressList();
+//                break;
+//            }
+//        }
     }
 
     private void openingTimeChange(Address address) {
-        for(Address it: addressList){
-            if(it.getAddress().equals(address.getAddress())){
-                it.setOpeningTime(address.getOpeningTime());
-                break;
-            }
-        }
-        createEvent("mapFragment","updateMarkers", this);
+//        for(Address it: addressList){
+//            if(it.getAddress().equals(address.getAddress())){
+//                it.setOpeningTime(address.getOpeningTime());
+//                break;
+//            }
+//        }
+//        createEvent("mapFragment","updateMarkers", this);
     }
 
     private void closingTimeChange(Address address) {
-        for(Address it: addressList){
-            if(it.getAddress().equals(address.getAddress())){
-                it.setClosingTime(address.getClosingTime());
-                break;
-            }
-        }
-        createEvent("mapFragment","updateMarkers", this);
+//        for(Address it: addressList){
+//            if(it.getAddress().equals(address.getAddress())){
+//                it.setClosingTime(address.getClosingTime());
+//                break;
+//            }
+//        }
+//        createEvent("mapFragment","updateMarkers", this);
     }
 
     private void addAddress(Address address){

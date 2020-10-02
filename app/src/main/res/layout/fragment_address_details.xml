@@ -59,6 +59,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/action_bar">
 
+        <Spinner
+            android:id="@+id/businessNamesSpinner"
+            android:layout_width="0dp"
+            android:background="@color/blueLight"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/addressTypeImageView"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/primaryAddressInfo"
             android:layout_width="0dp"
@@ -72,6 +84,7 @@
             android:textColor="@color/streetDark"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/addressTypeImageView"
             app:layout_constraintTop_toTopOf="@+id/subLayout" />
@@ -80,7 +93,7 @@
             android:id="@+id/secondaryAddressInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="18dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="Second"
@@ -138,71 +151,173 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/address_details_header_bg"
-        android:paddingBottom="16dp"
         android:paddingTop="16dp"
-        android:visibility="gone"
+        android:paddingBottom="16dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/subLayout">
+
+        <TextView
+            android:id="@+id/monday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:text=" 8:00 AM – 5:00 PM"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/monday2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/thursday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Thursday:"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintTop_toBottomOf="@+id/wednesday2" />
+
+        <TextView
+            android:id="@+id/friday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Friday:"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintTop_toBottomOf="@+id/thursday2" />
+
+        <TextView
+            android:id="@+id/saturday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Saturday:"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintTop_toBottomOf="@+id/friday2" />
+
+        <TextView
+            android:id="@+id/sunday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Sunday:"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintTop_toBottomOf="@+id/saturday2" />
+
+        <TextView
+            android:id="@+id/monday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Monday:"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/wednesday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Wednesday:"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintTop_toBottomOf="@+id/tuesday2" />
+
+        <TextView
+            android:id="@+id/tuesday2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Tuesday:"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintTop_toBottomOf="@+id/monday2" />
+
+        <TextView
+            android:id="@+id/saturday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="8:00 AM – 5:00 PM"
+            android:textColor="@color/streetDark"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="@+id/friday"
+            app:layout_constraintTop_toBottomOf="@+id/friday" />
 
         <TextView
             android:id="@+id/thursday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="Thursday: 8:00 AM – 8:00 PM"
+            android:text="8:00 AM – 8:00 PM"
             android:textColor="@color/streetDark"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintEnd_toEndOf="@+id/wednesday"
             app:layout_constraintTop_toBottomOf="@+id/wednesday" />
 
         <TextView
             android:id="@+id/friday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="Friday: 8:00 AM – 5:00 PM"
+            android:text="8:00 AM – 5:00 PM"
             android:textColor="@color/streetDark"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintEnd_toEndOf="@+id/thursday"
             app:layout_constraintTop_toBottomOf="@+id/thursday" />
 
         <TextView
-            android:id="@+id/saturday"
+            android:id="@+id/wednesday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="Saturday: 8:00 AM – 5:00 PM"
+            android:text="8:00 AM – 5:00 PM"
             android:textColor="@color/streetDark"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/clockIv"
-            app:layout_constraintTop_toBottomOf="@+id/friday" />
+            app:layout_constraintEnd_toEndOf="@+id/tuesday"
+            app:layout_constraintTop_toBottomOf="@+id/tuesday" />
 
         <TextView
             android:id="@+id/sunday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="Sunday: Closed"
+            android:text="Closed"
             android:textColor="@color/streetDark"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/clockIv"
+            app:layout_constraintEnd_toEndOf="@+id/saturday"
             app:layout_constraintTop_toBottomOf="@+id/saturday" />
 
         <TextView
-            android:id="@+id/monday"
+            android:id="@+id/tuesday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="Monday: 8:00 AM – 5:00 PM"
+            android:layout_marginTop="8dp"
+            android:text="8:00 AM – 5:00 PM"
             android:textColor="@color/streetDark"
             android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/clockIv"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/monday"
+            app:layout_constraintTop_toBottomOf="@+id/monday" />
 
         <ImageView
             android:id="@+id/clockIv"
@@ -214,30 +329,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/clock" />
-
-        <TextView
-            android:id="@+id/tuesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="Tuesday: 8:00 AM – 5:00 PM"
-            android:textColor="@color/streetDark"
-            android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/clockIv"
-            app:layout_constraintTop_toBottomOf="@+id/monday" />
-
-        <TextView
-            android:id="@+id/wednesday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="Wednesday: 8:00 AM – 5:00 PM"
-            android:textColor="@color/streetDark"
-            android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@+id/clockIv"
-            app:layout_constraintTop_toBottomOf="@+id/tuesday" />
 
     </android.support.constraint.ConstraintLayout>
 

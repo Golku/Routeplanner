@@ -15,6 +15,8 @@ public interface MvcAddressDetails {
 
         void changeAddressType(Address address);
 
+        void updateOpeningHours(Address address);
+
         void networkOperationStarted(String message);
 
         void networkOperationFinish(int operation, String message);
@@ -41,6 +43,8 @@ public interface MvcAddressDetails {
     interface Controller{
 
         void getAddressInformation();
+
+        void updateBusinessName(String name);
 
         String convertTime(int timeInMinutes);
 

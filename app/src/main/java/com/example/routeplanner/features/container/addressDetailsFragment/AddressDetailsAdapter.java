@@ -2,7 +2,6 @@ package com.example.routeplanner.features.container.addressDetailsFragment;
 
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,23 +9,23 @@ import android.widget.TextView;
 
 import com.example.routeplanner.R;
 import com.example.routeplanner.data.pojos.CommentInformation;
-import com.example.routeplanner.data.pojos.database.AddressInformation;
+import com.example.routeplanner.data.pojos.database.Notes;
 
 public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsAdapter.CustomViewHolder>{
 
-    private AddressInformation addressInformation;
+    private Notes notes;
     private CommentListFunctions commentListFunctions;
     private CommentInformation commentInformation;
 
-    AddressDetailsAdapter(AddressInformation addressInformation, CommentListFunctions commentListFunctions) {
+    AddressDetailsAdapter(Notes notes, CommentListFunctions commentListFunctions) {
         this.commentListFunctions = commentListFunctions;
         this.commentInformation = new CommentInformation();
 
-        if(addressInformation == null){
-            this.addressInformation = new AddressInformation();
-            this.addressInformation.setCommentsCount(0);
+        if(notes == null){
+            this.notes = new Notes();
+            this.notes.setNotesCount(0);
         }else{
-            this.addressInformation = addressInformation;
+            this.notes = notes;
         }
 
     }
@@ -48,14 +47,14 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
             holder.infoWrapper.setBackgroundResource(R.drawable.list_item_bg);
         }
 
-        holder.employedName.setText(addressInformation.getEmployeeId().get(position));
-        holder.date.setText(addressInformation.getDates().get(position));
-        holder.comment.setText(addressInformation.getComments().get(position));
+        holder.employedName.setText(notes.getAuthors().get(position));
+        holder.date.setText(notes.getDates().get(position));
+        holder.comment.setText(notes.getNotes().get(position));
     }
 
     @Override
     public int getItemCount() {
-        return addressInformation.getCommentsCount();
+        return notes.getNotesCount();
     }
 
     class CustomViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -77,9 +76,9 @@ public class AddressDetailsAdapter extends RecyclerView.Adapter <AddressDetailsA
         }
 
         public void onClick(View v) {
-            commentInformation.setEmployeeId(addressInformation.getEmployeeId().get(this.getAdapterPosition()));
-            commentInformation.setDate(addressInformation.getDates().get(this.getAdapterPosition()));
-            commentInformation.setComment(addressInformation.getComments().get(this.getAdapterPosition()));
+            commentInformation.setEmployeeId(notes.getAuthors().get(this.getAdapterPosition()));
+            commentInformation.setDate(notes.getDates().get(this.getAdapterPosition()));
+            commentInformation.setComment(notes.getNotes().get(this.getAdapterPosition()));
             commentListFunctions.onListItemClick(commentInformation);
         }
     }
