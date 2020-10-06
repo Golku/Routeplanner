@@ -37,22 +37,6 @@ public class DriveListHandler {
     }
 
     public void addressTypeChange(Address address) {
-
-        for (Drive drive : driveList) {
-
-            if (drive.getDestinationAddress().getAddress().equals(address.getAddress())) {
-
-                if (address.isBusiness()) {
-                    drive.setDestinationIsABusiness(true);
-                    drive.getDestinationAddress().setBusiness(true);
-                } else {
-                    drive.setDestinationIsABusiness(false);
-                    drive.getDestinationAddress().setBusiness(false);
-                }
-
-                break;
-            }
-        }
     }
 
     public void addDriveToList(Drive drive) {
@@ -193,7 +177,7 @@ public class DriveListHandler {
     public void removeMultipleDrive(String address) {
 
         for (Drive drive : driveList) {
-            if (address.equals(drive.getDestinationAddress().getAddress())) {
+            if (address.equals(drive.getDestinationAddress())) {
                 driveList.subList(driveList.indexOf(drive), driveList.size()).clear();
                 break;
             }

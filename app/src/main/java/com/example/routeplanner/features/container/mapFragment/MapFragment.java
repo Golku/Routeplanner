@@ -115,24 +115,20 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void addPolylineToMap(List<LatLng> newDecodedPath, GoogleMap googleMap) {
-        getActivity().runOnUiThread(() -> {
-            Polyline polyline = googleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-            polyline.setColor(ContextCompat.getColor(getActivity(), R.color.blueLight));
-            controller.storePolyline(polyline);
-        });
+        Polyline polyline = googleMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+        polyline.setColor(ContextCompat.getColor(getActivity(), R.color.blueLight));
+        controller.storePolyline(polyline);
     }
 
     @Override
     public void removePolylineFromMap(Polyline polyline) {
-        getActivity().runOnUiThread(polyline::remove);
+        polyline.remove();
     }
 
     @Override
     public void updatePolyline(Polyline polyline) {
-        getActivity().runOnUiThread(() -> {
-            polyline.setColor(ContextCompat.getColor(getActivity(), R.color.glacierBlue));
-            polyline.setZIndex(1);
-        });
+        polyline.setColor(ContextCompat.getColor(getActivity(), R.color.glacierBlue));
+        polyline.setZIndex(1);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

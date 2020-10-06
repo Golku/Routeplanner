@@ -3,7 +3,7 @@ package com.example.routeplanner.features.container.addressDetailsFragment;
 import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +14,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -105,7 +105,9 @@ public class AddressDetailsFragment extends Fragment implements
 
     private AddressDetailsController controller;
 
+    private boolean marginSet;
     private String workingHours;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -175,19 +177,19 @@ public class AddressDetailsFragment extends Fragment implements
 
     @Override
     public void updateOpeningHours(Address address) {
-        String businessName = address.getChosenBusinessName();
-        if(address.getWeekdayText().get(businessName) != null){
-            monday.setText(address.getWeekdayText().get(businessName)[0]);
-            tuesday.setText(address.getWeekdayText().get(businessName)[1]);
-            wednesday.setText(address.getWeekdayText().get(businessName)[2]);
-            thursday.setText(address.getWeekdayText().get(businessName)[3]);
-            friday.setText(address.getWeekdayText().get(businessName)[4]);
-            saturday.setText(address.getWeekdayText().get(businessName)[5]);
-            sunday.setText(address.getWeekdayText().get(businessName)[6]);
-            workingHours_layout.setVisibility(View.VISIBLE);
-        }else{
-            workingHours_layout.setVisibility(View.GONE);
-        }
+//        String businessName = address.getChosenBusinessName();
+//        if(address.getWeekdayText().get(businessName) != null){
+//            monday.setText(address.getWeekdayText().get(businessName)[0]);
+//            tuesday.setText(address.getWeekdayText().get(businessName)[1]);
+//            wednesday.setText(address.getWeekdayText().get(businessName)[2]);
+//            thursday.setText(address.getWeekdayText().get(businessName)[3]);
+//            friday.setText(address.getWeekdayText().get(businessName)[4]);
+//            saturday.setText(address.getWeekdayText().get(businessName)[5]);
+//            sunday.setText(address.getWeekdayText().get(businessName)[6]);
+//            workingHours_layout.setVisibility(View.VISIBLE);
+//        }else{
+//            workingHours_layout.setVisibility(View.GONE);
+//        }
     }
 
     @Override
@@ -209,27 +211,31 @@ public class AddressDetailsFragment extends Fragment implements
 
             workingHours_layout.setVisibility(View.GONE);
 
-            if(address.getWeekdayText().get(businessName) != null){
-                monday.setText(address.getWeekdayText().get(businessName)[0]);
-                tuesday.setText(address.getWeekdayText().get(businessName)[1]);
-                wednesday.setText(address.getWeekdayText().get(businessName)[2]);
-                thursday.setText(address.getWeekdayText().get(businessName)[3]);
-                friday.setText(address.getWeekdayText().get(businessName)[4]);
-                saturday.setText(address.getWeekdayText().get(businessName)[5]);
-                sunday.setText(address.getWeekdayText().get(businessName)[6]);
-                workingHours_layout.setVisibility(View.VISIBLE);
-            }
+//            if(address.getWeekdayText().get(businessName) != null){
+//                monday.setText(address.getWeekdayText().get(businessName)[0]);
+//                tuesday.setText(address.getWeekdayText().get(businessName)[1]);
+//                wednesday.setText(address.getWeekdayText().get(businessName)[2]);
+//                thursday.setText(address.getWeekdayText().get(businessName)[3]);
+//                friday.setText(address.getWeekdayText().get(businessName)[4]);
+//                saturday.setText(address.getWeekdayText().get(businessName)[5]);
+//                sunday.setText(address.getWeekdayText().get(businessName)[6]);
+//                workingHours_layout.setVisibility(View.VISIBLE);
+//            }
 
             if(address.getBusinessName().size() > 1){
-                ArrayAdapter<String> businessNameAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, address.getBusinessName());
-                businessNameAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+                ArrayAdapter<String> businessNameAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner, R.id.company_name, address.getBusinessName());
+                businessNameAdapter.setDropDownViewResource(R.layout.spinner_item);
                 businessNamesSpinner.setAdapter(businessNameAdapter);
-                primaryAddressInfo.setVisibility(View.INVISIBLE);
+                primaryAddressInfo.setVisibility(View.GONE);
                 businessNamesSpinner.setVisibility(View.VISIBLE);
                 businessNamesSpinner.setSelection(address.getBusinessName().indexOf(businessName));
+
+                setParams(35);
+
             }else{
                 primaryAddressInfo.setVisibility(View.VISIBLE);
                 businessNamesSpinner.setVisibility(View.GONE);
+                setParams(8);
             }
         }else{
             addressTypeImageView.setImageResource(R.drawable.house);
@@ -238,7 +244,7 @@ public class AddressDetailsFragment extends Fragment implements
             workingHours_layout.setVisibility(View.GONE);
             thirdAddressInfo.setVisibility(View.GONE);
 
-            secondaryAddressInfo.setTextColor(ContextCompat.getColor(getActivity(), R.color.greyDot));
+            setParams(8);
 
             primaryAddressInfo.setText(address.getStreet());
             if(address.getPostCode().isEmpty()){
@@ -253,6 +259,19 @@ public class AddressDetailsFragment extends Fragment implements
 
 //        changeAddressType(address);
         controller.getAddressInformation();
+    }
+
+    private void setParams(int dp){
+        Resources r = this.getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                r.getDisplayMetrics()
+        );
+
+        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) secondaryAddressInfo.getLayoutParams();
+        params.setMargins(params.leftMargin, px,params.rightMargin,params.bottomMargin);
+        secondaryAddressInfo.setLayoutParams(params);
     }
 
     @Override

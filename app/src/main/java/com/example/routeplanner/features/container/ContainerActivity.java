@@ -284,7 +284,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
                 if(inputText.getText().toString().length() >= 3){
                     add_stops_iv.setVisibility(View.GONE);
-                    controller.getPrediction(inputText.getText().toString());
+                    controller.getPrediction();
                 }else if(inputText.getText().toString().length() <= 3){
                     add_stops_iv.setVisibility(View.VISIBLE);
                     setupPredictionAdapter(new ArrayList<AutocompletePrediction>());
@@ -303,6 +303,11 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
         });
 
         controller.getContainer();
+    }
+
+    @Override
+    public String getInputtedText() {
+        return inputText.getText().toString();
     }
 
     @Override
@@ -485,7 +490,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
     public void predictionClick(String address) {
         inputText.setText(address+" ");
         inputText.setSelection(inputText.getText().length());
-        controller.getPrediction(address);
+        controller.getPrediction();
     }
 
     @Override
@@ -599,7 +604,7 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @Override
     public void navigateToDestination(Drive drive) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + drive.getDestinationAddress().getLat() +", "+ drive.getDestinationAddress().getLng());
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + drive.getDestinationAddressObj().getLat() +", "+ drive.getDestinationAddressObj().getLng());
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         startActivity(mapIntent);

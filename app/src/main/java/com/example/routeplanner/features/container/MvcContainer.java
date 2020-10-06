@@ -38,6 +38,8 @@ public interface MvcContainer {
 
         void showInputField();
 
+        String getInputtedText();
+
         void showManualInputOption(boolean show);
 
         void showAddressDetails();
@@ -63,7 +65,7 @@ public interface MvcContainer {
 
         void getContainer();
 
-        void getPrediction(String address);
+        void getPrediction();
 
         void getAddress(String address);
 

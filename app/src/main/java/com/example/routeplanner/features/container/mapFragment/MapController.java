@@ -15,14 +15,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.maps.DirectionsApiRequest;
-import com.google.maps.GeoApiContext;
-import com.google.maps.PendingResult;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.internal.PolylineEncoding;
-import com.google.maps.model.DirectionsResult;
-import com.google.maps.model.DirectionsRoute;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +33,6 @@ public class MapController extends BaseController implements
     private GoogleMap googleMap;
     private ClusterManager<Address> clusterManager;
     private CustomClusterRenderer renderer;
-    private GeoApiContext geoApiContext;
 
     private Address userLocation;
     private Address currentAddress;
@@ -60,7 +52,6 @@ public class MapController extends BaseController implements
         this.addressList = addressList;
         this.driveList = driveList;
         this.routeOrder = new ArrayList<>();
-        this.geoApiContext = null;
         this.index = 0;
         this.firstIteration = true;
 
@@ -99,12 +90,6 @@ public class MapController extends BaseController implements
         clusterManager.cluster();
 
         this.googleMap = googleMap;
-
-        if(geoApiContext == null){
-            geoApiContext = new GeoApiContext.Builder()
-                    .apiKey("AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY")
-                    .build();
-        }
 
         CameraPosition cameraPosition = CameraPosition.builder().target(new LatLng(userLocation.getLat(), userLocation.getLng())).zoom(12f).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -270,7 +255,7 @@ public class MapController extends BaseController implements
                 driveFailed();
                 break;
             case "driveCompleted":
-                driveCompleted(event.getAddress());
+                driveCompleted(event.getAddressString());
                 break;
             case "updateRouteOrder":
                 updateRouteOrder(event.getRouteInfo().getDriveList());
@@ -289,25 +274,22 @@ public class MapController extends BaseController implements
         index = 0;
 
         if(!routeOrder.isEmpty()){
-//            Log.d(debugTag, "List not empty");
-            previousSelectedAddress = findAddress(driveList.get(0).getOriginAddress().getAddress());
-//            Log.d(debugTag, "previousSelectedAddress: " + previousSelectedAddress.getAddress());
+            previousSelectedAddress = findAddress(driveList.get(0).getDestinationAddress());
             index = routeOrder.indexOf(previousSelectedAddress)+1;
         }
 
-        currentAddress = findAddress(driveList.get(0).getDestinationAddress().getAddress());
+        currentAddress = findAddress(driveList.get(0).getDestinationAddress());
 //        Log.d(debugTag, "currentAddress first: " + currentAddress.getAddress());
 
         for(Drive drive : driveList){
             for(Address address : addressList){
-                if(address.getAddress().equals(drive.getDestinationAddress().getAddress())){
+                if(address.getAddress().equals(drive.getDestinationAddress())){
                     address.setSelected(true);
-//                    Log.d(debugTag, "Adding: " + address.getAddress());
                     routeOrder.add(address);
                 }
             }
         }
-        getPolyLines();
+        addingMultiplePolyline(driveList);
     }
 
     @Override
@@ -372,7 +354,7 @@ public class MapController extends BaseController implements
         currentAddress.setSelected(true);
         routeOrder.add(currentAddress);
         index = routeOrder.size();
-        getPolyLines();
+        findPolyline();
         previousSelectedAddress = currentAddress;
         renderer.changeMarkerIcon(currentAddress);
         googleMap.setOnMarkerClickListener(this);
@@ -386,57 +368,20 @@ public class MapController extends BaseController implements
         view.showDialog("Failed to get drive");
     }
 
-    private void getPolyLines(){
+    private void addingMultiplePolyline(List<Drive> driveList){
+        for(Drive drive: driveList){
+            view.addPolylineToMap(drive.getPolyline(), googleMap);
+        }
+    }
 
-//        Log.d(debugTag, "calculateDirections from: " + previousSelectedAddress.getAddress() + " to " + currentAddress.getAddress());
-
-//        com.google.maps.model.LatLng origin = new com.google.maps.model.LatLng(
-//                previousSelectedAddress.getLat(),
-//                previousSelectedAddress.getLng()
-//        );
-//
-//        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
-//                currentAddress.getLat(),
-//                currentAddress.getLng()
-//        );
-//
-//        DirectionsApiRequest directions = new DirectionsApiRequest(geoApiContext);
-//        directions.origin(origin);
-//        directions.destination(destination);
-//        directions.alternatives(false);
-//
-//        directions.setCallback(new PendingResult.Callback<DirectionsResult>() {
-//            @Override
-//            public void onResult(DirectionsResult result) {
-//                Log.d(debugTag, "calculateDirections: routes: " + result.routes[0].toString());
-//                Log.d(debugTag, "calculateDirections: duration: " + result.routes[0].legs[0].duration);
-//                Log.d(debugTag, "calculateDirections: distance: " + result.routes[0].legs[0].distance);
-//                Log.d(debugTag, "calculateDirections: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
-//
-//                for (DirectionsRoute route : result.routes) {
-//                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
-//
-//                    List<LatLng> newDecodedPath = new ArrayList<>();
-//
-//                    // This loops through all the LatLng coordinates of ONE polyline.
-//                    for (com.google.maps.model.LatLng latLng : decodedPath) {
-//
-//                        newDecodedPath.add(new LatLng(
-//                                latLng.lat,
-//                                latLng.lng
-//                        ));
-//                    }
-//
-//                    view.addPolylineToMap(newDecodedPath, googleMap);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable e) {
-//                Log.e(debugTag, "calculateDirections: Failed to get directions: " + e.getMessage() );
-//
-//            }
-//        });
+    private void findPolyline(){
+        for(Drive drive: driveList){
+            if(drive.getDestinationAddress().contains(currentAddress.getAddress())){
+                if(drive.getDestinationAddress().contains(currentAddress.getCity())){
+                    view.addPolylineToMap(drive.getPolyline(), googleMap);
+                }
+            }
+        }
     }
 
     @Override
@@ -444,44 +389,48 @@ public class MapController extends BaseController implements
 
         Address address = currentAddress;
         polylineHashMap.put(address.getAddress(), polyline);
-//        Log.d(debugTag, "storePolyline address: " + address.getAddress());
+        Log.d(debugTag, "storePolyline address: " + address.getAddress());
         if(routeOrder.indexOf(address) == 0){
-//            Log.d(debugTag, "First in routOrder: " + address.getAddress());
+            Log.d(debugTag, "First in routOrder: " + address.getAddress());
             view.updatePolyline(polylineHashMap.get(address.getAddress()));
         }
 
         renderer.changeMarkerIcon(currentAddress);
 
-//        Log.d(debugTag, "From: " + previousSelectedAddress.getAddress());
-//        Log.d(debugTag, "To: " + currentAddress.getAddress());
+        Log.d(debugTag, "From: " + previousSelectedAddress.getAddress());
+        Log.d(debugTag, "To: " + currentAddress.getAddress());
+        Log.d(debugTag, " ");
         previousSelectedAddress = currentAddress;
         if(index < routeOrder.size()-1){
             previousSelectedAddress = findAddress(routeOrder.get(index).getAddress());
             index++;
             currentAddress = findAddress(routeOrder.get(index).getAddress());
 //            Log.d(debugTag, "incrementing: "+ looper);
-            getPolyLines();
+            findPolyline();
         }
     }
 
     private void removePolyline(String address){
-//        Log.d(debugTag, "removePolyline address: " + address);
+        Log.d(debugTag, "removePolyline address: " + address);
         if(polylineHashMap.get(address) != null){
-//            Log.d(debugTag, "Removing: " + address);
+            Log.d(debugTag, "Removing: " + address);
+            Log.d(debugTag, " ");
             view.removePolylineFromMap(polylineHashMap.get(address));
             polylineHashMap.remove(address);
+        }else{
+            Log.d(debugTag, "Address is null");
         }
     }
 
-    private void driveCompleted(Address address) {
-//        for (Address it: routeOrder) {
-//            if (it.getAddress().equals(address.getAddress())) {
-//                it.setCompleted(true);
-//                removePolyline(address.getAddress());
-//                view.updatePolyline(polylineHashMap.get(routeOrder.get(routeOrder.indexOf(it)+1).getAddress()));
-//                renderer.changeMarkerIcon(it);
-//                break;
-//            }
-//        }
+    private void driveCompleted(String address) {
+        for (Address it: routeOrder) {
+            if (it.getAddress().equals(address)) {
+                it.setCompleted(true);
+                removePolyline(address);
+                view.updatePolyline(polylineHashMap.get(routeOrder.get(routeOrder.indexOf(it)+1).getAddress()));
+                renderer.changeMarkerIcon(it);
+                break;
+            }
+        }
     }
 }

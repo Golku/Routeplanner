@@ -26,6 +26,7 @@ import com.example.routeplanner.features.shared.MvcBaseController;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
@@ -63,6 +64,7 @@ public class ContainerController extends BaseController implements
     private List<Address> routeOrder;
     private boolean updatingApiDriveList;
     private boolean organizingRoute;
+    private boolean gettingPrediction;
 
     private Address tempNewAddress;
 
@@ -75,8 +77,10 @@ public class ContainerController extends BaseController implements
         this.minutesFormat = new SimpleDateFormat("mm:ss");
 
 
+
         if (!Places.isInitialized()) {
-            Places.initialize(context.getApplicationContext(), "AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY");
+//            Places.initialize(context.getApplicationContext(), "AIzaSyBBGGpwJAUvyMgj0MntBegtFUFofe-0Ax0"); //(Work)
+            Places.initialize(context.getApplicationContext(), "AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY"); //(Test)
         }
 
         this.placesClient = Places.createClient(activity);
@@ -227,7 +231,24 @@ public class ContainerController extends BaseController implements
     }
 
     @Override
-    public void getPrediction(String address) {
+    public void getPrediction() {
+
+        if(gettingPrediction){
+            return;
+        }
+
+        gettingPrediction = true;
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                requestPrediction();
+                gettingPrediction = false;
+            }
+        }, 2000);
+    }
+
+    private void requestPrediction(){
 
         AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
         // Create a RectangularBounds object.
@@ -242,7 +263,7 @@ public class ContainerController extends BaseController implements
                 .setCountry("nl")
                 .setTypeFilter(TypeFilter.ADDRESS)
                 .setSessionToken(token)
-                .setQuery(address)
+                .setQuery(view.getInputtedText())
                 .build();
 
         placesClient.findAutocompletePredictions(request).addOnSuccessListener(response -> {
@@ -407,12 +428,20 @@ public class ContainerController extends BaseController implements
 
     private void addDrive(Drive drive) {
         if(drive != null && drive.isValid()){
+
+            for(Address address: container.getAddressList()){
+                if(drive.getDestinationAddress().contains(address.getAddress())){
+                    if(drive.getDestinationAddress().contains(address.getCity())){
+                        drive.setDestinationAddressObj(address);
+                    }
+                }
+            }
+
             createEvent("driveFragment", "addDrive", drive, this);
         }else{
             createEvent("mapFragment", "driveFailed",this);
         }
     }
-
 
     //model request
     @Override
@@ -533,6 +562,15 @@ public class ContainerController extends BaseController implements
         view.showOptimisingDialog(false);
         if(response != null){
             RouteInfo routeInfo = new RouteInfo();
+            for(Drive drive: response.getOrganizedRoute()) {
+                for (Address address : container.getAddressList()) {
+                    if (drive.getDestinationAddress().contains(address.getAddress())) {
+                        if (drive.getDestinationAddress().contains(address.getCity())) {
+                            drive.setDestinationAddressObj(address);
+                        }
+                    }
+                }
+            }
             routeInfo.setDriveList(response.getOrganizedRoute());
             createEvent("mapFragment", "updateRouteOrder", routeInfo, this);
             createEvent("driveFragment", "updateDriveList", routeInfo, this);

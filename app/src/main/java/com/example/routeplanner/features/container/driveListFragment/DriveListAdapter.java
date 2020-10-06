@@ -68,7 +68,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
             holder.drive_info_wrapper.setBackgroundResource(R.drawable.list_item_bg);
         }
 
-        Address address = drive.getDestinationAddress();
+        Address address = drive.getDestinationAddressObj();
 
         if (address.isBusiness()) {
             holder.addressType.setImageResource(R.drawable.company);
@@ -168,7 +168,7 @@ public class DriveListAdapter extends RecyclerView.Adapter<DriveListAdapter.Cust
         public void onClick(View v) {
 
             if(v == this.itemWrapper){
-                callback.itemClick(driveList.get(this.getAdapterPosition()).getDestinationAddress());
+                callback.itemClick(driveList.get(this.getAdapterPosition()).getDestinationAddressObj());
             }
             else if(v == this.goIvWrapper){
                 callback.goButtonClick(driveList.get(this.getAdapterPosition()));

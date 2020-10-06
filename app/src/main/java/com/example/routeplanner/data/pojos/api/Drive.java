@@ -1,6 +1,9 @@
 package com.example.routeplanner.data.pojos.api;
 
 import com.example.routeplanner.data.pojos.Address;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
 
 public class Drive{
 
@@ -8,10 +11,10 @@ public class Drive{
 
     private int position;
 
-    private Address originAddress;
-    private Address destinationAddress;
-
-    private boolean destinationIsABusiness;
+    private String originAddress;
+    private Address originAddressObj;
+    private String destinationAddress;
+    private Address destinationAddressObj;
 
     private long driveDurationInSeconds;
     private String driveDurationHumanReadable;
@@ -30,6 +33,8 @@ public class Drive{
 
     private int done;
 
+    private List<LatLng> polyline;
+
     public boolean isValid() {
         return valid;
     }
@@ -46,28 +51,36 @@ public class Drive{
         this.position = position;
     }
 
-    public Address getOriginAddress() {
+    public String getOriginAddress() {
         return originAddress;
     }
 
-    public void setOriginAddress(Address originAddress) {
+    public void setOriginAddress(String originAddress) {
         this.originAddress = originAddress;
     }
 
-    public Address getDestinationAddress() {
+    public String getDestinationAddress() {
         return destinationAddress;
     }
 
-    public void setDestinationAddress(Address destinationAddress) {
+    public void setDestinationAddress(String destinationAddress) {
         this.destinationAddress = destinationAddress;
     }
 
-    public boolean isDestinationIsABusiness() {
-        return destinationIsABusiness;
+    public Address getOriginAddressObj() {
+        return originAddressObj;
     }
 
-    public void setDestinationIsABusiness(boolean destinationIsABusiness) {
-        this.destinationIsABusiness = destinationIsABusiness;
+    public void setOriginAddressObj(Address originAddressObj) {
+        this.originAddressObj = originAddressObj;
+    }
+
+    public Address getDestinationAddressObj() {
+        return destinationAddressObj;
+    }
+
+    public void setDestinationAddressObj(Address destinationAddressObj) {
+        this.destinationAddressObj = destinationAddressObj;
     }
 
     public long getDriveDurationInSeconds() {
@@ -156,5 +169,13 @@ public class Drive{
 
     public void setDone(int done) {
         this.done = done;
+    }
+
+    public List<LatLng> getPolyline() {
+        return polyline;
+    }
+
+    public void setPolyline(List<LatLng> polyline) {
+        this.polyline = polyline;
     }
 }
