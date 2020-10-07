@@ -79,8 +79,8 @@ public class ContainerController extends BaseController implements
 
 
         if (!Places.isInitialized()) {
-//            Places.initialize(context.getApplicationContext(), "AIzaSyBBGGpwJAUvyMgj0MntBegtFUFofe-0Ax0"); //(Work)
-            Places.initialize(context.getApplicationContext(), "AIzaSyAycv4bRa_NI4gl7WwkgLGs4EDhn44G8DY"); //(Test)
+//            Places.initialize(context.getApplicationContext(), ""); //(Work)
+            Places.initialize(context.getApplicationContext(), ""); //(Test)
         }
 
         this.placesClient = Places.createClient(activity);

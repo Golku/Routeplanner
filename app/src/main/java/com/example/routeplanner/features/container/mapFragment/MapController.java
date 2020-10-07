@@ -405,7 +405,7 @@ public class MapController extends BaseController implements
             previousSelectedAddress = findAddress(routeOrder.get(index).getAddress());
             index++;
             currentAddress = findAddress(routeOrder.get(index).getAddress());
-//            Log.d(debugTag, "incrementing: "+ looper);
+            Log.d(debugTag, "finding polyline");
             findPolyline();
         }
     }
