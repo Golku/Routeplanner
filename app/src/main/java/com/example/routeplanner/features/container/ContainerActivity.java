@@ -284,9 +284,12 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
                 if(inputText.getText().toString().length() >= 3){
                     add_stops_iv.setVisibility(View.GONE);
+                    showLoader("Getting address prediction");
+                    predictionsList.setVisibility(View.GONE);
                     controller.getPrediction();
                 }else if(inputText.getText().toString().length() <= 3){
                     add_stops_iv.setVisibility(View.VISIBLE);
+                    hideLoader();
                     setupPredictionAdapter(new ArrayList<AutocompletePrediction>());
                     showManualInputOption(false);
                 }
@@ -375,6 +378,9 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
     @Override
     public void setupPredictionAdapter(List<AutocompletePrediction> predictions){
+        if(predictions.size()>=1){
+            predictionsList.setVisibility(View.VISIBLE);
+        }
         PredictionsAdapter adapter = new PredictionsAdapter(this, predictions);
         predictionsList.setAdapter(adapter);
     }
@@ -550,20 +556,20 @@ public class ContainerActivity extends AppCompatActivity implements MvcContainer
 
             workingHours_layout.setVisibility(View.GONE);
 
-            try{
-                if(address.getWeekdayText().get(businessName) != null){
-                    monday.setText(address.getWeekdayText().get(businessName)[0]);
-                    tuesday.setText(address.getWeekdayText().get(businessName)[1]);
-                    wednesday.setText(address.getWeekdayText().get(businessName)[2]);
-                    thursday.setText(address.getWeekdayText().get(businessName)[3]);
-                    friday.setText(address.getWeekdayText().get(businessName)[4]);
-                    saturday.setText(address.getWeekdayText().get(businessName)[5]);
-                    sunday.setText(address.getWeekdayText().get(businessName)[6]);
-                    workingHours_layout.setVisibility(View.VISIBLE);
-                }
-            }catch (NullPointerException e){
-                Log.d(debugTag, "Failed to load times");
-            }
+//            try{
+//                if(address.getWeekdayText().get(businessName) != null){
+//                    monday.setText(address.getWeekdayText().get(businessName)[0]);
+//                    tuesday.setText(address.getWeekdayText().get(businessName)[1]);
+//                    wednesday.setText(address.getWeekdayText().get(businessName)[2]);
+//                    thursday.setText(address.getWeekdayText().get(businessName)[3]);
+//                    friday.setText(address.getWeekdayText().get(businessName)[4]);
+//                    saturday.setText(address.getWeekdayText().get(businessName)[5]);
+//                    sunday.setText(address.getWeekdayText().get(businessName)[6]);
+//                    workingHours_layout.setVisibility(View.VISIBLE);
+//                }
+//            }catch (NullPointerException e){
+//                Log.d(debugTag, "Failed to load times");
+//            }
 
         }else{
             addressTypeImageView.setImageResource(R.drawable.house);

@@ -12,6 +12,8 @@
         android:text="TextView"
         android:textColor="@color/streetDark"
         android:textSize="20sp"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

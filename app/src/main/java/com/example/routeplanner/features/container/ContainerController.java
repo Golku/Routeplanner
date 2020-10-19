@@ -68,6 +68,8 @@ public class ContainerController extends BaseController implements
 
     private Address tempNewAddress;
 
+    private Runnable getAutocompletePrediction;
+
     ContainerController(MvcContainer.View view, ContainerActivity activity, Session session) {
         this.view = view;
         this.activity = activity;
@@ -77,15 +79,21 @@ public class ContainerController extends BaseController implements
         this.minutesFormat = new SimpleDateFormat("mm:ss");
 
 
-
         if (!Places.isInitialized()) {
-//            Places.initialize(context.getApplicationContext(), ""); //(Work)
-            Places.initialize(context.getApplicationContext(), ""); //(Test)
         }
 
         this.placesClient = Places.createClient(activity);
 
         this.model = new ContainerModel(createApiService());
+
+        this.getAutocompletePrediction = new Runnable() {
+            @Override
+            public void run() {
+                if(view.getInputtedText().length() >= 3){
+                    requestPrediction();
+                }
+            }
+        };
     }
 
     //container
@@ -232,20 +240,8 @@ public class ContainerController extends BaseController implements
 
     @Override
     public void getPrediction() {
-
-        if(gettingPrediction){
-            return;
-        }
-
-        gettingPrediction = true;
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                requestPrediction();
-                gettingPrediction = false;
-            }
-        }, 2000);
+        handler.removeCallbacks(getAutocompletePrediction);
+        handler.postDelayed(getAutocompletePrediction, 1000);
     }
 
     private void requestPrediction(){
@@ -268,6 +264,8 @@ public class ContainerController extends BaseController implements
 
         placesClient.findAutocompletePredictions(request).addOnSuccessListener(response -> {
             //Log.d(debugTag, "onSuccess");
+
+            view.hideLoader();
 
             view.setupPredictionAdapter(response.getAutocompletePredictions());
 

@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -395,10 +396,14 @@ public class AddressDetailsFragment extends Fragment implements
     public void showAddressInGoogle(Address address) {
         String url = "";
         if(address.isBusiness()){
-            url = "http://www.google.com/search?q=" + address.getChosenBusinessName()+ " " +address.getStreet() + " " + address.getCity();
+            String businessName = address.getChosenBusinessName().replaceAll("[&]","");
+            url = "http://www.google.com/search?q=" + businessName+ " " +address.getStreet() + " " + address.getCity();
+//            Log.d(debugTag, "Business: " + address.getChosenBusinessName()+ " " +address.getStreet() + " " + address.getCity());
         }else{
             url = "http://www.google.com/search?q=" + address.getStreet() + " " + address.getCity();
+//            Log.d(debugTag, "House: " + address.getStreet() + " " + address.getCity());
         }
+//        Log.d(debugTag, "Url: " + url);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         startActivity(intent);
